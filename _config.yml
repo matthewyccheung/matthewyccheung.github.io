@@ -1,0 +1,14 @@
+title: Matt Cheung
+email: matt.cheung@rice.edu
+description: ""
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "matthewyccheung.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+github_username:  matthewyccheung
+
+# Build settings
+markdown: kramdown
+kramdown:
+   math_engine: mathjax
+theme: minima
+# plugins:
+#   - jekyll-feed
