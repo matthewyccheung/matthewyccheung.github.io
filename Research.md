@@ -4,42 +4,16 @@ title: Research
 permalink: /Research/
 ---
 
-<h4> Research Statement </h4>
-
-I am interested in continuing research in the field of Computational Imaging Systems, specifically in combining Optics and Numerical Algorithms for applications in microscopy, photography and computing. In microscopy and in photography, I am interested in making the invisible visible by jointly developing new hardware and software. In computing, I am interested in developing novel optical computing techniques. Ultimately, capturing images and processing images can be seamless, requiring no transistor and be completed in one system. <br> <br>
-
 <h4> Deep Diffractive Neural Networks </h4>
 
-<div style="text-align: center"><img src="/images/diff_analog.png" style="width: 50%; height: 50%"/></div>
+Deep Learning as become a basic tool for image classification. Training and testing using Deep Neural Networks is an incredibly time-consuming and resource-heavy process, especially for large image datasets. Recent advances in Deep Learning Diffractive Optics have shown to potential to alleviate these problems by embedding software into hardware. Specifically, Trabelsi et al. demonstrated that a Neural Network can be trained using all complex values instead of all real values for audio applications by using basic convolutional neural network building blocks [1]. Using this result, Lin et al. successfully demonstrated image classification using a terahertz source and 3-D printed passive diffractive layers. To accomplish this, Lin et al. presented a theoretically linear network, called D2NN, by modulating complex electric fields by complex valued transmission and reflection coefficients. Thus, allowing the forward propagation step to be computed at the at light speed with great empirical accuracy, albeit linear, for the MNIST Handwritten Dataset and the MNIST Fashion Dataset [2]. 
+
+I explored building Deep Diffractive Neural Networks using a combination of phase, amplitude and polarization modulation layers through simulation of coherent visible light. The results for Combination D2NNs for classification and spatial differentiation were preliminary and were not published. I have lots of code and results to show and am open to discussing them. They can be found [here](https://github.com/matthewyccheung/D2NN)
+
+<div style="text-align: center"><img src="/images/spat_diff_d2nn.png" style="width: 70%; height: 70%"/></div>
 <br>
+<div style="text-align: center"><img src="/images/class_acc_d2nn.png" style="width: 70%; height: 70%"/></div>
 
-Recently, a novel method to perform deep learning using using all optical hardware has been demonstrated ( [Lin et al. 2018](https://science.sciencemag.org/content/361/6406/1004) ). This design allows the forward propagation step to be computed at the speed of light and in parallel
+[1] Trabelsi, et al. “Deep Complex Networks.” ArXiv.org, 25 Feb. 2018, arxiv.org/abs/1705.09792.
 
-However, there are several issues with the current State-of-the-art design.
-1. Deep Learning must have nonlinear activation functions: the paper does not demonstrate nonlinearity. Optical Phenomena is nonlinear.
-2. The large size makes scaling to larger and larger arrays difficult
-3. It is non-programmable and susceptible to defects in fabrication (3D printing), making it difficult to explore other learning techniques (i.e. Reinforcement Learning, Transfer Learning)
-4. It is costly: terahertz source was used to increase scattering angle
-
-<br>
-<h4> Current Research Project </h4>
-
-<div style="text-align: center"><img src="/images/nin.jpg" style="width: 100%; height: 100%"/></div>
-<br>
-
-To address these issues, we designed a programmable and compact solution using accessible off-the-shelf components and visible light. The important theoretical ideas were:
-
-1. To solve nonlinear property: found cheap off-the-shelf optical components with nonlinear properties
-2. To build programmable array: component allowed implementation of many different architectures
-3. To solve scalability issue: component was cheap and small
-<br> <br>
-
-<h4> Results so far </h4>
-
-I built a Deep Learning Physics Simulation with an existing Deep Learning framework (Tensorflow) and am working on finding the analogs between Deep Learning architectures and optical systems to improve my accuracy. I trained the network to 80+% accuracy on the MNIST Handwritten dataset, but am in the process of improving the accuracy before submitting for publication.
-
-The current challenges of my project are:
-1. Characterizing a Deep Learning environment that has never been investigated before <br>
-2. FFT was used for simulating diffraction. FFT takes a long time to process large matrices. Computing power is limited. <br>
-
-I am currently working on implementing adaptive parameter tuning to attain better models before submitting for publication.
+[2] Lin, et al. “All-Optical Machine Learning Using Diffractive Deep Neural Networks.” ArXiv.org, 26 July 2018, arxiv.org/abs/1804.08711.
