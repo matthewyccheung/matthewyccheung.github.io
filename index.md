@@ -15,4 +15,4 @@ layout: home
 
 I'm a PhD student in the Electrical & Computer Engineering Department at Rice University. Broadly speaking, I'm interested solving real-world problems using fundamentals of Computational Imaging, DSP and Machine Learning. In the past, I have done some work on end-to-end optimization design of all-optical systems for simultaneous imaging and parallel processing (Deep Diffractive Neural Networks) and have studied topics related to Computational Science & Engineering.
 
-Here's my [Google Scholar Profile](https://scholar.google.com/citations?user=6d3hfUcAAAAJ&hl=en)
+Here's my [Google Scholar Profile](https://scholar.google.com/citations?user=6d3hfUcAAAAJ&hl=en).
