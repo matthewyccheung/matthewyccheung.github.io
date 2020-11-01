@@ -43,7 +43,9 @@ The Kovnir Group moved to Iowa State University in 2017. Research in the group w
 * Examined sample compositions using Powder X-Ray Diffraction (PXRD)<br>
 * Determined annealing recipes to optimize purity of synthesized compound from PXRD analysis<br>
 
-<br> <br>
+<br>
+
+----
 
 <h4> Industry Experience </h4>
 
