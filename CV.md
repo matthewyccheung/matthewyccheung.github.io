@@ -22,14 +22,30 @@ Sep. 2015 – Jun. 2020 <br>
 
 ----
 <br>
-<h4> Research / R&D Experience </h4>
+<h4> Research Experience </h4>
 
 Research Assistant, [Yang Research Laboratory](https://www.ece.ucdavis.edu/~wejyang/home.html), Davis CA <br>
 Sep. 2018 – Present
 <br>
-* Research focused on analogs between optical physics and modern computing algorithms, specifically deep learning and different CNN architectures for image classification
-* Independent project on design, simulation and fabrication of all optical diffractive convolutional neural network device via Tensorflow
+* Built Deep Diffractive Neural Networks using a combination of different modulation techniques through simulation of coherent visible light
+* Result for Combination D2NNs for classification and spatial differentiation were never written up and published
+* IT work: managing the ubuntu-based server setup, upgrading and resource distribution
 <br> <br>
+
+Research Assistant, [Kovnir Group](https://group.chem.iastate.edu/Kovnir/), Davis CA <br>
+Mar. 2016 – May. 2017 (1 year 2 months)<br>
+
+The Kovnir Group moved to Iowa State University in 2017. Research in the group was focused on solid state and materials chemistry, specifically the synthesis of novel thermoelectric, superconducting, magnetic, catalytic, and low-dimensional materials through exploring crystal structure, chemical bonding, and physical properties.
+
+
+* Research was focused on solid state and materials chemistry, namely thermoelectric materials<br>
+* Synthesized type I clathrate compounds (cesium zinc antimonides and nickel phosphides) in vacuum sealed silica tubes<br>
+* Examined sample compositions using Powder X-Ray Diffraction (PXRD)<br>
+* Determined annealing recipes to optimize purity of synthesized compound from PXRD analysis<br>
+
+<br> <br>
+
+<h4> Industry Experience </h4>
 
 Quality Reliability Engineering Intern, [Texas Instruments](http://www.ti.com/), Dallas TX <br>
 Jun 2019 – Sep 2019 (3 months) <br>
@@ -52,17 +68,6 @@ Next generation lithium-ion battery using new 3D cell architecture and high-capa
 * Updated and maintained SQL databases<br>
 * Integrated Python and VBA for live process control
 <br> <br>
-
-Research Assistant, [Kovnir Group](https://group.chem.iastate.edu/Kovnir/), Davis CA <br>
-Mar. 2016 – May. 2017 (1 year 2 months)<br>
-
-The Kovnir Group moved to Iowa State University in 2017. Research in the group was focused on solid state and materials chemistry, specifically the synthesis of novel thermoelectric, superconducting, magnetic, catalytic, and low-dimensional materials through exploring crystal structure, chemical bonding, and physical properties.
-
-
-* Research was focused on solid state and materials chemistry, namely thermoelectric materials<br>
-* Synthesized type I clathrate compounds (cesium zinc antimonides and nickel phosphides) in vacuum sealed silica tubes<br>
-* Examined sample compositions using Powder X-Ray Diffraction (PXRD)<br>
-* Determined annealing recipes to optimize purity of synthesized compound from PXRD analysis<br>
 
 ----
 <br>
@@ -103,7 +108,7 @@ Controls System Team Member: UC Davis HyperLoop Team (Oct 2017 – Jan 2018)
 * Sourced electrical components that meet the design specifications
 <br>
 
-Project Sole Contributer: [AridLab@UCDavis](https://www.aridlab.org/) (Oct 2017 – Jan 2018)
+Project Member: [AridLab@UCDavis](https://www.aridlab.org/) (Oct 2017 – Jan 2018)
 * Implemented RF mesh network of microcontrollers using nRF24 transceivers for soil ecology research
 <br>
 
