@@ -28,7 +28,7 @@ Research Assistant, [Yang Research Laboratory](https://www.ece.ucdavis.edu/~wejy
 Sep. 2018 – Present
 <br>
 * Built Deep Diffractive Neural Networks using a combination of different modulation techniques through simulation of coherent visible light
-* Result for Combination D2NNs for classification and spatial differentiation were never written up and published
+* Results for Combination D2NNs for classification and spatial differentiation were never written up and published, but can be found on my github page
 * IT work: managing the ubuntu-based server setup, upgrading and resource distribution
 <br> <br>
 
