@@ -47,6 +47,7 @@ The Kovnir Group moved to Iowa State University in 2017. Research in the group w
 
 ----
 
+<br>
 <h4> Industry Experience </h4>
 
 Quality Reliability Engineering Intern, [Texas Instruments](http://www.ti.com/), Dallas TX <br>
