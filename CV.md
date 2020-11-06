@@ -11,7 +11,7 @@ Aug. 2020 - Present <br>
 
 University of California, Davis <br>
 Sep. 2015 – Jun. 2020 <br>
-* B.S. Electrical Engineering; GPA: 3.658 <br>
+* B.S. Electrical Engineering, cum laude <br>
 * Graduate Coursework in [Optical Microscopy](https://www.ece.ucdavis.edu/~wejyang/Syllabus_EEC289T_Fall2018.pdf), [Large Scale Scientific Computing](https://web.cs.ucdavis.edu/~bai/ECS231/), [Computational Imaging](https://bmegg.ucdavis.edu/files/2019/07/BIM252.pdf) and Solid State Device Physics <br>
 * Undergraduate Coursework in Signal Processing, Electromagnetics and Solid State Device Physics <br>
 * Tau Beta Pi CA Lambda Chapter, [UC Davis Cycling Team](https://www.ucdaviscycling.com/) <br>
