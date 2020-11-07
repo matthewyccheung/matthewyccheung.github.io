@@ -8,6 +8,7 @@ permalink: /CV/
 Rice University <br>
 Aug. 2020 - Present <br>
 * Ph.D. Electrical & Computer Engineering
+* Coursework in Network Science, Information Theory and Random Processes
 
 University of California, Davis <br>
 Sep. 2015 – Jun. 2020 <br>
