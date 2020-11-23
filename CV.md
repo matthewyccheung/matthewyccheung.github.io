@@ -26,7 +26,7 @@ Sep. 2015 – Jun. 2020 <br>
 <h4> Research Experience </h4>
 
 Research Assistant, [Yang Research Laboratory](https://www.ece.ucdavis.edu/~wejyang/home.html), Davis CA <br>
-Sep. 2018 – Present
+Sep. 2018 – Jul. 2020
 <br>
 * Built Deep Diffractive Neural Networks using a combination of different modulation techniques through simulation of coherent visible light
 * Results for Combination D2NNs for classification and spatial differentiation were never written up and published, but can be found on my github page
