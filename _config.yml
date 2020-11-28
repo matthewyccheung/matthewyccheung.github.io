@@ -15,7 +15,7 @@ show_date: true
 markdown: kramdown
 kramdown:
    math_engine: mathjax
-theme: minimal-mistakes-jekyll
+remote-theme: "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "contrast"
 #plugins:
 #    - jekyll-jupyter-notebook
