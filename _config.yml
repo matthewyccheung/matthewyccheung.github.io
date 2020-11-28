@@ -23,7 +23,7 @@ plugins:
 author:
   name: "Matt Y. Cheung"
   avatar: "/images/IMG_3972 2 copy.jpg"
-  bio: "I'm a PhD student in the Electrical & Computer Engineering Department at Rice University working under Professor [Ashok Veeraraghavan](https://profiles.rice.edu/faculty/ashok-veeraraghavan) in the [Rice Computational Imaging Lab](http://computationalimaging.rice.edu/). Broadly speaking, I'm interested solving real-world problems using fundamentals of Computational Imaging, DSP and Machine Learning."
+  bio: "I'm a PhD student in the Electrical & Computer Engineering Department at Rice University working under Professor [Ashok Veeraraghavan](https://profiles.rice.edu/faculty/ashok-veeraraghavan) in the [Rice Computational Imaging Lab](http://computationalimaging.rice.edu/). By using fundamentals of Wave Optics, DSP and Machine Learning, we co-design design hardware and software to solve real-world problems."
   location: "Houston, TX"
   links:
     - label: "GitHub"
