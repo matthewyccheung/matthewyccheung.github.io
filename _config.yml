@@ -5,15 +5,8 @@ masthead_title: ""
 search: true
 timezone: America/Chicago
 
-defaults:
-    #_posts
-    - scope:
-        path: ""
-        type: posts
-    - values:
-        layout: single
-        author_profile: true
-        show_date: true
+author_profile: true
+show_date: true
 
 # Build settings
 markdown: kramdown
