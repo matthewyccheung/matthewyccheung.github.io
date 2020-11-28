@@ -15,10 +15,10 @@ show_date: true
 markdown: kramdown
 kramdown:
    math_engine: mathjax
-remote-theme: "mmistakes/minimal-mistakes"
+remote_theme: "mmistakes/minimal-mistakes@4.21.0"
 minimal_mistakes_skin: "contrast"
-#plugins:
-#    - jekyll-jupyter-notebook
+plugins:
+    - jekyll-include-cache
 
 author:
   name: "Matt Y. Cheung"
