@@ -1,14 +1,44 @@
-title: Matt Y. Cheung
-email: mattyc@rice.edu
-description: ""
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "matthewyccheung.github.io" # the base hostname & protocol for your site, e.g. http://example.com
-github_username:  matthewyccheung
+title: "Matt Y. Cheung"
+title_separator: "|"
+logo: "/images/home-solid.png"
+masthead_title: ""
+search: true
+timezone: America/Chicago
+
+defaults:
+    #_posts
+    - scope:
+        path: ""
+        type: posts
+    - values:
+        layout: single
+        author_profile: true
+        show_date: true
 
 # Build settings
 markdown: kramdown
 kramdown:
    math_engine: mathjax
-theme: minima
-# plugins:
-#    - jekyll-feed
+theme: minimal-mistakes-jekyll
+minimal_mistakes_skin: "contrast"
+#plugins:
+#    - jekyll-jupyter-notebook
+
+author:
+  name: "Matt Y. Cheung"
+  avatar: "/images/IMG_3972 2 copy.jpg"
+  bio: "I'm a PhD student in the Electrical & Computer Engineering Department at Rice University working under Professor [Ashok Veeraraghavan](https://profiles.rice.edu/faculty/ashok-veeraraghavan) in the [Rice Computational Imaging Lab](http://computationalimaging.rice.edu/). Broadly speaking, I'm interested solving real-world problems using fundamentals of Computational Imaging, DSP and Machine Learning."
+  location: "Houston, TX"
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/matthewyccheung"
+    - label: "Google Scholar"
+      icon: "fas fa-graduation-cap"
+      url: "https://scholar.google.com/citations?user=6d3hfUcAAAAJ&hl=en"
+    - label: "LinkedIn"
+      icon: "fab fa-linkedin-in"
+      url: "https://www.linkedin.com/in/matthewyccheung/"
+    - label: "Email"
+      icon: "fas fa-at"
+      url: "mailto:mattyc@rice.edu"

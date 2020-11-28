@@ -1,6 +1,8 @@
 ---
-layout: page
+layout: single
 title: CV
+author_profile: true
+classes: wide
 permalink: /CV/
 ---
 

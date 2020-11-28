@@ -1,0 +1,1094 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.21.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Project] Comparing Basic Linear Algebra Subprograms | Matt Y. Cheung</title>
+<meta name="description" content="The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory.   The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.   Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and is slow. Different algorithms have been devised for computing the matrix product for large matrices.">
+
+
+  <meta name="author" content="Matt Y. Cheung">
+  
+  <meta property="article:author" content="Matt Y. Cheung">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Matt Y. Cheung">
+<meta property="og:title" content="[Project] Comparing Basic Linear Algebra Subprograms">
+<meta property="og:url" content="http://localhost:4000/2019/04/30/Comparing-Basic-Linear-Algebra-Subprograms.html">
+
+
+  <meta property="og:description" content="The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory.   The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.   Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and is slow. Different algorithms have been devised for computing the matrix product for large matrices.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-04-30T00:00:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/2019/04/30/Comparing-Basic-Linear-Algebra-Subprograms.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Matt Y. Cheung Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/images/home-solid.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Matt Y. Cheung
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/Publications/">Publications</a>
+            </li><li class="masthead__menu-item">
+              <a href="/CV/">CV</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/images/IMG_3972%202%20copy.jpg" alt="Matt Y. Cheung" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Matt Y. Cheung</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>I’m a PhD student in the Electrical &amp; Computer Engineering Department at Rice University working under Professor <a href="https://profiles.rice.edu/faculty/ashok-veeraraghavan">Ashok Veeraraghavan</a> in the <a href="http://computationalimaging.rice.edu/">Rice Computational Imaging Lab</a>. Broadly speaking, I’m interested solving real-world problems using fundamentals of Computational Imaging, DSP and Machine Learning.</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Houston, TX</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="https://github.com/matthewyccheung" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://scholar.google.com/citations?user=6d3hfUcAAAAJ&hl=en" rel="nofollow noopener noreferrer"><i class="fas fa-graduation-cap" aria-hidden="true"></i><span class="label">Google Scholar</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/matthewyccheung/" rel="nofollow noopener noreferrer"><i class="fab fa-linkedin-in" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="mailto:mattyc@rice.edu" rel="nofollow noopener noreferrer"><i class="fas fa-at" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Project] Comparing Basic Linear Algebra Subprograms">
+    <meta itemprop="description" content="  The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory.  The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.  Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and is slow. Different algorithms have been devised for computing the matrix product for large matrices.">
+    <meta itemprop="datePublished" content="2019-04-30T00:00:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">[Project] Comparing Basic Linear Algebra Subprograms
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2019-04-30T00:00:00-05:00">April 30, 2019</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <ul>
+  <li>The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory.</li>
+  <li>The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.</li>
+  <li>Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and is slow. Different algorithms have been devised for computing the matrix product for large matrices.</li>
+</ul>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<h3 id="introduction">Introduction</h3>
+
+<p>Matrix Multiplication or Matrix Product is an operation that produces a matrix from two matrices.</p>
+
+<p>If $A\in \mathbb{R}^{m\times p}$ represented by</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{gather}
+A =
+\begin{bmatrix}
+    a_{11} & a_{12} & a_{13} & \dots  & a_{1n} \\\\
+    a_{21} & a_{22} & a_{23} & \dots  & a_{2n} \\\\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\\\
+    a_{m1} & a_{m2} & a_{m3} & \dots  & a_{mn}
+\end{bmatrix}
+\end{gather} %]]></script>
+
+<p>and $B\in \mathbb{R}^{p\times n}$ represented by</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{gather}
+B =
+\begin{bmatrix}
+    b_{11} & b_{12} & b_{13} & \dots  & b_{1n} \\
+    b_{21} & b_{22} & b_{23} & \dots  & b_{2n} \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    b_{p1} & b_{p2} & b_{p3} & \dots  & b_{pn}
+\end{bmatrix}
+\end{gather} %]]></script>
+
+<p>then the Matrix Product can be defined as $C = AB$ where <script type="math/tex">c_{ij} = \sum^m_{k=1}a_{ik}b_{kj} \quad 1\leq i \leq n\ , 1\leq j \leq p</script></p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{gather}
+C = AB = 
+\begin{bmatrix}
+    c_{11} & c_{12} & c_{13} & \dots  & c_{1n} \\
+    c_{21} & c_{22} & c_{23} & \dots  & c_{2n} \\
+    \vdots & \vdots & \vdots & \ddots & \vdots \\
+    c_{m1} & c_{m2} & c_{m3} & \dots  & c_{mn}
+\end{bmatrix}
+\end{gather} %]]></script>
+
+<p>Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and hence slow. Different algorithms have been devised for computing the matrix product for large matrices. In this project, a survey of methods that take computer architecture into account will be explored.</p>
+
+<h3 id="computing-bottleneck">Computing Bottleneck</h3>
+
+<p>The time to run a program can be modeled by:</p>
+
+<script type="math/tex; mode=display">Time\;to\;run\;code\;=\;clock\;cycles\;running\;code\;+\;clock\;cycles\;waiting\;for\;memory</script>
+
+<p>The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.</p>
+
+<p>To model this, we can define a simple memory model with two levels - fast and slow memories. All the data is initially in slow memory. Data is processed faster if in the fast memory. Therefore, Data needs to be transferred from slow to fast memory before each subroutine. The performance metric is the number of floating point operations per slow element access, called FLOPS.</p>
+
+<h3 id="basic-linear-algebra-subprograms-blas">Basic Linear Algebra Subprograms (BLAS)</h3>
+
+<p>BLAS are low-level kernels that provide routines for performing Linear Algebra operations such as matrix addition, multiplication and dot products. These routines tend to be optimized for particular machines. These are the standard building blocks in modern linear algebra software.</p>
+
+<p>BLAS separates its functionality into three levels: BLAS-1, BLAS-2 and BLAS-3. BLAS-1 performs scalar, vector and vector-vector operations. BLAS-2 performs matrix-vector operations. BLAS-3 performs matrix-matrix operations. A summary table of performance metrics is shown below:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{array}{rr} \hline
+BLAS &Memory References &FLOPS & FLOPS/Memory References \\ \hline
+1 & 3n & 2n & 2/3 \\ \hline
+2 & n^2 & 2n^2 & 2 \\ \hline
+3 & 4n^2 & 2n^3 & n/2
+\end{array} %]]></script>
+
+<h3 id="experiment-methods">Experiment Methods</h3>
+
+<p>Five different algorithms for matrix multiplication will be tested and compared with FLOP rate for square matrices. The size of the matrix (n) will be varied and plotted versus MFLOPS/s. In this case, 10 values from 10 to 500 were selected using the numpy linspace function.</p>
+
+<p>The MFLOPS/s will be computed using the equation: $ MFLOPS/s = \frac{2n^3}{10^6 \times runtime}$</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">time</span>
+</code></pre></div></div>
+
+<h4 id="1-triple-loop">1. Triple Loop</h4>
+<p>The triple loop is the element wise (naïve) multiplication, which is mentioned in the introduction as <script type="math/tex">c_{ij} = \sum^m_{k=1}a_{ik}b_{kj} \quad 1\leq i \leq n\ , 1\leq j \leq p</script></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">matmul_triple</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat2_shape</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">C</span>
+</code></pre></div></div>
+
+<h4 id="2-dot-product-blas-1">2. Dot Product (BLAS-1)</h4>
+<p>The dot product of two vectors $a = [a_1, a_2, \dots, a_n]$ and $b = [b_1, b_2, \dots, b_n]$ is defined as <script type="math/tex">a\cdot b = \sum^n_{i=1}a_i b_i</script></p>
+
+<p>The implementation of using the dot product for matrix multiplication is <script type="math/tex">c_{ij} = a_{i}\cdot b_{j} \quad 1\leq i \leq m\ , 1\leq j \leq n</script></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">matmul_dot</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat2_shape</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">B</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">C</span>
+</code></pre></div></div>
+
+<h4 id="3-saxpy-blas-1">3. Saxpy (BLAS-1)</h4>
+<p>Saxpy (Single-Precision A X Plus Y) is defined as the form $y:=ax + y$, where $x,y$ are vectors and $a$ is a scalar. The implementation of saxpy for matrix multiplication is <script type="math/tex">c_i = c_i + a_j b_{ji} \quad 1\leq i \leq m\ , 1\leq j \leq p</script></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">matmul_saxpy</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat2_shape</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="n">C</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">A</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">C</span>
+</code></pre></div></div>
+
+<h4 id="4-matrix-vector-blas-2">4. Matrix-Vector (BLAS-2)</h4>
+<p>Matrix-Vector multiplication is defined as $y:=y+Ax$ where A is matrix and x is a vector. The implementation for Matrix-Vector matrix multiplication is <script type="math/tex">c_k = c_k + Ab_k \quad 1\leq k \leq n</script></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">matmul_matvec</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat2_shape</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">C</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span> <span class="p">:],</span> <span class="n">B</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">C</span>
+</code></pre></div></div>
+
+<h4 id="5-outer-product-blas-2">5. Outer product (BLAS-2)</h4>
+<p>The outer product is defined as $a\otimes b = ab^T$ If a and b have dimensions of m and n, then their outer product is an m by n matrix. The implementation of the outer product matrix multiplication is defined as <script type="math/tex">C = C + a_i b^T_i</script></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">matmul_outer</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">mat2_shape</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">C</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">C</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="k">return</span> <span class="n">C</span>
+</code></pre></div></div>
+
+<h4 id="misc-functions">Misc Function(s)</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">mat2_shape</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">):</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+    <span class="p">[</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">B</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">n</span>
+</code></pre></div></div>
+
+<h4 id="get-running-time-routine">Get running time routine</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">'matmul_triple'</span><span class="p">,</span> <span class="s">'matmul_dot'</span><span class="p">,</span> <span class="s">'matmul_saxpy'</span><span class="p">,</span>
+         <span class="s">'matmul_matvec'</span><span class="p">,</span> <span class="s">'matmul_outer'</span><span class="p">]</span>
+<span class="n">func_names</span> <span class="o">=</span> <span class="p">[</span><span class="s">'triple loop'</span><span class="p">,</span> <span class="s">'dot product (BLAS-1)'</span><span class="p">,</span> <span class="s">'saxpy (BLAS-1)'</span><span class="p">,</span>
+         <span class="s">'matrix-vector (BLAS-2)'</span><span class="p">,</span> <span class="s">'outer product (BLAS-2)'</span><span class="p">]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">funcs</span><span class="p">))))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="p">)):</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">funcs</span><span class="p">)):</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">C</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">funcs</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="s">'(A, B)'</span><span class="p">)</span>
+        <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</code></pre></div></div>
+
+<h4 id="get-flopss-routine">Get FLOPS/s routine</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">flops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="n">flops</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">/</span><span class="p">(</span><span class="mf">1e6</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="experiment-results">Experiment Results</h3>
+
+<h4 id="run-time-comparison">Run Time Comparison</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dispt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">dispt</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">'int'</span><span class="p">)</span>
+<span class="n">dispt</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">t</span>
+<span class="n">df_t</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dispt</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">'n'</span><span class="p">],</span> <span class="n">func_names</span><span class="p">))</span>
+<span class="n">df_t</span><span class="p">[</span><span class="s">'n'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_t</span><span class="p">[</span><span class="s">'n'</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df_t</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>n</th>
+      <th>triple loop</th>
+      <th>dot product (BLAS-1)</th>
+      <th>saxpy (BLAS-1)</th>
+      <th>matrix-vector (BLAS-2)</th>
+      <th>outer product (BLAS-2)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>10</td>
+      <td>0.001958</td>
+      <td>0.000494</td>
+      <td>0.001043</td>
+      <td>0.000294</td>
+      <td>0.000350</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>64</td>
+      <td>0.324073</td>
+      <td>0.007775</td>
+      <td>0.028444</td>
+      <td>0.000872</td>
+      <td>0.002727</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>119</td>
+      <td>2.483323</td>
+      <td>0.056787</td>
+      <td>0.104679</td>
+      <td>0.000967</td>
+      <td>0.008148</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>173</td>
+      <td>7.373535</td>
+      <td>0.110846</td>
+      <td>0.270866</td>
+      <td>0.002401</td>
+      <td>0.019772</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>228</td>
+      <td>16.292575</td>
+      <td>0.119387</td>
+      <td>0.522254</td>
+      <td>0.004367</td>
+      <td>0.040190</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>282</td>
+      <td>28.353514</td>
+      <td>0.195107</td>
+      <td>0.848704</td>
+      <td>0.005697</td>
+      <td>0.071406</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>337</td>
+      <td>49.096077</td>
+      <td>0.392282</td>
+      <td>1.279814</td>
+      <td>0.007889</td>
+      <td>0.109456</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>391</td>
+      <td>76.775584</td>
+      <td>0.513610</td>
+      <td>1.959762</td>
+      <td>0.012160</td>
+      <td>0.248771</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>446</td>
+      <td>113.867998</td>
+      <td>0.725625</td>
+      <td>2.673684</td>
+      <td>0.018931</td>
+      <td>0.330257</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>500</td>
+      <td>161.462556</td>
+      <td>0.949153</td>
+      <td>3.341192</td>
+      <td>0.023851</td>
+      <td>0.473899</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'n'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'Run Time'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Run Time Comparison between different BLAS-type Operation Kernels'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">t</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">label</span> <span class="o">=</span> <span class="n">func_names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s">'log'</span><span class="p">,</span> <span class="n">basey</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="blas_comparisons_files/blas_comparisons_23_0.png" alt="png" /></p>
+
+<h4 id="mflopss-comparison">MFLOPS/s Comparison</h4>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dispf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">flops</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">flops</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">dispf</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="nb">round</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">'int'</span><span class="p">)</span>
+<span class="n">dispf</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">flops</span>
+<span class="n">df_f</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dispf</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s">'n'</span><span class="p">],</span> <span class="n">func_names</span><span class="p">))</span>
+<span class="n">df_f</span><span class="p">[</span><span class="s">'n'</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_f</span><span class="p">[</span><span class="s">'n'</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="n">df_f</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>n</th>
+      <th>triple loop</th>
+      <th>dot product (BLAS-1)</th>
+      <th>saxpy (BLAS-1)</th>
+      <th>matrix-vector (BLAS-2)</th>
+      <th>outer product (BLAS-2)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>10</td>
+      <td>1.021506</td>
+      <td>4.048556</td>
+      <td>1.917396</td>
+      <td>6.803413</td>
+      <td>5.714311</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>64</td>
+      <td>1.651746</td>
+      <td>68.844448</td>
+      <td>18.818775</td>
+      <td>613.933586</td>
+      <td>196.289135</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>119</td>
+      <td>1.353383</td>
+      <td>59.184310</td>
+      <td>32.106561</td>
+      <td>3476.344810</td>
+      <td>412.482171</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>173</td>
+      <td>1.412539</td>
+      <td>93.962826</td>
+      <td>38.452263</td>
+      <td>4337.740537</td>
+      <td>526.774207</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>228</td>
+      <td>1.450689</td>
+      <td>197.973229</td>
+      <td>45.256638</td>
+      <td>5412.442808</td>
+      <td>588.093318</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>282</td>
+      <td>1.585611</td>
+      <td>230.425641</td>
+      <td>52.972115</td>
+      <td>7891.444145</td>
+      <td>629.604966</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>337</td>
+      <td>1.554474</td>
+      <td>194.550326</td>
+      <td>59.632566</td>
+      <td>9673.719498</td>
+      <td>697.253226</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>391</td>
+      <td>1.558502</td>
+      <td>232.968327</td>
+      <td>61.055832</td>
+      <td>9839.989620</td>
+      <td>480.983716</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>446</td>
+      <td>1.553581</td>
+      <td>243.794175</td>
+      <td>66.164569</td>
+      <td>9344.554011</td>
+      <td>535.652727</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>500</td>
+      <td>1.548347</td>
+      <td>263.392745</td>
+      <td>74.823590</td>
+      <td>10481.672148</td>
+      <td>527.538693</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'n'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'log10(MFLOPS/s)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Run Time Comparison between different BLAS-type Operation Kernels'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">flops</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">label</span> <span class="o">=</span> <span class="n">func_names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s">'log'</span><span class="p">,</span> <span class="n">basey</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="blas_comparisons_files/blas_comparisons_26_0.png" alt="png" /></p>
+
+<h3 id="conclusion">Conclusion</h3>
+<p>From the collected data, the MFLOPS/s ranking was matrix-vector, outer product, dot product, saxpy and triple loop. The rankings were expected because BLAS-2 were theorized to be faster than BLAS-1 and both were theorzied to be faster than the triple loop due to the number of FLOPS/MemoryReferences. The curves plotted were consistent with the expected shape - as the size of the matrix gets larger and larger, the MFLOPS/s eventually plateaus. This wil be more evident as the size of the matrix gets larger and larger. The maximum MFLOPS/s for each of the methods is shown below</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_f_max</span> <span class="o">=</span> <span class="n">df_f</span><span class="o">.</span><span class="nb">max</span><span class="p">()[</span><span class="mi">1</span><span class="p">::]</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
+<span class="n">df_f_max</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">'Maximum MFLOPS/s'</span><span class="p">]</span>
+<span class="n">df_f_max</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Maximum MFLOPS/s</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>triple loop</th>
+      <td>1.651746</td>
+    </tr>
+    <tr>
+      <th>dot product (BLAS-1)</th>
+      <td>263.392745</td>
+    </tr>
+    <tr>
+      <th>saxpy (BLAS-1)</th>
+      <td>74.823590</td>
+    </tr>
+    <tr>
+      <th>matrix-vector (BLAS-2)</th>
+      <td>10481.672148</td>
+    </tr>
+    <tr>
+      <th>outer product (BLAS-2)</th>
+      <td>697.253226</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3 id="discussion">Discussion</h3>
+
+<p>Although it is evident that BLAS-2 is faster than BLAS-1, there is still some question to the ratios of MFLOPS/s between different methods. From the table in the introduction, BLAS-2 should be approximately $\frac{2}{2/3} = 3 $ times as fast as BLAS-1. These values makes sense if the comparison was done between dot product (BLAS-1) and outer product (BLAS-2), but does not make sense for any other combination. One reason that may have caused this is because the matrix was not large enough and did not plateau. Due to CPU speed and time limitations, more data was not be taken. Another experiment that collects more data points for larger matrix multiplications should be run. A percent change difference is computed below.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_f_pct_change</span> <span class="o">=</span> <span class="n">df_f</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'n'</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">pct_change</span><span class="p">()</span>
+<span class="n">df_f_pct_change</span>
+</code></pre></div></div>
+
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>triple loop</th>
+      <th>dot product (BLAS-1)</th>
+      <th>saxpy (BLAS-1)</th>
+      <th>matrix-vector (BLAS-2)</th>
+      <th>outer product (BLAS-2)</th>
+    </tr>
+    <tr>
+      <th>n</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>10</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>64</th>
+      <td>0.616971</td>
+      <td>16.004692</td>
+      <td>8.814756</td>
+      <td>89.239061</td>
+      <td>33.350449</td>
+    </tr>
+    <tr>
+      <th>119</th>
+      <td>-0.180635</td>
+      <td>-0.140318</td>
+      <td>0.706092</td>
+      <td>4.662412</td>
+      <td>1.101401</td>
+    </tr>
+    <tr>
+      <th>173</th>
+      <td>0.043710</td>
+      <td>0.587631</td>
+      <td>0.197645</td>
+      <td>0.247788</td>
+      <td>0.277084</td>
+    </tr>
+    <tr>
+      <th>228</th>
+      <td>0.027008</td>
+      <td>1.106931</td>
+      <td>0.176956</td>
+      <td>0.247756</td>
+      <td>0.116405</td>
+    </tr>
+    <tr>
+      <th>282</th>
+      <td>0.093006</td>
+      <td>0.163923</td>
+      <td>0.170483</td>
+      <td>0.458019</td>
+      <td>0.070587</td>
+    </tr>
+    <tr>
+      <th>337</th>
+      <td>-0.019637</td>
+      <td>-0.155692</td>
+      <td>0.125735</td>
+      <td>0.225849</td>
+      <td>0.107446</td>
+    </tr>
+    <tr>
+      <th>391</th>
+      <td>0.002591</td>
+      <td>0.197471</td>
+      <td>0.023867</td>
+      <td>0.017188</td>
+      <td>-0.310174</td>
+    </tr>
+    <tr>
+      <th>446</th>
+      <td>-0.003157</td>
+      <td>0.046469</td>
+      <td>0.083673</td>
+      <td>-0.050349</td>
+      <td>0.113661</td>
+    </tr>
+    <tr>
+      <th>500</th>
+      <td>-0.003369</td>
+      <td>0.080390</td>
+      <td>0.130871</td>
+      <td>0.121688</td>
+      <td>-0.015148</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">df_f_pct_change_ri</span> <span class="o">=</span> <span class="n">df_f_pct_change</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_f_pct_change_ri</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="s">'n'</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">df_f_pct_change_ri</span><span class="p">[</span><span class="s">'n'</span><span class="p">],</span> <span class="n">df_f_pct_change_ri</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Percent Change in MFLOPS/s for different BLAS-type Operation Kernels'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'pct change (</span><span class="si">%</span><span class="s">)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'n'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">yscale</span><span class="p">(</span><span class="s">'log'</span><span class="p">,</span> <span class="n">basey</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p><img src="blas_comparisons_files/blas_comparisons_31_0.png" alt="png" /></p>
+
+<p>From this, there is room for improvement, as the dot product and the matrix-vector kernels have a percentage change of greater than 10% at n = 500.</p>
+
+<p>Another observation is that MATLAB behaves differently when the same kernels are implemented. It is unknown if it is an implementation problem or MATLAB’s matrix multiplication routines. The MATLAB implementation is shown here https://pastebin.com/TL93T9mU and results are shown below</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="n">Image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">'blas_comparison_matlab.png'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><img src="blas_comparisons_files/blas_comparisons_34_0.png" alt="png" /></p>
+
+<p>From the Run Time Comparison, we do not see the BLAS Run Time hierarchy. This may possibly be due to error in implementation. But the reason for this is still unknown.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2019-04-30T00:00:00-05:00">April 30, 2019</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="#" class="pagination--pager disabled">Previous</a>
+    
+    
+      <a href="/2019/05/14/Iterative-Subspace-Projection-Methods.html" class="pagination--pager" title="[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 Matt Y. Cheung. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

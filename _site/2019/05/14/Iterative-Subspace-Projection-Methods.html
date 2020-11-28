@@ -1,0 +1,873 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.21.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems | Matt Y. Cheung</title>
+<meta name="description" content="Solving Ax = b quickly is important. However, solving them for large sparse matrices is inefficient and time consuming (n-cubed by gaussian elimination).   Iterative Subspace Projection Methods aim to solve these problems by dimension reduction. For eigenvalue problems, these methods attain approximations for eigenvalues and eigenvectors from projections of the eigenproblem to subspaces of smaller dimension, which are expanded during the course of the algorithm.   Solving eigenvalues are important in many fields such as physics and play an important role in subfields in Computer Science such as Computer Vision">
+
+
+  <meta name="author" content="Matt Y. Cheung">
+  
+  <meta property="article:author" content="Matt Y. Cheung">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="Matt Y. Cheung">
+<meta property="og:title" content="[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems">
+<meta property="og:url" content="http://localhost:4000/2019/05/14/Iterative-Subspace-Projection-Methods.html">
+
+
+  <meta property="og:description" content="Solving Ax = b quickly is important. However, solving them for large sparse matrices is inefficient and time consuming (n-cubed by gaussian elimination).   Iterative Subspace Projection Methods aim to solve these problems by dimension reduction. For eigenvalue problems, these methods attain approximations for eigenvalues and eigenvectors from projections of the eigenproblem to subspaces of smaller dimension, which are expanded during the course of the algorithm.   Solving eigenvalues are important in many fields such as physics and play an important role in subfields in Computer Science such as Computer Vision">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2019-05-14T00:00:00-05:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/2019/05/14/Iterative-Subspace-Projection-Methods.html">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Matt Y. Cheung Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5/css/all.min.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+          <a class="site-logo" href="/"><img src="/images/home-solid.png" alt=""></a>
+        
+        <a class="site-title" href="/">
+          Matt Y. Cheung
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/Publications/">Publications</a>
+            </li><li class="masthead__menu-item">
+              <a href="/CV/">CV</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/images/IMG_3972%202%20copy.jpg" alt="Matt Y. Cheung" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Matt Y. Cheung</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>I’m a PhD student in the Electrical &amp; Computer Engineering Department at Rice University working under Professor <a href="https://profiles.rice.edu/faculty/ashok-veeraraghavan">Ashok Veeraraghavan</a> in the <a href="http://computationalimaging.rice.edu/">Rice Computational Imaging Lab</a>. Broadly speaking, I’m interested solving real-world problems using fundamentals of Computational Imaging, DSP and Machine Learning.</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+        <li itemprop="homeLocation" itemscope itemtype="https://schema.org/Place">
+          <i class="fas fa-fw fa-map-marker-alt" aria-hidden="true"></i> <span itemprop="name">Houston, TX</span>
+        </li>
+      
+
+      
+        
+          
+            <li><a href="https://github.com/matthewyccheung" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://scholar.google.com/citations?user=6d3hfUcAAAAJ&hl=en" rel="nofollow noopener noreferrer"><i class="fas fa-graduation-cap" aria-hidden="true"></i><span class="label">Google Scholar</span></a></li>
+          
+        
+          
+            <li><a href="https://www.linkedin.com/in/matthewyccheung/" rel="nofollow noopener noreferrer"><i class="fab fa-linkedin-in" aria-hidden="true"></i><span class="label">LinkedIn</span></a></li>
+          
+        
+          
+            <li><a href="mailto:mattyc@rice.edu" rel="nofollow noopener noreferrer"><i class="fas fa-at" aria-hidden="true"></i><span class="label">Email</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems">
+    <meta itemprop="description" content="  Solving Ax = b quickly is important. However, solving them for large sparse matrices is inefficient and time consuming (n-cubed by gaussian elimination).  Iterative Subspace Projection Methods aim to solve these problems by dimension reduction. For eigenvalue problems, these methods attain approximations for eigenvalues and eigenvectors from projections of the eigenproblem to subspaces of smaller dimension, which are expanded during the course of the algorithm.  Solving eigenvalues are important in many fields such as physics and play an important role in subfields in Computer Science such as Computer Vision">
+    <meta itemprop="datePublished" content="2019-05-14T00:00:00-05:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems
+</h1>
+          
+
+  <p class="page__meta">
+    
+      
+      <span class="page__meta-date">
+        <i class="far fa-calendar-alt" aria-hidden="true"></i>
+        <time datetime="2019-05-14T00:00:00-05:00">May 14, 2019</time>
+      </span>
+    
+
+    
+
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <ul>
+  <li>Solving Ax = b quickly is important. However, solving them for large sparse matrices is inefficient and time consuming (n-cubed by gaussian elimination).</li>
+  <li>Iterative Subspace Projection Methods aim to solve these problems by dimension reduction. For eigenvalue problems, these methods attain approximations for eigenvalues and eigenvectors from projections of the eigenproblem to subspaces of smaller dimension, which are expanded during the course of the algorithm.</li>
+  <li>Solving eigenvalues are important in many fields such as physics and play an important role in subfields in Computer Science such as Computer Vision</li>
+</ul>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Iterative subspace projection methods are used for solving large sparse
+linear systems (i.e. Ax = b). We implement the Steepest Descent (SD),
+Conjugate Gradient (CG), Minimal Residual (RM) and Restarted GMRES
+algorithms to study the convergence behaviors of these methods for the
+matrices bcsstk15, mahindas, nos3 and west0479 from The University of
+Florida Sparse Matrix Collection. The matrices are shown below.</p>
+
+<p><img src="pics/test_mat.png" alt="Four Test Matrices from The University of Florida Sparse Matrix
+Collection[]{label=&quot;datagen&quot;}" /></p>
+
+<p>The investigated parameters in this report will be the residuals and the
+eigenvalues.</p>
+
+<h1 id="methods">Methods</h1>
+
+<h2 id="part-i-iterative-subspace-projection-methods-for-large-scale-linear-systems">Part I: Iterative subspace projection methods for large scale linear systems</h2>
+
+<p>In this section, functions for each of the methods were written using
+MATLAB. A pseudo code implementation will be presented in the main
+report and the code will be provided in the appendix. These will be
+verified using the built in methods (i.e. gmres, cg). Then the
+implementations will be run on the test matrices.</p>
+
+<h3 id="steepest-descent-sd">Steepest Descent (SD)</h3>
+
+<p>The Steepest Descent (SD) method solves Ax = b for symmetric positive
+definite (SPD) matrices. The algorithm is presented in Subspace
+projection methods for LS Lecture on slide 16. [1]</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%% Steepest Descent (SD) Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+mats = ["bcsstk15", "mahindas", "nos3", "west0479"];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    xk = ones(n, 1); 
+    [xk, norm_rks] = sd(A, b, xk, maxiter, tol);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Steepest Descent (SD) Method Residuals Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, maxiter]);
+
+
+function [xk, norm_rks] = sd(A, b, x0, maxiter, tol)
+    iter = 0; xk = x0; x_prev = inf; norm_rks = [];
+    while (norm(x_prev - xk) &gt;= tol) &amp; (iter &lt;= maxiter)
+        iter = iter + 1;
+        rk = b - A*xk;
+        norm_rks = [norm_rks, norm(rk)/(norm(A, 1)*norm(xk) + norm(b))];
+        ak = rk'*rk/(rk'*A*rk);
+        xprev = xk;
+        xk = xk + ak*rk;
+    end
+end
+</code></pre></div></div>
+
+<p>A is SPD only when $r_k &gt; 0$. When $r_k = 0$, the algorithm has
+converged. Therefore, the stopping criterion is when
+$r_k \leq \epsilon$, where $\epsilon$ is machine precision, 2.2204e-16.</p>
+
+<h3 id="conjugate-gradient-cg">Conjugate Gradient (CG)</h3>
+
+<p>The Conjugate Gradient (CG) method solves Ax = b for SPD A.
+Theoretically, it yields an exact solution in n steps. The algorithm
+from <em>Linear Algebra and Learning from Data by Gilbert Strang</em> is shown
+below. [2]</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%% Conjugate Gradient (CG) Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+A = bcsstk15;
+n = size(A, 1);
+b = randi(10, n, 1);
+x0 = b/norm(b);
+
+run('load_test_matrices.m');
+mats = ["bcsstk15", "mahindas", "nos3", "west0479"];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    x0 = b/norm(b);
+    [x, norm_rks] = conjgrad(A, b, x0, maxiter);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Conjugate Gradient (CG) Method Residuals Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, 100]);
+hold off;
+
+function [x, norm_rks] = conjgrad(A, b, x, maxiter)
+    r = b - A*x;
+    d = r;
+    r2_prev = r'*r;
+    norm_rks = [r2_prev];
+    for i = 1:maxiter
+        Ad = A*d;
+        alpha = r2_prev/(d'*Ad);
+        r = r - alpha*Ad;
+        x = x + alpha*d;
+        norm_rks = [norm_rks, norm(r)/(norm(A, 1)*norm(x) + norm(b))];
+        r2 = r' * r;
+        if r2 &lt; 1e-10
+              break;
+        end
+        beta = r2/r2_prev;
+        d = r + beta*d;
+        r2_prev = r2;
+    end
+end
+</code></pre></div></div>
+
+<p>The conjugate method minimizes the error $||x - x_k||_S$ over the kth
+Krylov subspace, where $x_k$ is the orthogonalized subspace $K_m$. The
+stopping criterion is when $r_k \leq \epsilon$, where $\epsilon$ is
+machine precision, 2.2204e-16.</p>
+
+<h3 id="minimal-residual-mr">Minimal Residual (MR)</h3>
+
+<p>The Minimal Residual (MR) Iteration Method solves Ax = b for a
+nonsymmetric and nonsingular matrix A. This is similar to the SD method.
+But in this case, $\alpha_k = \frac{r_k^T A^T r_k}{r_k^T A^T A r_k}$. he
+algorithm is presented in Subspace projection methods for LS Lecture on
+slide 21. [1]</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%% Minimal Residual (MR) Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+mats = ["bcsstk15", "mahindas", "nos3", "west0479"];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    xk = ones(n, 1); 
+    [xk, norm_rks] = mr(A, b, xk, maxiter, tol);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Minimal Residuals (MR) Method Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, maxiter]);
+hold off;
+
+
+function [xk, norm_rks] = mr(A, b, x0, maxiter, tol)
+    iter = 0; xk = x0; x_prev = inf; norm_rks = [];
+    while (norm(x_prev - xk) &gt;= tol) &amp; (iter &lt;= maxiter)
+        iter = iter + 1;
+        rk = b - A*xk;
+        norm_rks = [norm_rks, norm(rk)/(norm(A, 1)*norm(xk) + norm(b))];
+        ak = rk'*(A')*rk/(rk'*(A')*A*rk);
+        xprev = xk;
+        xk = xk + ak*rk;
+    end
+end
+</code></pre></div></div>
+
+<p>Each iteration minimizes $f(x)\equiv ||r||^2_2 = ||{b - Ax}||^2_2$. The
+stopping criterion is when $r_k \leq \epsilon$, where $\epsilon$ is
+machine precision, 2.2204e-16.</p>
+
+<h3 id="arnoldi-and-restarted-gmres">Arnoldi and Restarted GMRES</h3>
+
+<p>The Restarted GMRES (GMRES(k)) uses Krylov subspaces as pair of
+projection subspaces. It is a generalization of the one-dimensional MR
+iteration. The Krylov subspaces are generated and orthogonalized using
+the Arnoldi Iteration. This can be represented by the equations
+<script type="math/tex">AV_m = V_mH_m + h_{m+1,m}v_{m+1}e^T_m = V_{m+1}\hat{H}_m</script></p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+V_{m+1}
+=
+\begin{bmatrix}
+    V_m & v_{m+1}
+\end{bmatrix} %]]></script>
+
+<script type="math/tex; mode=display">\hat{H}_m
+=
+\begin{bmatrix}
+    H_m \\
+    h_{m+1,m}e^T_m
+\end{bmatrix}</script>
+
+<p>where A has dimensions $n\times n$, $V_m$ has dimensions $n\times m$,
+$V_{m+1}$ has dimensions $n\times (m+1)$, the Hessenberg $H_m$ has
+dimensions $m\times m$, $\hat{H}<em>m$ has dimensions $(m+1)\times m$,
+$h</em>{m+1,m}$ is a scalar, $v_{m+1}$ is a columns vector of dimensions
+$(m+1)\times 1$ and $e_m$ is a unit vector of size $m \times 1$.</p>
+
+<p>The Arnoldi algorithm is presented in Subspace projection methods for LS
+Lecture on slide 25.[1]</p>
+
+<p>$v_1 = \frac{v}{||v||}$ for$\;j = 1,2,…,m$ $w = Av_j$ for
+$\;i = 1,2,…,j$ $h_{ij} = v_i^T w$ $w = w - h_{ij}v_i$ end
+$h_{j+1,j} = ||w||<em>2$ $if\;h</em>{j+1,j} = 0, stop$
+$v_{j+1} = \frac{1}{h_{j+1,j}}$</p>
+
+<p>$H_k = Q^T_k A Q_k$ is the projection of A onto the Krylov space using
+the columns of $Q$. [2] A version for re-orthogonalization was
+implemented.</p>
+
+<p>The GMRES algorithm is presented in Subspace projection methods for LS
+Lecture on slide 19.[1]</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>%% Restarted GMRES Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+mats = ["bcsstk15", "mahindas", "nos3", "west0479"];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    xk = ones(n, 1); 
+    [xk, norm_rks] = gm(A, b, xk, maxiter);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Restarted GMRES Method Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, maxiter]);
+
+function [xk, norm_rks] = gm(A, b, xk, maxiter)
+    norm_rks = [];
+    n = maxiter;
+    for i = 1:100
+        [Q, H] = arnoldi(A, xk, maxiter);
+        be1 = zeros(n+1, 1); be1(1) = norm(b);
+        y = H\be1;
+        xk = xk + Q(:, 1:end-1)*y;
+        norm_rks = [norm_rks, norm(H*y - be1)/norm(b)];
+    end
+end
+
+
+function [Q, H] = arnoldi(A, v, m)
+    n = size(A, 1);
+    H = zeros(m+1, m);
+    Q = zeros(n, m+1);
+    Q(:, 1) = v/norm(v);
+    for k = 1:m
+        v = A*Q(:, k);
+        for j = 1:k
+            H(j, k) = Q(:, j)'*v;
+            v = v - H(j, k)*Q(:, j);
+        end
+        H(k+1, k) = norm(v);
+        Q(:, k+1) = v/H(k+1, k);
+    end
+end
+</code></pre></div></div>
+
+<p>The least squares problem provides a solution. The Arnoldi procedure
+breaks down when $h_{j+1,j} = 0$ at some step j and this is when $x_j$
+is the exact solution of the linear system Ax = b.</p>
+
+<h3 id="residuals">Residuals</h3>
+
+<p>The residuals for the Steepest Descent, Minimal Residuals and Conjugate
+Gradient methods were computed using the formula
+<script type="math/tex">r = \frac{||r_0||_2}{||A||_1||x||_2 + ||b||_2}</script></p>
+
+<p>The residuals for the Conjugate Gradient methods were computed using the
+formula <script type="math/tex">r = \frac{||\hat{H}_my - \beta e_1||_2}{||b||_2}</script></p>
+
+<h2 id="part-ii-iterative-subspace-projection-methods-for-large-scale-eigenvalue-problems">Part II: Iterative subspace projection methods for large scale eigenvalue problems</h2>
+
+<p>In this part, the Arnoldi method with and without reorthogonalization
+are used to to compute eigenpairs of large sparse matrix A (west0479)
+for different iterations. This was compared to the “exact” eigenvalues
+computed using the eig function in MATLAB. The real and imaginary values
+are plotted and discussed.</p>
+
+<h3 id="reorthogonalizationno-reorthogonalization-and-residual-comparison">Reorthogonalization/No Reorthogonalization and Residual Comparison</h3>
+
+<p>The Arnoldi (with Reorthogonalization) code is modified so that he
+reorthogonalization is not done. The correctness of the code is verified
+using <script type="math/tex">|| AV_m - V_{m+1}\hat{H}_m ||_2</script> 
+The orthogonality is evaluated using the residual <script type="math/tex">||I - V^H_{j+1}V_{j+1}||_2</script></p>
+
+<h3 id="ritz-values">Ritz Values</h3>
+
+<p>A method to attain eigenvalues is to use the eigenvalues of the
+Hessenberg matrix $H_j$. These are computed using the eig command. The
+Ritz values and the exact eigenvalues together. In theory, the outlying
+eigenvalues are good approximations for the Ritz values.</p>
+
+<h3 id="arnoldi-with-shift-and-inversion">Arnoldi with Shift and Inversion</h3>
+
+<p>The shift and invert spectral transform are used to find the eigenvalues
+closest to a target. Instead of multiplying the initial vector by A, the
+vector is multiplied by $(A - \tau I)^{-1}$, where $\tau$ is the target.
+This is similar to the power method with shift and inversion. The
+eigenvalues problem now becomes
+<script type="math/tex">(A - \tau I)^{-1}x = \frac{1}{\lambda - \sigma}x</script></p>
+
+<p>The eigenvalue ($\lambda_j$) closest to $\tau$ of the shifted and
+inverted problem $\sigma = \frac{1}{\lambda_j - \tau}$ is now dominant
+and thus leads to a smaller residual. The residuals can be proved to be
+[3]
+<script type="math/tex">||r_j|| \leq h_{m+1,m} |\lambda_j - \tau|\;||A-\tau b||\; |e^T_my_j|</script></p>
+
+<p>From this form, we see that the residual ($r_j$) is bounded by zero if
+$\lambda$ is a good estimate for $\tau$.</p>
+
+<h1 id="numerical-experiment-results">Numerical Experiment Results</h1>
+
+<h3 id="steepest-descent-sd-1">Steepest Descent (SD)</h3>
+
+<p><img src="pics/sd_comparison.png" alt="Steepest Descent Method Comparison for 4 test
+matrices[]{label=&quot;datagen&quot;}" /></p>
+
+<p>From the plot, we see that only the bcsstk15 and the nos3 display
+convergent behavior. This is expected because mahindas and west0479 are
+non SPD matrices.</p>
+
+<h3 id="conjugate-gradient-cg-1">Conjugate Gradient (CG)</h3>
+
+<p><img src="pics/cj_comparison.png" alt="Conjugate Gradient (CJ) Method Comparison for 4 test
+matrices[]{label=&quot;datagen&quot;}" /></p>
+
+<p>Similar to the Steepest Descent method, from the plot, we see that only
+the bcsstk15 and the nos3 display convergent behavior. This is expected
+because mahindas and west0479 are non SPD matrices.</p>
+
+<h3 id="minimal-residual-mr-1">Minimal Residual (MR)</h3>
+
+<p><img src="pics/mr_comparison.png" alt="Minimal Residual (MR) Method Comparison for 4 test
+matrices[]{label=&quot;datagen&quot;}" /></p>
+
+<p>From the plot, we see that only bcsstk15, nos3 and west0479 are
+converging. mahindas is not because it is non invertible. This can be
+seen by taking the determinant of mahindas, which is computed to be
+-1.0008e-20.</p>
+
+<h3 id="restarted-gmres">Restarted GMRES</h3>
+
+<p><img src="pics/gmres_comparison.png" alt="Restarted GMRES Method Comparison for 4 test
+matrices[]{label=&quot;datagen&quot;}" /></p>
+
+<p>From the plot, we see that only nos3, mahindas and west0479 are
+converging. Interestingly, bcsstk15 does not appear to converge quickly.</p>
+
+<h3 id="reorthogonalizationno-reorthogonalization-and-residual-comparison-1">Reorthogonalization/No Reorthogonalization and Residual Comparison</h3>
+
+<p>To check my correctness of the Reorthogonalized Arnoldi Algorithm,
+<script type="math/tex">|| AV_m - V_{m+1}\hat{H}_m ||_2</script> was computed for 30 iterations to be
+2.6297e-12. Similarly, for the Arnoldi without reorthogonalization,
+<script type="math/tex">|| AV_m - V_{m+1}\hat{H}_m ||_2</script> was computed to be 2.2025e-12. Both of
+these are approximately zero, despite being 4 orders of magnitude
+smaller than machine precision.</p>
+
+<p>The orthogonality was evaluated using the residual
+<script type="math/tex">||I - V^H_{j+1}V_{j+1}||_2</script>. At 30 iterations, these were computed to
+be 1.1814e-15 for the Reorthogonalized Arnoldi Algorithm and 4.3886e-13
+for the Non-Reorthogonalized Algorithm. Also, at 60 iterations, the
+Non-Reorthogonalized Algorithm residual the residual
+<script type="math/tex">||I - V^H_{j+1}V_{j+1}||_2</script> was 8.9316e-12. From these results, it is
+evident that $V_{j+1}$ loses orthogonality. Therefore, in practice, it
+is a good idea to implement the reorthogonalization. Furthermore, the
+residuals were computed to be 2.2025e-12 and 7.0673e-11 for 30 and 60
+iterations.</p>
+
+<h3 id="ritz-values-1">Ritz Values</h3>
+
+<p>The Ritz values were computed using the eig command and compared to the
+exact eigenvalues.</p>
+
+<p><img src="pics/ritz10.png" alt="Hessenberg vs Exact Eigenvalues for iterations =
+10[]{label=&quot;datagen&quot;}" /></p>
+
+<p><img src="pics/ritz20.png" alt="Hessenberg vs Exact Eigenvalues for iterations =
+20[]{label=&quot;datagen&quot;}" /></p>
+
+<p><img src="pics/ritz30.png" alt="Hessenberg vs Exact Eigenvalues for iterations =
+30[]{label=&quot;datagen&quot;}" /></p>
+
+<p>From the figures above, the eigenvalues are approximated well by the
+Ritz values. However, the number of iterations does not improve the
+eigenvalue approximations. The norm of the difference between the
+Reorthogonalized and the Non-Reorthogonalized eigenvalues were computed
+to be 528.5324 and 275.3189 for both algorithms. The shift-inversion
+spectral transformation converges to the dominant eigenvalue. The
+implementation was unsuccessful and did not yield good results.</p>
+
+<h1 id="acknowledgements">Acknowledgements</h1>
+
+<p>I would like to thank Professor Zhaojun Bai who provided me with a
+wealth of knowledge about NUmerical Linear Algebra techniques to
+undertake investigation.</p>
+
+<h1 id="references">References</h1>
+
+<p>[1] Bai, Zhaojun. “Subspace Projection Methods for LS.” ECS231 Slides,
+web.cs.ucdavis.edu/ bai/ECS231/Slides/ls.pdf.</p>
+
+<p>[2] Strang, Gilbert. Linear Algebra and Learning from Data.
+Wellesley-Cambridge Press, 2019.</p>
+
+<p>[3] Jia, Zhongxiao, and Yong Zhang. “A Refined Shift-and-Invert Arnoldi
+Algorithm for Large Unsymmetric Generalized Eigenproblems.” Computers
+&amp; Mathematics with Applications, vol. 44, no. 8-9, 2002, pp.
+1117–1127., doi:10.1016/s0898-1221(02)00220-1.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2019-05-14T00:00:00-05:00">May 14, 2019</time></p>
+
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2019/04/30/Comparing-Basic-Linear-Algebra-Subprograms.html" class="pagination--pager" title="[Project] Comparing Basic Linear Algebra Subprograms
+">Previous</a>
+    
+    
+      <a href="/2019/06/07/1D-Kalman-Denoising.html" class="pagination--pager" title="[Project] Signal Denoising using 1D Kalman Filters
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 Matt Y. Cheung. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+  </body>
+</html>

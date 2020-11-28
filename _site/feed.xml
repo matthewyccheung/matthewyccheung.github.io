@@ -1,1 +1,1546 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-10-31T15:02:42-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Matt Cheung</title><subtitle></subtitle></feed>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.8.6">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2020-11-27T19:21:32-06:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Matt Y. Cheung</title><author><name>Matt Y. Cheung</name></author><entry><title type="html">[Project] Combination Deep Diffractive Neural Networks</title><link href="http://localhost:4000/2020/08/01/Deep-Diffractive-Neural-Networks.html" rel="alternate" type="text/html" title="[Project] Combination Deep Diffractive Neural Networks" /><published>2020-08-01T00:00:00-05:00</published><updated>2020-08-01T00:00:00-05:00</updated><id>http://localhost:4000/2020/08/01/Deep-Diffractive-Neural-Networks</id><content type="html" xml:base="http://localhost:4000/2020/08/01/Deep-Diffractive-Neural-Networks.html">&lt;h4&gt; Deep Diffractive Neural Networks &lt;/h4&gt;
+&lt;p&gt;Deep Learning as become a basic tool for image classification. Training and testing using Deep Neural Networks is an incredibly time-consuming and resource-heavy process, especially for large image datasets. Recent advances in Deep Learning Diffractive Optics have shown to potential to alleviate these problems by embedding software into hardware. Specifically, Trabelsi et al. demonstrated that a Neural Network can be trained using all complex values instead of all real values for audio applications by using basic convolutional neural network building blocks [1]. Using this result, Lin et al. successfully demonstrated image classification using a terahertz source and 3-D printed passive diffractive layers. To accomplish this, Lin et al. presented a theoretically linear network, called D2NN, by modulating complex electric fields by complex valued transmission and reflection coefficients. Thus, allowing the forward propagation step to be computed at the at light speed with great empirical accuracy, albeit linear, for the MNIST Handwritten Dataset and the MNIST Fashion Dataset [2].&lt;/p&gt;
+
+&lt;p&gt;I explored building Deep Diffractive Neural Networks using a combination of phase, amplitude and polarization modulation layers through simulation of coherent visible light. The results for Combination D2NNs for classification and spatial differentiation were preliminary and were not published. I have lots of code and results to show and am open to discussing them. They can be found &lt;a href=&quot;https://github.com/matthewyccheung/D2NN&quot;&gt;here&lt;/a&gt;&lt;/p&gt;
+
+&lt;div style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/images/spat_diff_d2nn.png&quot; style=&quot;width: 70%; height: 70%&quot; /&gt;&lt;/div&gt;
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;div style=&quot;text-align: center&quot;&gt;&lt;img src=&quot;/images/class_acc_d2nn.png&quot; style=&quot;width: 70%; height: 70%&quot; /&gt;&lt;/div&gt;
+
+&lt;p&gt;[1] Trabelsi, et al. “Deep Complex Networks.” ArXiv.org, 25 Feb. 2018, arxiv.org/abs/1705.09792.&lt;/p&gt;
+
+&lt;p&gt;[2] Lin, et al. “All-Optical Machine Learning Using Diffractive Deep Neural Networks.” ArXiv.org, 26 July 2018, arxiv.org/abs/1804.08711.&lt;/p&gt;</content><author><name>Matt Y. Cheung</name></author><summary type="html">Deep Diffractive Neural Networks Deep Learning as become a basic tool for image classification. Training and testing using Deep Neural Networks is an incredibly time-consuming and resource-heavy process, especially for large image datasets. Recent advances in Deep Learning Diffractive Optics have shown to potential to alleviate these problems by embedding software into hardware. Specifically, Trabelsi et al. demonstrated that a Neural Network can be trained using all complex values instead of all real values for audio applications by using basic convolutional neural network building blocks [1]. Using this result, Lin et al. successfully demonstrated image classification using a terahertz source and 3-D printed passive diffractive layers. To accomplish this, Lin et al. presented a theoretically linear network, called D2NN, by modulating complex electric fields by complex valued transmission and reflection coefficients. Thus, allowing the forward propagation step to be computed at the at light speed with great empirical accuracy, albeit linear, for the MNIST Handwritten Dataset and the MNIST Fashion Dataset [2].</summary></entry><entry><title type="html">[Project] Signal Denoising using 1D Kalman Filters</title><link href="http://localhost:4000/2019/06/07/1D-Kalman-Denoising.html" rel="alternate" type="text/html" title="[Project] Signal Denoising using 1D Kalman Filters" /><published>2019-06-07T00:00:00-05:00</published><updated>2019-06-07T00:00:00-05:00</updated><id>http://localhost:4000/2019/06/07/1D-Kalman-Denoising</id><content type="html" xml:base="http://localhost:4000/2019/06/07/1D-Kalman-Denoising.html">&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      processEscapes: true
+    }
+  });
+&lt;/script&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
+&lt;/script&gt;
+
+&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;The Kalman filter is an optimal estimator that infers parameters
+uncertain and inaccurate measurements. The recursion implementation
+implies that new measurements can be processed as they arrive. The
+Kalman Filter uses this concept of perturbation to &quot;update states&quot;
+without recursively solving a larger and larger least squares problem.
+This is advantageous because solving increasingly larger least squares
+problems is incredibly time consuming. This section pertains to the
+concepts and derivation of the Kalman Filter. Firstly, perturbing
+inverse of a matrix is explored through the work of Hager (1989). Next,
+the update concept to derive the Kalman Filter formulae. This is a
+modified version of the derivation presented by Lacey (1998).
+Ultimately, the filter reduces to updating 5 equations.&lt;/p&gt;
+
+&lt;h2 id=&quot;solving-overdetermined-systems-normal-equation&quot;&gt;Solving Overdetermined Systems: Normal Equation&lt;/h2&gt;
+
+&lt;p&gt;An overdetermined system $Ax = b$ can be solved by minimizing
+$| b - Ax |_2^2$ where $A \in {\rm I!R}^{m \times n}$, $m &amp;gt; n$,
+$x \in {\rm I!R}^{n \times 1}$ and $b \in {\rm I!R}^{m \times 1}$
+&lt;script type=&quot;math/tex&quot;&gt;\| b - Ax \|^2_2 = x^T A^T A x - 2bAx + \|b\|^2_2&lt;/script&gt; The overdetermined
+system is equivalent to solving the square system &lt;script type=&quot;math/tex&quot;&gt;A^T A x = A^T b&lt;/script&gt;
+This is called the normal equation and the solution is
+&lt;script type=&quot;math/tex&quot;&gt;x = (A^T A)^{-1} A^T b&lt;/script&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;perturbing-any-invertible-matrix-a&quot;&gt;Perturbing any Invertible Matrix A&lt;/h2&gt;
+
+&lt;p&gt;The inverse of an invertible matrix A perturbed by a rank k matrix
+$UV^T$ is given by the Sherman-Morrison-Woodbury formula&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;M^{-1} = (A - UV^T)^{-1} = A^{-1} + A^{-1}U(I-V^T A^{-1}U)^{-1} V^T A^{-1}&lt;/script&gt;
+
+&lt;h2 id=&quot;updating-least-squares&quot;&gt;Updating Least Squares&lt;/h2&gt;
+
+&lt;p&gt;Suppose we receive new data that has the relation $vx = c$. THe new
+&quot;A&quot; matrix is given by &lt;script type=&quot;math/tex&quot;&gt;A_1 \\
+=
+\begin{bmatrix}
+A_0 \\
+v \\
+\end{bmatrix}&lt;/script&gt; Let $B = A^T A$. The updated B can be given the the
+equation &lt;script type=&quot;math/tex&quot;&gt;% &lt;![CDATA[
+B_{k+1} = A_{k+1}^T A_{k+1} = 
+\begin{bmatrix}
+A_k^T &amp; v^T \\
+\end{bmatrix}
+\begin{bmatrix}
+A_k \\
+v \\
+\end{bmatrix}
+= A_k^T A_k + v^T v = B_k + v^Tv %]]&gt;&lt;/script&gt; Let $u = v^T$. From the
+Sherman-Morrison-Woodbury formula, we can attain
+&lt;script type=&quot;math/tex&quot;&gt;B_{k+1}^{-1} = (B_k + uv)^{-1} = B_k^{-1} - \alpha B_k^{-1}uvB_k^{-1}&lt;/script&gt;
+where &lt;script type=&quot;math/tex&quot;&gt;\alpha = \frac{1}{1 + vB_k^{-1} u}&lt;/script&gt; This implies that the new B
+can be found by adding a rank 1 correction to the first matrix. This
+form can be used to produce the new least squares solution with the new
+B &lt;script type=&quot;math/tex&quot;&gt;x_1 = x_0 + k(c-vx_0)&lt;/script&gt; where &lt;script type=&quot;math/tex&quot;&gt;k = \frac{B_k^{-1}u}{1+vB_k^{-1}u}&lt;/script&gt;
+Similarly, if the new data has the relation $Vx = C$, then the new x can
+be expressed by &lt;script type=&quot;math/tex&quot;&gt;x_1 = x_0 + K(C-Vx_0)&lt;/script&gt; where
+&lt;script type=&quot;math/tex&quot;&gt;K = B_k^{-1}U(I + VB_k^{-1}U)^{-1}&lt;/script&gt; $B_{k+1}^{-1}$ can be expressed
+as &lt;script type=&quot;math/tex&quot;&gt;B_{k+1}^{-1} = B_k^{-1} - B_k^{-1}U(I + VB_k^{-1}U)^{-1}VB_k^{-1}&lt;/script&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;kalman-filter&quot;&gt;Kalman Filter&lt;/h2&gt;
+
+&lt;p&gt;The Kalman Filter uses the updated least squares solution form
+$x_1 = x_0 + k(c-vx_0)$ to attain a new estimate when new data arrives.
+This implies that a new linear system does not need to be fully solved.&lt;/p&gt;
+
+&lt;h3 id=&quot;state-vectors-measurement-vectors-and-covariances&quot;&gt;State Vectors, Measurement Vectors and Covariances&lt;/h3&gt;
+
+&lt;p&gt;Suppose the true values are represented by the equation
+&lt;script type=&quot;math/tex&quot;&gt;x_{k+1} = \Phi x_k + w_k&lt;/script&gt; where $x\in {\rm I!R}^{m\times 1}$ is
+called the state vector at time k, $\Phi \in {\rm I!R}^{m\times n}$ is
+the transition matrix from time k to time k+1 (assumed to be time
+invariant) and $v_k \in {\rm I!R}^{m\times 1}$ is the associated white
+noise process. The observations can be represented by the equation
+&lt;script type=&quot;math/tex&quot;&gt;z_k = Hx_k + v_k&lt;/script&gt; where $z_k\in {\rm I!R}^{m\times 1}$ is the actual
+measurement vector at time k, $H \in {\rm I!R}^{m\times n}$ is the
+noiseless connection between state and measurement vector (assumed to be
+time invariant) and $v_k \in {\rm I!R}^{m\times 1}$ is the associated
+measurement vector (white noise process). The covariances of the noise
+models mentioned above can be represented by &lt;script type=&quot;math/tex&quot;&gt;Q = E[w_k w_k^T]&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;R = E[v_k v_k^T]&lt;/script&gt; where Q is the state covariance and R is the
+measurement covariance. Similarly, the covariance of the error (mean
+squared error) can be represented by &lt;script type=&quot;math/tex&quot;&gt;P_k = E[e_k e_k^T]&lt;/script&gt; where
+&lt;script type=&quot;math/tex&quot;&gt;e_k = x_k - \hat x_k&lt;/script&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;update-equation-for-new-estimate&quot;&gt;Update Equation for New Estimate&lt;/h3&gt;
+
+&lt;p&gt;The update equation from the new estimate can be put in the form
+&lt;script type=&quot;math/tex&quot;&gt;\hat x_k = \hat x'_k + K_k (z_k - H\hat x'_k)&lt;/script&gt; $x’_k$ is the prior
+estimate of $x_k$. $z_k - H\hat x’_k$ is called the innovation $i_k$.
+This is equivalent to the updated least squares solution
+&lt;script type=&quot;math/tex&quot;&gt;x_k = x_{k-1} + K_k(C-Vx_{k-1})&lt;/script&gt; In this case, C is z and V is H.&lt;/p&gt;
+
+&lt;h3 id=&quot;relating-p_k-and-p_k-1&quot;&gt;Relating $P_k$ and $P_{k-1}$&lt;/h3&gt;
+
+&lt;p&gt;In order to relate $P_{k+1}$ and $P_k$, substitute &lt;script type=&quot;math/tex&quot;&gt;z_k = Hx_k + v_k&lt;/script&gt;
+into &lt;script type=&quot;math/tex&quot;&gt;\hat x_k = \hat x_{k-1} + K_k (z_k - H\hat x_{k-1})&lt;/script&gt; to attain
+&lt;script type=&quot;math/tex&quot;&gt;\hat x_k = \hat x'_k + K_k (Hx_k + v_k - H\hat x'_k)&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Therefore, the estimation error is
+&lt;script type=&quot;math/tex&quot;&gt;e_k = x_k - \hat x_k = (I - K_k H)(x_k - \hat x'_k) - K_k v_k&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;And the covariance of the previous estimation error is&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;P_k = E[[(I - K_k H)(x_k - \hat x'_k) - K_k v_k][(I - K_k H)(x_k - \hat x'_k) - K_k v_k]^T]&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;= (I - K_k H)E[(x_k - \hat x'_k)(x_k - \hat x'_k)^T](I - K_k H)^T + K_kE[v_kv_k^T]K_k^T&lt;/script&gt;
+$E[(x_k - \hat x’_k)(x_k - \hat x’_k)^T]$ can be replaced by $P’_k$,
+which is the error covariance for the previous estimate. $E[v_kv_k^T]$
+can be replaced by R (from the above definition)&lt;/p&gt;
+
+&lt;p&gt;Therefore, &lt;script type=&quot;math/tex&quot;&gt;P_k = (I - K_k H)P'_k(I - K_k H)^T + K_kRK_k^T&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;An expansion of $P_k$ gives the form
+&lt;script type=&quot;math/tex&quot;&gt;P_k = P'_k - K_k H P'_k - P'_k H^T K_k^T + K_k(HP'_kH^T + R) K_k^T&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The covariance matrix form of $P_k$ can be represented in the form&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+P_k = 
+\begin{bmatrix}
+E[e_{k-1} e_{k-1}] &amp; E[e_{k-1} e_k] &amp; E[e_{k-1} e_{k+1}] \\
+E[e_k e_{k-1}] &amp; E[e_k e_k] &amp; E[e_k e_{k+1}] \\
+E[e_{k+1} e_{k-1}] &amp; E[e_{k+1} e_k] &amp; E[e_{k+1} e_{k+1}] \\
+\end{bmatrix} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Noting that $tr(K_k H P’_k) = tr(P’_k H^T K_k^T)$ because
+$tr(A) = tr(A^T)$, the trace of the expansion is
+&lt;script type=&quot;math/tex&quot;&gt;tr(P_k) = tr(P'_k) - 2tr(K_kHP'_k) + tr(K_k(HP'_kH^T + R)K_k^T)&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;From this, we can see that
+&lt;script type=&quot;math/tex&quot;&gt;tr(P_k) = E[e_{k-1} e_{k-1}] + E[e_k e_k] + E[e_{k+1} e_{k+1}]&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;Minimizing the trace of $P_k$ minimizes the mean squared error&lt;/p&gt;
+
+&lt;h3 id=&quot;kalman-gain&quot;&gt;Kalman Gain&lt;/h3&gt;
+
+&lt;p&gt;To get the gain that minimizes the mean squared error, we must take
+$\frac{dtr(P_k)}{dK_k}$
+&lt;script type=&quot;math/tex&quot;&gt;\frac{dtr(P_k)}{dK_k} = -2(HP'_k)^T + 2K_k(HP'_kH^T + R) = 0&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;K_k = P'_kH^T(HP'_kH^T + R)^{-1}&lt;/script&gt; The innovation $i_k$ covariance is
+given by &lt;script type=&quot;math/tex&quot;&gt;S_k = HP'_kH^T + R&lt;/script&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;solving-for-p_k&quot;&gt;Solving for $P_k$&lt;/h3&gt;
+
+&lt;p&gt;Using the Kalman Gain equation, we can substitute it into the expanded
+$P_k$
+&lt;script type=&quot;math/tex&quot;&gt;P_k = P'_k - K_k H P'_k - P'_k H^T K_k^T + K_k(HP'_kH^T + R) K_k^T&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;P_k = (I-K_kH)P'_k&lt;/script&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;estimated-state-projection-and-error-covariance&quot;&gt;Estimated State Projection and Error Covariance&lt;/h3&gt;
+
+&lt;p&gt;The state projection is done using &lt;script type=&quot;math/tex&quot;&gt;\hat
+x'_{k+1} = \Phi \hat x_k&lt;/script&gt; The error covariance for the next time
+interval is given by &lt;script type=&quot;math/tex&quot;&gt;e'_{k+1} = x_{k+1} - x'_{k+1} = \Phi e_k + w_k&lt;/script&gt;
+Finally, &lt;script type=&quot;math/tex&quot;&gt;P'_{k+1} = \Phi P_k \Phi^T + Q&lt;/script&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;algorithm&quot;&gt;Algorithm&lt;/h1&gt;
+
+&lt;p&gt;The update equations are as follows&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;K_k = P'_kH^T(HP'_kH^T + R)^{-1}&lt;/script&gt;,&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\hat x_k = \hat x_{k-1} + K_k (z_k - H\hat x_{k-1})&lt;/script&gt;,&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;P_k = (I-K_kH)P'_k&lt;/script&gt;,&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;x'_{k+1} = \Phi \hat x_k&lt;/script&gt;,&lt;/p&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;P'_{k+1} = \Phi P_k \Phi^T + Q&lt;/script&gt;,&lt;/p&gt;
+
+&lt;p&gt;The Kalman Filter Algorithm can be boiled down to a few lines of code&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;math&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pi&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;kf_1d&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'xhat0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'p0'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;xhat_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transpose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transpose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;H&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;get_error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;abs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;# set truth values
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# initialize arrays
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;xhat_prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;P&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;arr_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;general-operation&quot;&gt;General Operation&lt;/h3&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1e-10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;R&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1e-4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;H&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;kf_1d&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;z&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;xhat_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P_prev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;phi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;methods&quot;&gt;Methods&lt;/h1&gt;
+
+&lt;p&gt;A standard signal with value 1.0 and length 1000 were used to
+investigate the Kalman Filter. After Gaussian noise was applied to the
+signal, each signal is passed into the filter iteratively and an
+estimate is computed for each point. The Gaussian noise is applied with
+mean of 1 and standard deviation of 0.1&lt;/p&gt;
+
+&lt;h2 id=&quot;kalman-filter-denoising&quot;&gt;Kalman Filter Denoising&lt;/h2&gt;
+
+&lt;p&gt;A 1D signal and a 2D signal (image) is used to demonstrate the Kalman
+Filter. The Q, R and H were arbitrarily chosen to be Q = 1e-10, R = 1e-4
+and H = 1.0. The image used was the AT3_1m4_01.tif from the MATLAB
+built in images and is shown below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/AT3_1m4_01.png&quot; alt=&quot;AT3_1m4_01.tif image from the MATLAB built in image
+dataset&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Each image for each iteration is given a new gaussian noise
+distribution. The noise ratio is computer by adding a fraction (called
+noise ratio, 1e0) of the maximum value of the image multiplied by a
+gaussian distribution to the image. This is exemplified in the code
+shown in the appendix.&lt;/p&gt;
+
+&lt;h2 id=&quot;convergence&quot;&gt;Convergence&lt;/h2&gt;
+
+&lt;p&gt;Different values for the initial guess (xhat[0] from 0 to 2), process
+variances Q (1e-10, 1e-6, 1e-2) and measurement variances R (1e-10,
+1e-6, 1e-2) were used to investigate the effect on mean squared error
+convergence.&lt;/p&gt;
+
+&lt;p&gt;The Kalman Filter is incredibly useful for denoising signals, whether
+the error is gaussian distributed, exponentially distributed or
+uniformly distributed. These three noise models are used to investigate
+convergence of the filter.&lt;/p&gt;
+
+&lt;h1 id=&quot;numerical-results&quot;&gt;Numerical Results&lt;/h1&gt;
+
+&lt;h2 id=&quot;kalman-filter-denoising-1&quot;&gt;Kalman Filter Denoising&lt;/h2&gt;
+
+&lt;p&gt;The true signals, measured signals and estimated signals are shown below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/1dsignals.png&quot; alt=&quot;Plot of true signals, measured signals and estimated
+signals&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From this plot, the Kalman Filter presents a good result for denoising
+unchanging signals with Gaussian noise.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/microscope_denoise.png&quot; alt=&quot;AT3_1m4_01.tif image from the MATLAB built in image
+dataset&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;convergence-1&quot;&gt;Convergence&lt;/h2&gt;
+
+&lt;p&gt;In order to quantify the convergence, the absolute relative error was
+computed. For the 1D signal, the absolute relative errors are shown
+below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/relerr_1dsignal.png&quot; alt=&quot;Relative Error 1D Signal&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the plot above, the relative error is seen to converge to around
+0.005 at 1000 iterations. The plot of absolute relative error for
+different values of Q is shown below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/relerr_initial_guess_var.png&quot; alt=&quot;Plot of Convergence for different Initial guess
+xhat[0]&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This plot shows that for different values of initial guess, xhat[0],
+the absolute relative error is the same after 1 iteration. This suggests
+that initial guesses can be arbitrary.&lt;/p&gt;
+
+&lt;p&gt;The plot of absolute relative error for different values of Q is shown
+below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/absrelerr_Qvar.png&quot; alt=&quot;Plot of Convergence for different Process Variances
+Q&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This plot shows that the estimated process variance values matter. The
+lower the estimated process variance, the better the estimated signal.&lt;/p&gt;
+
+&lt;p&gt;The plot for different Measurement Variances R is shown below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/absrelerr_R.png&quot; alt=&quot;Plot of Convergence for different Process Variances
+R&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This plot shows that the estimated measured variance values matter. The
+smaller the estimated process variance, the worse the estimated signal.&lt;/p&gt;
+
+&lt;p&gt;The same concept was applied to images. The results for AT3_1m4_01.tif
+is shown below for different iterations.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/microscope_convergence.png&quot; alt=&quot;Plot of Convergence for gaussian noise applied to
+AT3_1m4_01.tif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Qualitatively, it is seen that as more Kalman Filters are applied, the
+image more denoised.&lt;/p&gt;
+
+&lt;p&gt;The plot of different noise models and the observed convergence for
+absolute relative error is shown below&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/convergence_noise_models.png&quot; alt=&quot;Plot of Convergence for different Noise
+Models&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the plot, it is seen that the gaussian distribution shows better
+convergence then exponential and uniform distributions. This implies
+that the noise distribution matters when detecting signals.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;From the numerical experiments above, the Kalman Filter serves as a good
+denoising filter for 1D signals. The estimated process variance and the
+estimated measurement variance affects the convergence but the initial
+guess of the signal does not. The lower the estimated process variance,
+the better the denoising. The higher the estimated measurement variance,
+the better the denoising. The initial guesses display the same
+convergence behavior after the 1st iteration. Furthermore, gaussian
+noise is suppressed better than exponential and uniform noise
+distributions.&lt;/p&gt;
+
+&lt;h1 id=&quot;discussion&quot;&gt;Discussion&lt;/h1&gt;
+
+&lt;p&gt;The 1D Kalman Filters can be extended to 2D and higher dimensions to
+estimate changing signals. For example, GPS software use the Kalman
+Filter to estimate position of a car it is in a tunnel with no GPS
+signals. Similarly, accelerometers use Kalman Filters to estimate
+velocity and position of an object.&lt;/p&gt;
+
+&lt;p&gt;Rejecting outlier measurements is important so that the denoised signal
+is not corrupted. This can be done using validation gates.&lt;/p&gt;
+
+&lt;p&gt;There are numerical problems with the Kalman Filter that were not
+discussed here. Asymmetric covariance matrices present numerical
+rounding issues.&lt;/p&gt;
+
+&lt;h1 id=&quot;acknowledgements&quot;&gt;Acknowledgements&lt;/h1&gt;
+
+&lt;p&gt;I would like to thank Professor Bai for providing me with the
+fundamental concepts to undertake this project.&lt;/p&gt;
+
+&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+
+&lt;p&gt;[1] “Part III: Low Rank and Compressed Sensing.” Linear Algebra and
+Learning from Data, by Gilbert Strang, Wellesley-Cambridge Press, 2019,
+pp. 159–200.&lt;/p&gt;
+
+&lt;p&gt;[2] Lacey, Tony. “Chapter 11 Tutorial: The Kalman
+Filter.” Algorithms Guide,
+web.mit.edu/kirtley/kirtley/binlustuff/literature/control/Kalman%20filter.pdf.&lt;/p&gt;
+
+&lt;p&gt;[3] Hager, William W. “Updating the Inverse of a Matrix.” SIAM Review,
+vol. 31, no. 2, 1989, pp. 221–239., doi:10.1137/1031049.&lt;/p&gt;</content><author><name>Matt Y. Cheung</name></author><summary type="html"></summary></entry><entry><title type="html">[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems</title><link href="http://localhost:4000/2019/05/14/Iterative-Subspace-Projection-Methods.html" rel="alternate" type="text/html" title="[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems" /><published>2019-05-14T00:00:00-05:00</published><updated>2019-05-14T00:00:00-05:00</updated><id>http://localhost:4000/2019/05/14/Iterative-Subspace-Projection-Methods</id><content type="html" xml:base="http://localhost:4000/2019/05/14/Iterative-Subspace-Projection-Methods.html">&lt;ul&gt;
+  &lt;li&gt;Solving Ax = b quickly is important. However, solving them for large sparse matrices is inefficient and time consuming (n-cubed by gaussian elimination).&lt;/li&gt;
+  &lt;li&gt;Iterative Subspace Projection Methods aim to solve these problems by dimension reduction. For eigenvalue problems, these methods attain approximations for eigenvalues and eigenvectors from projections of the eigenproblem to subspaces of smaller dimension, which are expanded during the course of the algorithm.&lt;/li&gt;
+  &lt;li&gt;Solving eigenvalues are important in many fields such as physics and play an important role in subfields in Computer Science such as Computer Vision&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      processEscapes: true
+    }
+  });
+&lt;/script&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
+&lt;/script&gt;
+
+&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;Iterative subspace projection methods are used for solving large sparse
+linear systems (i.e. Ax = b). We implement the Steepest Descent (SD),
+Conjugate Gradient (CG), Minimal Residual (RM) and Restarted GMRES
+algorithms to study the convergence behaviors of these methods for the
+matrices bcsstk15, mahindas, nos3 and west0479 from The University of
+Florida Sparse Matrix Collection. The matrices are shown below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/test_mat.png&quot; alt=&quot;Four Test Matrices from The University of Florida Sparse Matrix
+Collection[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The investigated parameters in this report will be the residuals and the
+eigenvalues.&lt;/p&gt;
+
+&lt;h1 id=&quot;methods&quot;&gt;Methods&lt;/h1&gt;
+
+&lt;h2 id=&quot;part-i-iterative-subspace-projection-methods-for-large-scale-linear-systems&quot;&gt;Part I: Iterative subspace projection methods for large scale linear systems&lt;/h2&gt;
+
+&lt;p&gt;In this section, functions for each of the methods were written using
+MATLAB. A pseudo code implementation will be presented in the main
+report and the code will be provided in the appendix. These will be
+verified using the built in methods (i.e. gmres, cg). Then the
+implementations will be run on the test matrices.&lt;/p&gt;
+
+&lt;h3 id=&quot;steepest-descent-sd&quot;&gt;Steepest Descent (SD)&lt;/h3&gt;
+
+&lt;p&gt;The Steepest Descent (SD) method solves Ax = b for symmetric positive
+definite (SPD) matrices. The algorithm is presented in Subspace
+projection methods for LS Lecture on slide 16. [1]&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%% Steepest Descent (SD) Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+mats = [&quot;bcsstk15&quot;, &quot;mahindas&quot;, &quot;nos3&quot;, &quot;west0479&quot;];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    xk = ones(n, 1); 
+    [xk, norm_rks] = sd(A, b, xk, maxiter, tol);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Steepest Descent (SD) Method Residuals Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, maxiter]);
+
+
+function [xk, norm_rks] = sd(A, b, x0, maxiter, tol)
+    iter = 0; xk = x0; x_prev = inf; norm_rks = [];
+    while (norm(x_prev - xk) &amp;gt;= tol) &amp;amp; (iter &amp;lt;= maxiter)
+        iter = iter + 1;
+        rk = b - A*xk;
+        norm_rks = [norm_rks, norm(rk)/(norm(A, 1)*norm(xk) + norm(b))];
+        ak = rk'*rk/(rk'*A*rk);
+        xprev = xk;
+        xk = xk + ak*rk;
+    end
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;A is SPD only when $r_k &amp;gt; 0$. When $r_k = 0$, the algorithm has
+converged. Therefore, the stopping criterion is when
+$r_k \leq \epsilon$, where $\epsilon$ is machine precision, 2.2204e-16.&lt;/p&gt;
+
+&lt;h3 id=&quot;conjugate-gradient-cg&quot;&gt;Conjugate Gradient (CG)&lt;/h3&gt;
+
+&lt;p&gt;The Conjugate Gradient (CG) method solves Ax = b for SPD A.
+Theoretically, it yields an exact solution in n steps. The algorithm
+from &lt;em&gt;Linear Algebra and Learning from Data by Gilbert Strang&lt;/em&gt; is shown
+below. [2]&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%% Conjugate Gradient (CG) Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+A = bcsstk15;
+n = size(A, 1);
+b = randi(10, n, 1);
+x0 = b/norm(b);
+
+run('load_test_matrices.m');
+mats = [&quot;bcsstk15&quot;, &quot;mahindas&quot;, &quot;nos3&quot;, &quot;west0479&quot;];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    x0 = b/norm(b);
+    [x, norm_rks] = conjgrad(A, b, x0, maxiter);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Conjugate Gradient (CG) Method Residuals Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, 100]);
+hold off;
+
+function [x, norm_rks] = conjgrad(A, b, x, maxiter)
+    r = b - A*x;
+    d = r;
+    r2_prev = r'*r;
+    norm_rks = [r2_prev];
+    for i = 1:maxiter
+        Ad = A*d;
+        alpha = r2_prev/(d'*Ad);
+        r = r - alpha*Ad;
+        x = x + alpha*d;
+        norm_rks = [norm_rks, norm(r)/(norm(A, 1)*norm(x) + norm(b))];
+        r2 = r' * r;
+        if r2 &amp;lt; 1e-10
+              break;
+        end
+        beta = r2/r2_prev;
+        d = r + beta*d;
+        r2_prev = r2;
+    end
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The conjugate method minimizes the error $||x - x_k||_S$ over the kth
+Krylov subspace, where $x_k$ is the orthogonalized subspace $K_m$. The
+stopping criterion is when $r_k \leq \epsilon$, where $\epsilon$ is
+machine precision, 2.2204e-16.&lt;/p&gt;
+
+&lt;h3 id=&quot;minimal-residual-mr&quot;&gt;Minimal Residual (MR)&lt;/h3&gt;
+
+&lt;p&gt;The Minimal Residual (MR) Iteration Method solves Ax = b for a
+nonsymmetric and nonsingular matrix A. This is similar to the SD method.
+But in this case, $\alpha_k = \frac{r_k^T A^T r_k}{r_k^T A^T A r_k}$. he
+algorithm is presented in Subspace projection methods for LS Lecture on
+slide 21. [1]&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%% Minimal Residual (MR) Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+mats = [&quot;bcsstk15&quot;, &quot;mahindas&quot;, &quot;nos3&quot;, &quot;west0479&quot;];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    xk = ones(n, 1); 
+    [xk, norm_rks] = mr(A, b, xk, maxiter, tol);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Minimal Residuals (MR) Method Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, maxiter]);
+hold off;
+
+
+function [xk, norm_rks] = mr(A, b, x0, maxiter, tol)
+    iter = 0; xk = x0; x_prev = inf; norm_rks = [];
+    while (norm(x_prev - xk) &amp;gt;= tol) &amp;amp; (iter &amp;lt;= maxiter)
+        iter = iter + 1;
+        rk = b - A*xk;
+        norm_rks = [norm_rks, norm(rk)/(norm(A, 1)*norm(xk) + norm(b))];
+        ak = rk'*(A')*rk/(rk'*(A')*A*rk);
+        xprev = xk;
+        xk = xk + ak*rk;
+    end
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Each iteration minimizes $f(x)\equiv ||r||^2_2 = ||{b - Ax}||^2_2$. The
+stopping criterion is when $r_k \leq \epsilon$, where $\epsilon$ is
+machine precision, 2.2204e-16.&lt;/p&gt;
+
+&lt;h3 id=&quot;arnoldi-and-restarted-gmres&quot;&gt;Arnoldi and Restarted GMRES&lt;/h3&gt;
+
+&lt;p&gt;The Restarted GMRES (GMRES(k)) uses Krylov subspaces as pair of
+projection subspaces. It is a generalization of the one-dimensional MR
+iteration. The Krylov subspaces are generated and orthogonalized using
+the Arnoldi Iteration. This can be represented by the equations
+&lt;script type=&quot;math/tex&quot;&gt;AV_m = V_mH_m + h_{m+1,m}v_{m+1}e^T_m = V_{m+1}\hat{H}_m&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+V_{m+1}
+=
+\begin{bmatrix}
+    V_m &amp; v_{m+1}
+\end{bmatrix} %]]&gt;&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\hat{H}_m
+=
+\begin{bmatrix}
+    H_m \\
+    h_{m+1,m}e^T_m
+\end{bmatrix}&lt;/script&gt;
+
+&lt;p&gt;where A has dimensions $n\times n$, $V_m$ has dimensions $n\times m$,
+$V_{m+1}$ has dimensions $n\times (m+1)$, the Hessenberg $H_m$ has
+dimensions $m\times m$, $\hat{H}&lt;em&gt;m$ has dimensions $(m+1)\times m$,
+$h&lt;/em&gt;{m+1,m}$ is a scalar, $v_{m+1}$ is a columns vector of dimensions
+$(m+1)\times 1$ and $e_m$ is a unit vector of size $m \times 1$.&lt;/p&gt;
+
+&lt;p&gt;The Arnoldi algorithm is presented in Subspace projection methods for LS
+Lecture on slide 25.[1]&lt;/p&gt;
+
+&lt;p&gt;$v_1 = \frac{v}{||v||}$ for$\;j = 1,2,…,m$ $w = Av_j$ for
+$\;i = 1,2,…,j$ $h_{ij} = v_i^T w$ $w = w - h_{ij}v_i$ end
+$h_{j+1,j} = ||w||&lt;em&gt;2$ $if\;h&lt;/em&gt;{j+1,j} = 0, stop$
+$v_{j+1} = \frac{1}{h_{j+1,j}}$&lt;/p&gt;
+
+&lt;p&gt;$H_k = Q^T_k A Q_k$ is the projection of A onto the Krylov space using
+the columns of $Q$. [2] A version for re-orthogonalization was
+implemented.&lt;/p&gt;
+
+&lt;p&gt;The GMRES algorithm is presented in Subspace projection methods for LS
+Lecture on slide 19.[1]&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%% Restarted GMRES Method
+
+clc
+close all
+clear all
+
+run('load_test_matrices.m');
+mats = [&quot;bcsstk15&quot;, &quot;mahindas&quot;, &quot;nos3&quot;, &quot;west0479&quot;];
+maxiter = 100; tol = eps;
+
+figure; set(gca,'yscale', 'log'); hold on;
+for i = 1:length(mats)
+    A = eval(mats(i));
+    n = size(A, 1);
+    b = randi(100, n, 1);
+    actual_sol = A\b;
+    xk = ones(n, 1); 
+    [xk, norm_rks] = gm(A, b, xk, maxiter);
+    iters = linspace(0, size(norm_rks, 2), size(norm_rks, 2));
+    plot(iters, norm_rks);  
+end
+title('Restarted GMRES Method Comparison for Test Matrices');
+legend(mats);
+xlabel('Iteration');
+ylabel('Residual');
+xlim([0, maxiter]);
+
+function [xk, norm_rks] = gm(A, b, xk, maxiter)
+    norm_rks = [];
+    n = maxiter;
+    for i = 1:100
+        [Q, H] = arnoldi(A, xk, maxiter);
+        be1 = zeros(n+1, 1); be1(1) = norm(b);
+        y = H\be1;
+        xk = xk + Q(:, 1:end-1)*y;
+        norm_rks = [norm_rks, norm(H*y - be1)/norm(b)];
+    end
+end
+
+
+function [Q, H] = arnoldi(A, v, m)
+    n = size(A, 1);
+    H = zeros(m+1, m);
+    Q = zeros(n, m+1);
+    Q(:, 1) = v/norm(v);
+    for k = 1:m
+        v = A*Q(:, k);
+        for j = 1:k
+            H(j, k) = Q(:, j)'*v;
+            v = v - H(j, k)*Q(:, j);
+        end
+        H(k+1, k) = norm(v);
+        Q(:, k+1) = v/H(k+1, k);
+    end
+end
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The least squares problem provides a solution. The Arnoldi procedure
+breaks down when $h_{j+1,j} = 0$ at some step j and this is when $x_j$
+is the exact solution of the linear system Ax = b.&lt;/p&gt;
+
+&lt;h3 id=&quot;residuals&quot;&gt;Residuals&lt;/h3&gt;
+
+&lt;p&gt;The residuals for the Steepest Descent, Minimal Residuals and Conjugate
+Gradient methods were computed using the formula
+&lt;script type=&quot;math/tex&quot;&gt;r = \frac{||r_0||_2}{||A||_1||x||_2 + ||b||_2}&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The residuals for the Conjugate Gradient methods were computed using the
+formula &lt;script type=&quot;math/tex&quot;&gt;r = \frac{||\hat{H}_my - \beta e_1||_2}{||b||_2}&lt;/script&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;part-ii-iterative-subspace-projection-methods-for-large-scale-eigenvalue-problems&quot;&gt;Part II: Iterative subspace projection methods for large scale eigenvalue problems&lt;/h2&gt;
+
+&lt;p&gt;In this part, the Arnoldi method with and without reorthogonalization
+are used to to compute eigenpairs of large sparse matrix A (west0479)
+for different iterations. This was compared to the “exact” eigenvalues
+computed using the eig function in MATLAB. The real and imaginary values
+are plotted and discussed.&lt;/p&gt;
+
+&lt;h3 id=&quot;reorthogonalizationno-reorthogonalization-and-residual-comparison&quot;&gt;Reorthogonalization/No Reorthogonalization and Residual Comparison&lt;/h3&gt;
+
+&lt;p&gt;The Arnoldi (with Reorthogonalization) code is modified so that he
+reorthogonalization is not done. The correctness of the code is verified
+using &lt;script type=&quot;math/tex&quot;&gt;|| AV_m - V_{m+1}\hat{H}_m ||_2&lt;/script&gt; 
+The orthogonality is evaluated using the residual &lt;script type=&quot;math/tex&quot;&gt;||I - V^H_{j+1}V_{j+1}||_2&lt;/script&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;ritz-values&quot;&gt;Ritz Values&lt;/h3&gt;
+
+&lt;p&gt;A method to attain eigenvalues is to use the eigenvalues of the
+Hessenberg matrix $H_j$. These are computed using the eig command. The
+Ritz values and the exact eigenvalues together. In theory, the outlying
+eigenvalues are good approximations for the Ritz values.&lt;/p&gt;
+
+&lt;h3 id=&quot;arnoldi-with-shift-and-inversion&quot;&gt;Arnoldi with Shift and Inversion&lt;/h3&gt;
+
+&lt;p&gt;The shift and invert spectral transform are used to find the eigenvalues
+closest to a target. Instead of multiplying the initial vector by A, the
+vector is multiplied by $(A - \tau I)^{-1}$, where $\tau$ is the target.
+This is similar to the power method with shift and inversion. The
+eigenvalues problem now becomes
+&lt;script type=&quot;math/tex&quot;&gt;(A - \tau I)^{-1}x = \frac{1}{\lambda - \sigma}x&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The eigenvalue ($\lambda_j$) closest to $\tau$ of the shifted and
+inverted problem $\sigma = \frac{1}{\lambda_j - \tau}$ is now dominant
+and thus leads to a smaller residual. The residuals can be proved to be
+[3]
+&lt;script type=&quot;math/tex&quot;&gt;||r_j|| \leq h_{m+1,m} |\lambda_j - \tau|\;||A-\tau b||\; |e^T_my_j|&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;From this form, we see that the residual ($r_j$) is bounded by zero if
+$\lambda$ is a good estimate for $\tau$.&lt;/p&gt;
+
+&lt;h1 id=&quot;numerical-experiment-results&quot;&gt;Numerical Experiment Results&lt;/h1&gt;
+
+&lt;h3 id=&quot;steepest-descent-sd-1&quot;&gt;Steepest Descent (SD)&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/sd_comparison.png&quot; alt=&quot;Steepest Descent Method Comparison for 4 test
+matrices[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the plot, we see that only the bcsstk15 and the nos3 display
+convergent behavior. This is expected because mahindas and west0479 are
+non SPD matrices.&lt;/p&gt;
+
+&lt;h3 id=&quot;conjugate-gradient-cg-1&quot;&gt;Conjugate Gradient (CG)&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/cj_comparison.png&quot; alt=&quot;Conjugate Gradient (CJ) Method Comparison for 4 test
+matrices[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Similar to the Steepest Descent method, from the plot, we see that only
+the bcsstk15 and the nos3 display convergent behavior. This is expected
+because mahindas and west0479 are non SPD matrices.&lt;/p&gt;
+
+&lt;h3 id=&quot;minimal-residual-mr-1&quot;&gt;Minimal Residual (MR)&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/mr_comparison.png&quot; alt=&quot;Minimal Residual (MR) Method Comparison for 4 test
+matrices[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the plot, we see that only bcsstk15, nos3 and west0479 are
+converging. mahindas is not because it is non invertible. This can be
+seen by taking the determinant of mahindas, which is computed to be
+-1.0008e-20.&lt;/p&gt;
+
+&lt;h3 id=&quot;restarted-gmres&quot;&gt;Restarted GMRES&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/gmres_comparison.png&quot; alt=&quot;Restarted GMRES Method Comparison for 4 test
+matrices[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the plot, we see that only nos3, mahindas and west0479 are
+converging. Interestingly, bcsstk15 does not appear to converge quickly.&lt;/p&gt;
+
+&lt;h3 id=&quot;reorthogonalizationno-reorthogonalization-and-residual-comparison-1&quot;&gt;Reorthogonalization/No Reorthogonalization and Residual Comparison&lt;/h3&gt;
+
+&lt;p&gt;To check my correctness of the Reorthogonalized Arnoldi Algorithm,
+&lt;script type=&quot;math/tex&quot;&gt;|| AV_m - V_{m+1}\hat{H}_m ||_2&lt;/script&gt; was computed for 30 iterations to be
+2.6297e-12. Similarly, for the Arnoldi without reorthogonalization,
+&lt;script type=&quot;math/tex&quot;&gt;|| AV_m - V_{m+1}\hat{H}_m ||_2&lt;/script&gt; was computed to be 2.2025e-12. Both of
+these are approximately zero, despite being 4 orders of magnitude
+smaller than machine precision.&lt;/p&gt;
+
+&lt;p&gt;The orthogonality was evaluated using the residual
+&lt;script type=&quot;math/tex&quot;&gt;||I - V^H_{j+1}V_{j+1}||_2&lt;/script&gt;. At 30 iterations, these were computed to
+be 1.1814e-15 for the Reorthogonalized Arnoldi Algorithm and 4.3886e-13
+for the Non-Reorthogonalized Algorithm. Also, at 60 iterations, the
+Non-Reorthogonalized Algorithm residual the residual
+&lt;script type=&quot;math/tex&quot;&gt;||I - V^H_{j+1}V_{j+1}||_2&lt;/script&gt; was 8.9316e-12. From these results, it is
+evident that $V_{j+1}$ loses orthogonality. Therefore, in practice, it
+is a good idea to implement the reorthogonalization. Furthermore, the
+residuals were computed to be 2.2025e-12 and 7.0673e-11 for 30 and 60
+iterations.&lt;/p&gt;
+
+&lt;h3 id=&quot;ritz-values-1&quot;&gt;Ritz Values&lt;/h3&gt;
+
+&lt;p&gt;The Ritz values were computed using the eig command and compared to the
+exact eigenvalues.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/ritz10.png&quot; alt=&quot;Hessenberg vs Exact Eigenvalues for iterations =
+10[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/ritz20.png&quot; alt=&quot;Hessenberg vs Exact Eigenvalues for iterations =
+20[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;pics/ritz30.png&quot; alt=&quot;Hessenberg vs Exact Eigenvalues for iterations =
+30[]{label=&amp;quot;datagen&amp;quot;}&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the figures above, the eigenvalues are approximated well by the
+Ritz values. However, the number of iterations does not improve the
+eigenvalue approximations. The norm of the difference between the
+Reorthogonalized and the Non-Reorthogonalized eigenvalues were computed
+to be 528.5324 and 275.3189 for both algorithms. The shift-inversion
+spectral transformation converges to the dominant eigenvalue. The
+implementation was unsuccessful and did not yield good results.&lt;/p&gt;
+
+&lt;h1 id=&quot;acknowledgements&quot;&gt;Acknowledgements&lt;/h1&gt;
+
+&lt;p&gt;I would like to thank Professor Zhaojun Bai who provided me with a
+wealth of knowledge about NUmerical Linear Algebra techniques to
+undertake investigation.&lt;/p&gt;
+
+&lt;h1 id=&quot;references&quot;&gt;References&lt;/h1&gt;
+
+&lt;p&gt;[1] Bai, Zhaojun. “Subspace Projection Methods for LS.” ECS231 Slides,
+web.cs.ucdavis.edu/ bai/ECS231/Slides/ls.pdf.&lt;/p&gt;
+
+&lt;p&gt;[2] Strang, Gilbert. Linear Algebra and Learning from Data.
+Wellesley-Cambridge Press, 2019.&lt;/p&gt;
+
+&lt;p&gt;[3] Jia, Zhongxiao, and Yong Zhang. “A Refined Shift-and-Invert Arnoldi
+Algorithm for Large Unsymmetric Generalized Eigenproblems.” Computers
+&amp;amp; Mathematics with Applications, vol. 44, no. 8-9, 2002, pp.
+1117–1127., doi:10.1016/s0898-1221(02)00220-1.&lt;/p&gt;</content><author><name>Matt Y. Cheung</name></author><summary type="html">Solving Ax = b quickly is important. However, solving them for large sparse matrices is inefficient and time consuming (n-cubed by gaussian elimination). Iterative Subspace Projection Methods aim to solve these problems by dimension reduction. For eigenvalue problems, these methods attain approximations for eigenvalues and eigenvectors from projections of the eigenproblem to subspaces of smaller dimension, which are expanded during the course of the algorithm. Solving eigenvalues are important in many fields such as physics and play an important role in subfields in Computer Science such as Computer Vision</summary></entry><entry><title type="html">[Project] Comparing Basic Linear Algebra Subprograms</title><link href="http://localhost:4000/2019/04/30/Comparing-Basic-Linear-Algebra-Subprograms.html" rel="alternate" type="text/html" title="[Project] Comparing Basic Linear Algebra Subprograms" /><published>2019-04-30T00:00:00-05:00</published><updated>2019-04-30T00:00:00-05:00</updated><id>http://localhost:4000/2019/04/30/Comparing-Basic-Linear-Algebra-Subprograms</id><content type="html" xml:base="http://localhost:4000/2019/04/30/Comparing-Basic-Linear-Algebra-Subprograms.html">&lt;ul&gt;
+  &lt;li&gt;The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory.&lt;/li&gt;
+  &lt;li&gt;The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.&lt;/li&gt;
+  &lt;li&gt;Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and is slow. Different algorithms have been devised for computing the matrix product for large matrices.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;script type=&quot;text/x-mathjax-config&quot;&gt;
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], [&quot;\\(&quot;,&quot;\\)&quot;] ],
+      processEscapes: true
+    }
+  });
+&lt;/script&gt;
+
+&lt;script type=&quot;text/javascript&quot; src=&quot;https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
+&lt;/script&gt;
+
+&lt;h3 id=&quot;introduction&quot;&gt;Introduction&lt;/h3&gt;
+
+&lt;p&gt;Matrix Multiplication or Matrix Product is an operation that produces a matrix from two matrices.&lt;/p&gt;
+
+&lt;p&gt;If $A\in \mathbb{R}^{m\times p}$ represented by&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{gather}
+A =
+\begin{bmatrix}
+    a_{11} &amp; a_{12} &amp; a_{13} &amp; \dots  &amp; a_{1n} \\\\
+    a_{21} &amp; a_{22} &amp; a_{23} &amp; \dots  &amp; a_{2n} \\\\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\\\
+    a_{m1} &amp; a_{m2} &amp; a_{m3} &amp; \dots  &amp; a_{mn}
+\end{bmatrix}
+\end{gather} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;and $B\in \mathbb{R}^{p\times n}$ represented by&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{gather}
+B =
+\begin{bmatrix}
+    b_{11} &amp; b_{12} &amp; b_{13} &amp; \dots  &amp; b_{1n} \\
+    b_{21} &amp; b_{22} &amp; b_{23} &amp; \dots  &amp; b_{2n} \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    b_{p1} &amp; b_{p2} &amp; b_{p3} &amp; \dots  &amp; b_{pn}
+\end{bmatrix}
+\end{gather} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;then the Matrix Product can be defined as $C = AB$ where &lt;script type=&quot;math/tex&quot;&gt;c_{ij} = \sum^m_{k=1}a_{ik}b_{kj} \quad 1\leq i \leq n\ , 1\leq j \leq p&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{gather}
+C = AB = 
+\begin{bmatrix}
+    c_{11} &amp; c_{12} &amp; c_{13} &amp; \dots  &amp; c_{1n} \\
+    c_{21} &amp; c_{22} &amp; c_{23} &amp; \dots  &amp; c_{2n} \\
+    \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+    c_{m1} &amp; c_{m2} &amp; c_{m3} &amp; \dots  &amp; c_{mn}
+\end{bmatrix}
+\end{gather} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and hence slow. Different algorithms have been devised for computing the matrix product for large matrices. In this project, a survey of methods that take computer architecture into account will be explored.&lt;/p&gt;
+
+&lt;h3 id=&quot;computing-bottleneck&quot;&gt;Computing Bottleneck&lt;/h3&gt;
+
+&lt;p&gt;The time to run a program can be modeled by:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;Time\;to\;run\;code\;=\;clock\;cycles\;running\;code\;+\;clock\;cycles\;waiting\;for\;memory&lt;/script&gt;
+
+&lt;p&gt;The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations.&lt;/p&gt;
+
+&lt;p&gt;To model this, we can define a simple memory model with two levels - fast and slow memories. All the data is initially in slow memory. Data is processed faster if in the fast memory. Therefore, Data needs to be transferred from slow to fast memory before each subroutine. The performance metric is the number of floating point operations per slow element access, called FLOPS.&lt;/p&gt;
+
+&lt;h3 id=&quot;basic-linear-algebra-subprograms-blas&quot;&gt;Basic Linear Algebra Subprograms (BLAS)&lt;/h3&gt;
+
+&lt;p&gt;BLAS are low-level kernels that provide routines for performing Linear Algebra operations such as matrix addition, multiplication and dot products. These routines tend to be optimized for particular machines. These are the standard building blocks in modern linear algebra software.&lt;/p&gt;
+
+&lt;p&gt;BLAS separates its functionality into three levels: BLAS-1, BLAS-2 and BLAS-3. BLAS-1 performs scalar, vector and vector-vector operations. BLAS-2 performs matrix-vector operations. BLAS-3 performs matrix-matrix operations. A summary table of performance metrics is shown below:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{array}{rr} \hline
+BLAS &amp;Memory References &amp;FLOPS &amp; FLOPS/Memory References \\ \hline
+1 &amp; 3n &amp; 2n &amp; 2/3 \\ \hline
+2 &amp; n^2 &amp; 2n^2 &amp; 2 \\ \hline
+3 &amp; 4n^2 &amp; 2n^3 &amp; n/2
+\end{array} %]]&gt;&lt;/script&gt;
+
+&lt;h3 id=&quot;experiment-methods&quot;&gt;Experiment Methods&lt;/h3&gt;
+
+&lt;p&gt;Five different algorithms for matrix multiplication will be tested and compared with FLOP rate for square matrices. The size of the matrix (n) will be varied and plotted versus MFLOPS/s. In this case, 10 values from 10 to 500 were selected using the numpy linspace function.&lt;/p&gt;
+
+&lt;p&gt;The MFLOPS/s will be computed using the equation: $ MFLOPS/s = \frac{2n^3}{10^6 \times runtime}$&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;numpy&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;pandas&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;matplotlib.pyplot&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;time&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;1-triple-loop&quot;&gt;1. Triple Loop&lt;/h4&gt;
+&lt;p&gt;The triple loop is the element wise (naïve) multiplication, which is mentioned in the introduction as &lt;script type=&quot;math/tex&quot;&gt;c_{ij} = \sum^m_{k=1}a_{ik}b_{kj} \quad 1\leq i \leq n\ , 1\leq j \leq p&lt;/script&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;matmul_triple&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat2_shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;2-dot-product-blas-1&quot;&gt;2. Dot Product (BLAS-1)&lt;/h4&gt;
+&lt;p&gt;The dot product of two vectors $a = [a_1, a_2, \dots, a_n]$ and $b = [b_1, b_2, \dots, b_n]$ is defined as &lt;script type=&quot;math/tex&quot;&gt;a\cdot b = \sum^n_{i=1}a_i b_i&lt;/script&gt;&lt;/p&gt;
+
+&lt;p&gt;The implementation of using the dot product for matrix multiplication is &lt;script type=&quot;math/tex&quot;&gt;c_{ij} = a_{i}\cdot b_{j} \quad 1\leq i \leq m\ , 1\leq j \leq n&lt;/script&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;matmul_dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat2_shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;3-saxpy-blas-1&quot;&gt;3. Saxpy (BLAS-1)&lt;/h4&gt;
+&lt;p&gt;Saxpy (Single-Precision A X Plus Y) is defined as the form $y:=ax + y$, where $x,y$ are vectors and $a$ is a scalar. The implementation of saxpy for matrix multiplication is &lt;script type=&quot;math/tex&quot;&gt;c_i = c_i + a_j b_{ji} \quad 1\leq i \leq m\ , 1\leq j \leq p&lt;/script&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;matmul_saxpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat2_shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;4-matrix-vector-blas-2&quot;&gt;4. Matrix-Vector (BLAS-2)&lt;/h4&gt;
+&lt;p&gt;Matrix-Vector multiplication is defined as $y:=y+Ax$ where A is matrix and x is a vector. The implementation for Matrix-Vector matrix multiplication is &lt;script type=&quot;math/tex&quot;&gt;c_k = c_k + Ab_k \quad 1\leq k \leq n&lt;/script&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;matmul_matvec&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat2_shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;matmul&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;5-outer-product-blas-2&quot;&gt;5. Outer product (BLAS-2)&lt;/h4&gt;
+&lt;p&gt;The outer product is defined as $a\otimes b = ab^T$ If a and b have dimensions of m and n, then their outer product is an m by n matrix. The implementation of the outer product matrix multiplication is defined as &lt;script type=&quot;math/tex&quot;&gt;C = C + a_i b^T_i&lt;/script&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;matmul_outer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mat2_shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;outer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:])&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;misc-functions&quot;&gt;Misc Function(s)&lt;/h4&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;mat2_shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;get-running-time-routine&quot;&gt;Get running time routine&lt;/h4&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'matmul_triple'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'matmul_dot'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'matmul_saxpy'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+         &lt;span class=&quot;s&quot;&gt;'matmul_matvec'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'matmul_outer'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;func_names&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'triple loop'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'dot product (BLAS-1)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'saxpy (BLAS-1)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+         &lt;span class=&quot;s&quot;&gt;'matrix-vector (BLAS-2)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'outer product (BLAS-2)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;500&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))))&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;start_time&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;funcs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'(A, B)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;start_time&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;get-flopss-routine&quot;&gt;Get FLOPS/s routine&lt;/h4&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;flops&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;1e6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;experiment-results&quot;&gt;Experiment Results&lt;/h3&gt;
+
+&lt;h4 id=&quot;run-time-comparison&quot;&gt;Run Time Comparison&lt;/h4&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;dispt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dispt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;astype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'int'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dispt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DataFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dispt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;func_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;astype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_t&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div&gt;
+&lt;style scoped=&quot;&quot;&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&quot;1&quot; class=&quot;dataframe&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&quot;text-align: right;&quot;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;n&lt;/th&gt;
+      &lt;th&gt;triple loop&lt;/th&gt;
+      &lt;th&gt;dot product (BLAS-1)&lt;/th&gt;
+      &lt;th&gt;saxpy (BLAS-1)&lt;/th&gt;
+      &lt;th&gt;matrix-vector (BLAS-2)&lt;/th&gt;
+      &lt;th&gt;outer product (BLAS-2)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;0.001958&lt;/td&gt;
+      &lt;td&gt;0.000494&lt;/td&gt;
+      &lt;td&gt;0.001043&lt;/td&gt;
+      &lt;td&gt;0.000294&lt;/td&gt;
+      &lt;td&gt;0.000350&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;0.324073&lt;/td&gt;
+      &lt;td&gt;0.007775&lt;/td&gt;
+      &lt;td&gt;0.028444&lt;/td&gt;
+      &lt;td&gt;0.000872&lt;/td&gt;
+      &lt;td&gt;0.002727&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;119&lt;/td&gt;
+      &lt;td&gt;2.483323&lt;/td&gt;
+      &lt;td&gt;0.056787&lt;/td&gt;
+      &lt;td&gt;0.104679&lt;/td&gt;
+      &lt;td&gt;0.000967&lt;/td&gt;
+      &lt;td&gt;0.008148&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;173&lt;/td&gt;
+      &lt;td&gt;7.373535&lt;/td&gt;
+      &lt;td&gt;0.110846&lt;/td&gt;
+      &lt;td&gt;0.270866&lt;/td&gt;
+      &lt;td&gt;0.002401&lt;/td&gt;
+      &lt;td&gt;0.019772&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;228&lt;/td&gt;
+      &lt;td&gt;16.292575&lt;/td&gt;
+      &lt;td&gt;0.119387&lt;/td&gt;
+      &lt;td&gt;0.522254&lt;/td&gt;
+      &lt;td&gt;0.004367&lt;/td&gt;
+      &lt;td&gt;0.040190&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;282&lt;/td&gt;
+      &lt;td&gt;28.353514&lt;/td&gt;
+      &lt;td&gt;0.195107&lt;/td&gt;
+      &lt;td&gt;0.848704&lt;/td&gt;
+      &lt;td&gt;0.005697&lt;/td&gt;
+      &lt;td&gt;0.071406&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;337&lt;/td&gt;
+      &lt;td&gt;49.096077&lt;/td&gt;
+      &lt;td&gt;0.392282&lt;/td&gt;
+      &lt;td&gt;1.279814&lt;/td&gt;
+      &lt;td&gt;0.007889&lt;/td&gt;
+      &lt;td&gt;0.109456&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;391&lt;/td&gt;
+      &lt;td&gt;76.775584&lt;/td&gt;
+      &lt;td&gt;0.513610&lt;/td&gt;
+      &lt;td&gt;1.959762&lt;/td&gt;
+      &lt;td&gt;0.012160&lt;/td&gt;
+      &lt;td&gt;0.248771&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;446&lt;/td&gt;
+      &lt;td&gt;113.867998&lt;/td&gt;
+      &lt;td&gt;0.725625&lt;/td&gt;
+      &lt;td&gt;2.673684&lt;/td&gt;
+      &lt;td&gt;0.018931&lt;/td&gt;
+      &lt;td&gt;0.330257&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;500&lt;/td&gt;
+      &lt;td&gt;161.462556&lt;/td&gt;
+      &lt;td&gt;0.949153&lt;/td&gt;
+      &lt;td&gt;3.341192&lt;/td&gt;
+      &lt;td&gt;0.023851&lt;/td&gt;
+      &lt;td&gt;0.473899&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xlabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ylabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Run Time'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Run Time Comparison between different BLAS-type Operation Kernels'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;func_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;legend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;yscale&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'log'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;basey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;blas_comparisons_files/blas_comparisons_23_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;mflopss-comparison&quot;&gt;MFLOPS/s Comparison&lt;/h4&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;dispf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flops&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flops&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dispf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;round&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;astype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'int'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;dispf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flops&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;DataFrame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dispf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;np&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;append&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;func_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;astype&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_f&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div&gt;
+&lt;style scoped=&quot;&quot;&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&quot;1&quot; class=&quot;dataframe&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&quot;text-align: right;&quot;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;n&lt;/th&gt;
+      &lt;th&gt;triple loop&lt;/th&gt;
+      &lt;th&gt;dot product (BLAS-1)&lt;/th&gt;
+      &lt;th&gt;saxpy (BLAS-1)&lt;/th&gt;
+      &lt;th&gt;matrix-vector (BLAS-2)&lt;/th&gt;
+      &lt;th&gt;outer product (BLAS-2)&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;10&lt;/td&gt;
+      &lt;td&gt;1.021506&lt;/td&gt;
+      &lt;td&gt;4.048556&lt;/td&gt;
+      &lt;td&gt;1.917396&lt;/td&gt;
+      &lt;td&gt;6.803413&lt;/td&gt;
+      &lt;td&gt;5.714311&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;64&lt;/td&gt;
+      &lt;td&gt;1.651746&lt;/td&gt;
+      &lt;td&gt;68.844448&lt;/td&gt;
+      &lt;td&gt;18.818775&lt;/td&gt;
+      &lt;td&gt;613.933586&lt;/td&gt;
+      &lt;td&gt;196.289135&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;119&lt;/td&gt;
+      &lt;td&gt;1.353383&lt;/td&gt;
+      &lt;td&gt;59.184310&lt;/td&gt;
+      &lt;td&gt;32.106561&lt;/td&gt;
+      &lt;td&gt;3476.344810&lt;/td&gt;
+      &lt;td&gt;412.482171&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;173&lt;/td&gt;
+      &lt;td&gt;1.412539&lt;/td&gt;
+      &lt;td&gt;93.962826&lt;/td&gt;
+      &lt;td&gt;38.452263&lt;/td&gt;
+      &lt;td&gt;4337.740537&lt;/td&gt;
+      &lt;td&gt;526.774207&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;228&lt;/td&gt;
+      &lt;td&gt;1.450689&lt;/td&gt;
+      &lt;td&gt;197.973229&lt;/td&gt;
+      &lt;td&gt;45.256638&lt;/td&gt;
+      &lt;td&gt;5412.442808&lt;/td&gt;
+      &lt;td&gt;588.093318&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;5&lt;/th&gt;
+      &lt;td&gt;282&lt;/td&gt;
+      &lt;td&gt;1.585611&lt;/td&gt;
+      &lt;td&gt;230.425641&lt;/td&gt;
+      &lt;td&gt;52.972115&lt;/td&gt;
+      &lt;td&gt;7891.444145&lt;/td&gt;
+      &lt;td&gt;629.604966&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;6&lt;/th&gt;
+      &lt;td&gt;337&lt;/td&gt;
+      &lt;td&gt;1.554474&lt;/td&gt;
+      &lt;td&gt;194.550326&lt;/td&gt;
+      &lt;td&gt;59.632566&lt;/td&gt;
+      &lt;td&gt;9673.719498&lt;/td&gt;
+      &lt;td&gt;697.253226&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;7&lt;/th&gt;
+      &lt;td&gt;391&lt;/td&gt;
+      &lt;td&gt;1.558502&lt;/td&gt;
+      &lt;td&gt;232.968327&lt;/td&gt;
+      &lt;td&gt;61.055832&lt;/td&gt;
+      &lt;td&gt;9839.989620&lt;/td&gt;
+      &lt;td&gt;480.983716&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;8&lt;/th&gt;
+      &lt;td&gt;446&lt;/td&gt;
+      &lt;td&gt;1.553581&lt;/td&gt;
+      &lt;td&gt;243.794175&lt;/td&gt;
+      &lt;td&gt;66.164569&lt;/td&gt;
+      &lt;td&gt;9344.554011&lt;/td&gt;
+      &lt;td&gt;535.652727&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;9&lt;/th&gt;
+      &lt;td&gt;500&lt;/td&gt;
+      &lt;td&gt;1.548347&lt;/td&gt;
+      &lt;td&gt;263.392745&lt;/td&gt;
+      &lt;td&gt;74.823590&lt;/td&gt;
+      &lt;td&gt;10481.672148&lt;/td&gt;
+      &lt;td&gt;527.538693&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xlabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ylabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'log10(MFLOPS/s)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Run Time Comparison between different BLAS-type Operation Kernels'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flops&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[:,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;label&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;func_names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;legend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;yscale&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'log'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;basey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;blas_comparisons_files/blas_comparisons_26_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h3&gt;
+&lt;p&gt;From the collected data, the MFLOPS/s ranking was matrix-vector, outer product, dot product, saxpy and triple loop. The rankings were expected because BLAS-2 were theorized to be faster than BLAS-1 and both were theorzied to be faster than the triple loop due to the number of FLOPS/MemoryReferences. The curves plotted were consistent with the expected shape - as the size of the matrix gets larger and larger, the MFLOPS/s eventually plateaus. This wil be more evident as the size of the matrix gets larger and larger. The maximum MFLOPS/s for each of the methods is shown below&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;df_f_max&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;::]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_frame&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_f_max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Maximum MFLOPS/s'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_f_max&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div&gt;
+&lt;style scoped=&quot;&quot;&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&quot;1&quot; class=&quot;dataframe&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&quot;text-align: right;&quot;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Maximum MFLOPS/s&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;triple loop&lt;/th&gt;
+      &lt;td&gt;1.651746&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;dot product (BLAS-1)&lt;/th&gt;
+      &lt;td&gt;263.392745&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;saxpy (BLAS-1)&lt;/th&gt;
+      &lt;td&gt;74.823590&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;matrix-vector (BLAS-2)&lt;/th&gt;
+      &lt;td&gt;10481.672148&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;outer product (BLAS-2)&lt;/th&gt;
+      &lt;td&gt;697.253226&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;h3 id=&quot;discussion&quot;&gt;Discussion&lt;/h3&gt;
+
+&lt;p&gt;Although it is evident that BLAS-2 is faster than BLAS-1, there is still some question to the ratios of MFLOPS/s between different methods. From the table in the introduction, BLAS-2 should be approximately $\frac{2}{2/3} = 3 $ times as fast as BLAS-1. These values makes sense if the comparison was done between dot product (BLAS-1) and outer product (BLAS-2), but does not make sense for any other combination. One reason that may have caused this is because the matrix was not large enough and did not plateau. Due to CPU speed and time limitations, more data was not be taken. Another experiment that collects more data points for larger matrix multiplications should be run. A percent change difference is computed below.&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;df_f_pct_change&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupby&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mean&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pct_change&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;df_f_pct_change&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div&gt;
+&lt;style scoped=&quot;&quot;&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&quot;1&quot; class=&quot;dataframe&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&quot;text-align: right;&quot;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;triple loop&lt;/th&gt;
+      &lt;th&gt;dot product (BLAS-1)&lt;/th&gt;
+      &lt;th&gt;saxpy (BLAS-1)&lt;/th&gt;
+      &lt;th&gt;matrix-vector (BLAS-2)&lt;/th&gt;
+      &lt;th&gt;outer product (BLAS-2)&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;n&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;10&lt;/th&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;64&lt;/th&gt;
+      &lt;td&gt;0.616971&lt;/td&gt;
+      &lt;td&gt;16.004692&lt;/td&gt;
+      &lt;td&gt;8.814756&lt;/td&gt;
+      &lt;td&gt;89.239061&lt;/td&gt;
+      &lt;td&gt;33.350449&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;119&lt;/th&gt;
+      &lt;td&gt;-0.180635&lt;/td&gt;
+      &lt;td&gt;-0.140318&lt;/td&gt;
+      &lt;td&gt;0.706092&lt;/td&gt;
+      &lt;td&gt;4.662412&lt;/td&gt;
+      &lt;td&gt;1.101401&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;173&lt;/th&gt;
+      &lt;td&gt;0.043710&lt;/td&gt;
+      &lt;td&gt;0.587631&lt;/td&gt;
+      &lt;td&gt;0.197645&lt;/td&gt;
+      &lt;td&gt;0.247788&lt;/td&gt;
+      &lt;td&gt;0.277084&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;228&lt;/th&gt;
+      &lt;td&gt;0.027008&lt;/td&gt;
+      &lt;td&gt;1.106931&lt;/td&gt;
+      &lt;td&gt;0.176956&lt;/td&gt;
+      &lt;td&gt;0.247756&lt;/td&gt;
+      &lt;td&gt;0.116405&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;282&lt;/th&gt;
+      &lt;td&gt;0.093006&lt;/td&gt;
+      &lt;td&gt;0.163923&lt;/td&gt;
+      &lt;td&gt;0.170483&lt;/td&gt;
+      &lt;td&gt;0.458019&lt;/td&gt;
+      &lt;td&gt;0.070587&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;337&lt;/th&gt;
+      &lt;td&gt;-0.019637&lt;/td&gt;
+      &lt;td&gt;-0.155692&lt;/td&gt;
+      &lt;td&gt;0.125735&lt;/td&gt;
+      &lt;td&gt;0.225849&lt;/td&gt;
+      &lt;td&gt;0.107446&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;391&lt;/th&gt;
+      &lt;td&gt;0.002591&lt;/td&gt;
+      &lt;td&gt;0.197471&lt;/td&gt;
+      &lt;td&gt;0.023867&lt;/td&gt;
+      &lt;td&gt;0.017188&lt;/td&gt;
+      &lt;td&gt;-0.310174&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;446&lt;/th&gt;
+      &lt;td&gt;-0.003157&lt;/td&gt;
+      &lt;td&gt;0.046469&lt;/td&gt;
+      &lt;td&gt;0.083673&lt;/td&gt;
+      &lt;td&gt;-0.050349&lt;/td&gt;
+      &lt;td&gt;0.113661&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;500&lt;/th&gt;
+      &lt;td&gt;-0.003369&lt;/td&gt;
+      &lt;td&gt;0.080390&lt;/td&gt;
+      &lt;td&gt;0.130871&lt;/td&gt;
+      &lt;td&gt;0.121688&lt;/td&gt;
+      &lt;td&gt;-0.015148&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;n&quot;&gt;df_f_pct_change_ri&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_f_pct_change&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reset_index&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figure&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_f_pct_change_ri&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;columns&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plot&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;df_f_pct_change_ri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;df_f_pct_change_ri&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'Percent Change in MFLOPS/s for different BLAS-type Operation Kernels'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ylabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'pct change (&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;%&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;)'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;xlabel&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'n'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;yscale&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'log'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;basey&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;legend&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;show&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;blas_comparisons_files/blas_comparisons_31_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From this, there is room for improvement, as the dot product and the matrix-vector kernels have a percentage change of greater than 10% at n = 500.&lt;/p&gt;
+
+&lt;p&gt;Another observation is that MATLAB behaves differently when the same kernels are implemented. It is unknown if it is an implementation problem or MATLAB’s matrix multiplication routines. The MATLAB implementation is shown here https://pastebin.com/TL93T9mU and results are shown below&lt;/p&gt;
+
+&lt;div class=&quot;language-python highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;IPython.display&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;Image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'blas_comparison_matlab.png'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;blas_comparisons_files/blas_comparisons_34_0.png&quot; alt=&quot;png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;From the Run Time Comparison, we do not see the BLAS Run Time hierarchy. This may possibly be due to error in implementation. But the reason for this is still unknown.&lt;/p&gt;</content><author><name>Matt Y. Cheung</name></author><summary type="html">The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory. The improvement rate in processor speed (Moore’s Law, ~60%/yr) exceeds that of DRAM memory (~7%/yr). There is a growing latency between the state of the art proessor speed and memory access speed (~53%/yr). Therefore, the bottleneck for computing is memory access and not the number of arithmetic operations. Computing the matrix product of two matrices has a computational complexity of $O(n^3)$ for $n\times n$ matrices and is slow. Different algorithms have been devised for computing the matrix product for large matrices.</summary></entry></feed>
