@@ -1,4 +1,4 @@
-title: "Matt Y. Cheung"
+title: ""
 title_separator: "|"
 logo: "/images/home-solid.png"
 masthead_title: ""
@@ -21,6 +21,7 @@ plugins:
     - jekyll-include-cache
 
 author:
+  name: "Matt Y. Cheung"
   avatar: "/images/IMG_3972 2 copy.jpg"
   bio: "I'm a PhD student in the Electrical & Computer Engineering Department at Rice University solving real-world problems under Professor [Ashok Veeraraghavan](https://profiles.rice.edu/faculty/ashok-veeraraghavan) in the [Rice Computational Imaging Lab](http://computationalimaging.rice.edu/). We build better cameras by co-designing hardware and software using the fundamentals of Wave Optics, Signal Processing and Machine Learning."
   location: "Houston, TX"
