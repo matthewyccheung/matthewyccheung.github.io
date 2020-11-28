@@ -4,6 +4,7 @@ logo: "/images/home-solid.png"
 masthead_title: ""
 search: true
 timezone: America/Chicago
+baseurl: "/matthewyccheung.github.io"
 url: "https://matthewyccheung.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  matthewyccheung
 
@@ -14,7 +15,7 @@ show_date: true
 markdown: kramdown
 kramdown:
    math_engine: mathjax
-remote-theme: minimal-mistakes-jekyll
+theme: minimal-mistakes-jekyll
 minimal_mistakes_skin: "contrast"
 #plugins:
 #    - jekyll-jupyter-notebook
