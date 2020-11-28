@@ -16,4 +16,4 @@ author_profile: true
 
 ----
 
-Oct 27 2020: [Publication] [Wearing a MASK: Compressed Representations of Variable-Length Sequences Using Recurrent Neural Tangent Kernels](https://arxiv.org/pdf/2010.13975.pdf)
+Oct 27 2020: [Preprint] [Wearing a MASK: Compressed Representations of Variable-Length Sequences Using Recurrent Neural Tangent Kernels](https://arxiv.org/pdf/2010.13975.pdf)
