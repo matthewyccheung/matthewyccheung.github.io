@@ -4,9 +4,8 @@ logo: "/images/home-solid.png"
 masthead_title: ""
 search: true
 timezone: America/Chicago
-
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "matthewyccheung.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://matthewyccheung.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  matthewyccheung
 
 author_profile: true
