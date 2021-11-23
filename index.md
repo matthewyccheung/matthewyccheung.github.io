@@ -16,4 +16,6 @@ author_profile: true
 
 ----
 
-Oct 27 2020: [Preprint] [Wearing a MASK: Compressed Representations of Variable-Length Sequences Using Recurrent Neural Tangent Kernels](https://arxiv.org/pdf/2010.13975.pdf)
+Nov 18 2020: Joined the [Rice Computational Imaging Lab](https://computationalimaging.rice.edu/)
+
+Oct 27 2020: [Wearing a MASK: Compressed Representations of Variable-Length Sequences Using Recurrent Neural Tangent Kernels](https://arxiv.org/pdf/2010.13975.pdf)

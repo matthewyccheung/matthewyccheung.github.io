@@ -3,7 +3,7 @@
 layout: single
 classes: wide
 author_profile: true
-title: "[Project] Signal Denoising using 1D Kalman Filters"
+title: "Signal Denoising using 1D Kalman Filters"
 show_date: true
 comments: true
 ---

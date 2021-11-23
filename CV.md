@@ -10,7 +10,7 @@ permalink: /CV/
 Rice University <br>
 Aug. 2020 - Present <br>
 * Ph.D. Electrical & Computer Engineering
-* Coursework in Network Science, Information Theory and Random Processes
+* Coursework in Network Science, Information Theory, Random Processes, Computer Vision and Model-Order Reduction
 
 University of California, Davis <br>
 Sep. 2015 – Jun. 2020 <br>
@@ -26,6 +26,15 @@ Sep. 2015 – Jun. 2020 <br>
 ----
 <br>
 <h4> Research Experience </h4>
+
+Research Assistant, [Rice Computational Imaging Laboratory](http://computationalimaging.rice.edu/), Houston TX <br>
+Dec 2020 - Present
+<br>
+* Advisor: Ashok Veeraraghavan
+* Various projects related to Machine Learning for Healthcare, Wearables, Novel Ultrasonic Devices for brain monitoring and open-source databases
+* [Smart Helmet](https://news.rice.edu/news/2021/rice-tapped-develop-3d-printed-smart-helmets-military)
+* [Sleeping Cap](https://news.rice.edu/news/2021/us-army-backs-sleeping-cap-help-brains-take-out-trash)
+
 
 Research Assistant, [Yang Research Laboratory](https://www.ece.ucdavis.edu/~wejyang/home.html), Davis CA <br>
 Sep. 2018 – Jul. 2020

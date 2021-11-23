@@ -4,7 +4,7 @@ classes: wide
 author_profile: true
 comments: true
 show_date: true
-title: "[Project] Comparing Basic Linear Algebra Subprograms"
+title: "Comparing Basic Linear Algebra Subprograms"
 ---
 
 * The time to run a program can be modeled by: Time to run code = clock cycles running code + clock cycles waiting for memory.

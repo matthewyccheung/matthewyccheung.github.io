@@ -23,7 +23,7 @@ plugins:
 author:
   name: "Matt Y. Cheung"
   avatar: "/images/IMG_3972 2 copy.jpg"
-  bio: "I'm a PhD student in the Electrical & Computer Engineering Department at Rice University under Professor [Ashok Veeraraghavan](https://profiles.rice.edu/faculty/ashok-veeraraghavan) in the [Rice Computational Imaging Lab](http://computationalimaging.rice.edu/). My interests mainly lie in Machine Learning and Healthcare."
+  bio: "PhD Student in Electrical & Computer Engineering working in the areas of Machine Learning in Healthcare, Ultrasonic Devices, Wearables and Open-access Healthcare Databases"
   location: "Houston, TX"
   links:
     - label: "GitHub"

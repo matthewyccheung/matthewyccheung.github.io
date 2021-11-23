@@ -2,7 +2,7 @@
 layout: single
 classes: wide
 author_profile: true
-title: "[Project] Combination Deep Diffractive Neural Networks"
+title: "Combination Deep Diffractive Neural Networks"
 show_date: true
 comments: true
 ---

@@ -2,7 +2,7 @@
 layout: single
 classes: wide
 author_profile: true
-title: "[Project] Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems"
+title: "Iterative Subspace Projection Methods for Large scale Linear Systems and Eigenvalue Problems"
 show_date: true
 comments: true
 ---
