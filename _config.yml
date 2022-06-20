@@ -22,8 +22,8 @@ plugins:
 
 author:
   name: "Matt Y. Cheung"
-  avatar: "/images/me.JPG"
-  bio: "PhD Student in Electrical & Computer Engineering working in the areas of Machine Learning Healthcare, Ultrasonic Devices, Wearables and Open-access Healthcare Databases"
+  avatar: "/images/me2.JPG"
+  bio: "PhD Student in Electrical & Computer Engineering interested in Wearables, Machine Learning for Healthcare, and Non-invasive Brain Monitoring"
   location: "Houston, TX"
   links:
     - label: "GitHub"
