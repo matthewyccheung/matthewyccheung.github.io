@@ -34,9 +34,9 @@ Dec 2020 - Present
 <br>
 * Advisor: Ashok Veeraraghavan and Ashu Sabharwal
 * Working on various projects related to Wearables, Machine Learning for Healthcare, and Non-invasive Neurophysiological Brain Monitoring
-** Wearables: Meta-Analysis (+benchmarking) of Blood Pressure Estimation from PPG and Development of Continuous and Cuffless Blood Pressure Monitoring Devices
-** Machine Learning for Healthcare: Fairness, Explainability, and Causal Inference in Clinical Trials
-** Brain Monitoring: [Smart Helmet](https://news.rice.edu/news/2021/rice-tapped-develop-3d-printed-smart-helmets-military) and [Sleeping Cap](https://news.rice.edu/news/2021/us-army-backs-sleeping-cap-help-brains-take-out-trash)
+	* Wearables: Meta-Analysis (+benchmarking) of Blood Pressure Estimation from PPG and Development of Continuous and Cuffless Blood Pressure Monitoring Devices
+	* Machine Learning for Healthcare: Fairness, Explainability, and Causal Inference in Clinical Trials
+	* Brain Monitoring: [Smart Helmet](https://news.rice.edu/news/2021/rice-tapped-develop-3d-printed-smart-helmets-military) and [Sleeping Cap](https://news.rice.edu/news/2021/us-army-backs-sleeping-cap-help-brains-take-out-trash)
 <br> <br>
 
 Research Assistant, [Yang Research Laboratory](https://www.ece.ucdavis.edu/~wejyang/home.html), Davis CA <br>
