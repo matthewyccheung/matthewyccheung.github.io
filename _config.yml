@@ -23,7 +23,7 @@ plugins:
 author:
   name: "Matt Y. Cheung"
   avatar: "/images/me2.JPG"
-  bio: "Ph.D. Student @ Rice ECE working on fair and democratic MedTech"
+  bio: "Ph.D. Student @ Rice ECE working on fair and demoratic MedTech"
   location: "Houston, TX"
   links:
     - label: "GitHub"
@@ -36,7 +36,8 @@ author:
       icon: "fab fa-linkedin-in"
       url: "https://www.linkedin.com/in/matthewyccheung/"
     - label: "Twitter"
-      icon: "https://twitter.com/matte_ce"
+      icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/matte_ce"
     - label: "Email"
       icon: "fas fa-at"
       url: "mailto:mattyc@rice.edu"
