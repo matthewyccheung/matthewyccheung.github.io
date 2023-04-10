@@ -7,7 +7,7 @@ show_date: true
 comments: true
 ---
 
-<i> X, the moonshot factory: “pursuing things that sound undoable, but if done, could redefine reality” </i>
+> X, the moonshot factory: “pursuing things that sound undoable, but if done, could redefine reality”
 
 Moonshots are what make science worth pursuing. It is important to dream of what can be done and be optimistic about the future. These are the foundations of some of the most valuable research funding awards that seek to push the boundaries of science and engineering. However, these high-risk and high-reward projects are not always going to work and could take a decade for some reasonable progress. In fact, many do not work and eventually spin out in other interesting directions. So what’s the point in working on them? To me, they represent high-impact projects that we can never do in an industry setting, where good results are demanded immediately.
 
