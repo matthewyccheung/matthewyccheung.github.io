@@ -16,6 +16,8 @@ author_profile: true
 
 ----
 
+May 5 2023: Defended M.S. thesis on Wearable Blood Pressure Monitoring and Study Design
+
 Mar 25 2023: Appointed to the [National Library of Medicine (NLM) Training Program in Biomedical Informatics and Data Science](https://www.gulfcoastconsortia.org/home/training/bmi-nlm/#1556808353573-bb3f1459-2252)!
 
 Nov 18 2020: Joined the [Rice Computational Imaging Lab](https://computationalimaging.rice.edu/)
