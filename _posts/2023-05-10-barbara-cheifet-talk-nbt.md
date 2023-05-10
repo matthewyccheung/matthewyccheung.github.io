@@ -17,7 +17,7 @@ Lot of great information in this very unique 30 minute lightning talk (12 min pr
 
 Here are the top ten tips that Barbara has:
 
-<h2> 1. Aim high but realistically </h2>
+<h2> 1. Aim high, but realistically </h2>
 
 Before submission, read papers that the journal is publishing and compare your paper to what they are publishing. Does the quality of your submission align with that of other papers in the journal? Find best home for paper to the appropriate audience, even if it is a lower impact journal.
 
@@ -33,15 +33,16 @@ Occassionally, cover letters are addressed to another journal by mistake (possib
 
 Formatting will be fixed later.
 
-<h2> 5. Don’t be afraid to suggest reviews </h2>
+<h2> 5. Don’t be afraid to suggest reviewers </h2>
 
+Some people will better understand the impact of your work. But:
 1. Don’t suggest your friends or collaborators.
-2. NBT never invites excluded reviewers. 
+2. NBT never invites excluded reviewers (but don't exclude everybody in the field). 
 3. NBT check for copublications.
 
 <h2> 6. Make sure data is deposited </h2> 
 
-This includes data, software, methods, code, ethics, and approvals. Not submtiting these delays the publication process. If there are restrictions on code, make sure that is clear to the editors
+This includes data, software, methods, code, ethics, and approvals. Not submitting these delays the publication process. If there are restrictions on code, make sure that is clear to the editors
 
 <h2> 7. Responding to peer review </h2> 
 
@@ -59,39 +60,49 @@ The majority of appeals are not successful. But the successful ones are well tho
 
 You have right to ask. Editors are trying to work with you.
 
-
 <h2> Audience questions </h2>
+
+Barbara succintly answers a lot of questions.
 
 <h3> What to place in supplemental </h3>
 
 Depends on the story and the message of the paper. Supplements can be massive because reviewers are coming to ask for more and more things. These items will be requested on a case to case basis. However, main results should be on main text. If there are additional experiments, then add it in supplemental mostly to satisfy the reviewer.
 
+<h3> Publications seem to hve similar writing styles. Is this due to the authors or the editors? </h3>
+
+Both. Authors look at what has been submitted in the path and write in appropriate tone/style. Editors then edit line by line.
+
 <h3> Reproducibility of proprietary code/dataets </h3>
 
 Reviewers can request to review it, and editors will make sure these code/datasets are protected.
 
-<h3> Will NBT immediately say no to a paper based on the cover letter? </h2>
+<h3> Will NBT immediately say no to a paper based on the cover letter? </h3>
 
 No, generally NBT will read the full paper in length.
 
-<h3> What is two submissions are similar </h3>
+<h3> What is two submissions are similar and of similar quality? </h3>
 
-Generally submit both of them to reviewers.
+Generally both are submitted both of them to reviewers. Reviewers judge which one is accepted/rejected.
 
 <h3> Scooping protection </h3> 
 
 If something is in review and something else is published, NBT will continue to move forward with paper.
 
 <h3> BioArxiv </h3>
-Barbara thinks it is great. We all know that publishing is slow. From editorial standpoint, they only look at what’s published.
+
+Barbara thinks it is great. We all know that publishing is slow. From editorial standpoint, they only look at what’s published/peer reviewed.
 
 <h3> How do they assign papers to editors? </h3> 
 
 Most editors will have particular areas of expertise. If none have expertise, they will randomly distribute based on workload.
 
-<h3> How does NBT judge whether the paper is sufficiently novel? </h3>
+<h3> How does NBT "judge" a paper? </h3>
 
-For NBT, they look at the novelty in both the technology and application side. There needs to be an appropriate balance between novel technology and application. But stronger technology can somewhat replace weaker application, and vice versa.
+For NBT, they look at the novelty in both the technology and application side. There needs to be an appropriate balance between novel technology and application. But sometimes stronger technology can be in place of weaker application, and vice versa.
+
+<h3> How many submissions does NBT get per week? </h3>
+
+Around 50. Aim for 20% acceptance. But in reality, around 15-18% acceptance. 
 
 <h3> Path to being an editor </h3>
 
