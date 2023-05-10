@@ -44,9 +44,9 @@ Some people will better understand the impact of your work. But:
 
 This includes data, software, methods, code, ethics, and approvals. Not submitting these delays the publication process. If there are restrictions on code, make sure that is clear to the editors
 
-<h2> 7. Responding to peer review </h2> 
+<h2> 7. Respond in detail to all reviewers comments </h2> 
 
-Respond in detail to all reviewers comments. Make it clear where to changes have been made (track change versions). It is fine to disagree, but support your arguments with facts and references. Make sure that any editor’s comments have been addressed.
+Make it clear where to changes have been made (track change versions). It is fine to disagree, but support your arguments with facts and references. Make sure that any editor’s comments have been addressed.
 
 <h2> 8. NBT are happy to discuss revision plan </h2>
 
@@ -64,15 +64,15 @@ You have right to ask. Editors are trying to work with you.
 
 Barbara succintly answers a lot of questions.
 
-<h3> What to place in supplemental </h3>
+<h3> What to place in supplemental? </h3>
 
 Depends on the story and the message of the paper. Supplements can be massive because reviewers are coming to ask for more and more things. These items will be requested on a case to case basis. However, main results should be on main text. If there are additional experiments, then add it in supplemental mostly to satisfy the reviewer.
 
-<h3> Publications seem to hve similar writing styles. Is this due to the authors or the editors? </h3>
+<h3> Publications seem to have similar writing styles. Is this due to the authors or the editors? </h3>
 
 Both. Authors look at what has been submitted in the path and write in appropriate tone/style. Editors then edit line by line.
 
-<h3> Reproducibility of proprietary code/dataets </h3>
+<h3> Can you comment on reproducibility of proprietary code/dataets? </h3>
 
 Reviewers can request to review it, and editors will make sure these code/datasets are protected.
 
@@ -80,15 +80,15 @@ Reviewers can request to review it, and editors will make sure these code/datase
 
 No, generally NBT will read the full paper in length.
 
-<h3> What is two submissions are similar and of similar quality? </h3>
+<h3> What if two submissions are similar and of similar quality? </h3>
 
 Generally both are submitted both of them to reviewers. Reviewers judge which one is accepted/rejected.
 
-<h3> Scooping protection </h3> 
+<h3> Since submission to publication process takes a while, what if something is in review and something similar is published elsewhere? </h3> 
 
-If something is in review and something else is published, NBT will continue to move forward with paper.
+NBT will continue to move forward with paper.
 
-<h3> BioArxiv </h3>
+<h3> What do you think of BioArxiv? </h3>
 
 Barbara thinks it is great. We all know that publishing is slow. From editorial standpoint, they only look at what’s published/peer reviewed.
 
@@ -104,6 +104,6 @@ For NBT, they look at the novelty in both the technology and application side. T
 
 Around 50. Aim for 20% acceptance. But in reality, around 15-18% acceptance. 
 
-<h3> Path to being an editor </h3>
+<h3> Path to being an editor? </h3>
 
 Barbara realized that she isn't good at working on the benchtop. She likes reading across disciplines and spending time deep diving into research areas.
