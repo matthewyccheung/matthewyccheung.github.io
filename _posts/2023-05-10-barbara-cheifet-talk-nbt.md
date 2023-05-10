@@ -33,7 +33,7 @@ Occassionally, cover letters are addressed to another journal by mistake (possib
 
 Formatting will be fixed later.
 
-<h2> 5. Don’t be afraid to suggest reviews </h2> '
+<h2> 5. Don’t be afraid to suggest reviews </h2>
 
 1. Don’t suggest your friends or collaborators.
 2. NBT never invites excluded reviewers. 
