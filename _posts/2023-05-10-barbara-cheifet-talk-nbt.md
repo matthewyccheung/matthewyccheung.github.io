@@ -15,7 +15,7 @@ Rice CS, Rice Ken Kennedy Institute:
 
 Lot of great information in this very unique 30 minute lightning talk (12 min presentation + 18 min Q&A) that many of us spent a lot of time navigating and discovering as (former) grad students or (i'm guessing) even early career faculty about finding the right venue, submitting, editing, and reviewing. 
 
-Here are the top ten tips that Barbara has:
+Here are the top ten tips that Barbara has for us:
 
 <h2> 1. Aim high, but realistically </h2>
 
@@ -62,7 +62,19 @@ You have right to ask. Editors are trying to work with you.
 
 <h2> Audience questions </h2>
 
-Barbara succintly answers a lot of questions.
+Barbara succintly answers a lot of questions (in no particular order).
+
+<h3> As an editor, how do you read a paper? </h3>
+
+Very different from what researchers usually do. Instead of looking at details of methodologies, figures, data, judge the overall message of the paper and whether it fits well with the journal. Those details are left for the reviewers. 
+
+<h3> How does NBT "judge" a paper? </h3>
+
+For NBT, they look at the novelty in both the technology and application side. There needs to be an appropriate balance between novel technology and application. But sometimes stronger technology can be in place of weaker application, and vice versa.
+
+<h3> How many submissions does NBT get per week? </h3>
+
+Around 50. 20% make it to review. Around 15-18% acceptance. 
 
 <h3> What to place in supplemental? </h3>
 
@@ -95,14 +107,6 @@ Barbara thinks it is great. We all know that publishing is slow. From editorial 
 <h3> How do they assign papers to editors? </h3> 
 
 Most editors will have particular areas of expertise. If none have expertise, they will randomly distribute based on workload.
-
-<h3> How does NBT "judge" a paper? </h3>
-
-For NBT, they look at the novelty in both the technology and application side. There needs to be an appropriate balance between novel technology and application. But sometimes stronger technology can be in place of weaker application, and vice versa.
-
-<h3> How many submissions does NBT get per week? </h3>
-
-Around 50. Aim for 20% acceptance. But in reality, around 15-18% acceptance. 
 
 <h3> Path to being an editor? </h3>
 
