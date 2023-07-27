@@ -49,11 +49,11 @@ $$C$$: concentrations of tissue layers and chromophores
 
 <h4> Find change in concentration:</h4>
 
-$$\frac{I_D - I_S}{I_S} = \epsilon \Delta C l$$
+$$\frac{I_{max} - I_{min}}{I_{max}} = \epsilon \Delta C l$$
 
-$$I_D$$: maximum absorption in PPG 
+$$I_{max}$$: maximum absorption in PPG 
 
-$$I_S$$: minimum absorption in PPG
+$$I_{min}$$: minimum absorption in PPG
 
 $$\Delta C$$: maximal change in hemoglobin in cardiac cycle
 
