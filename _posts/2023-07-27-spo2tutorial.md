@@ -27,7 +27,8 @@ Summary: Review presents an introduction to the technique of pulse oximetry incl
 
 <h2> Pulse Oximetry Principles </h2>
 
-Modified Beer Lambert
+<h4> Modified Beer Lambert </h4>
+
 $$I_t = I_0 exp(-G-\epsilon C l)$$
 
 $$G$$: light loss due to scattering
@@ -42,7 +43,7 @@ $$\epsilon$$: molar extinction concentration of tissue layers and chromophores s
 
 $$C$$: concentrations of tissue layers and chromophores
 
-Find change in concentration:
+<h4> Find change in concentration:</h4>
 
 $$(I_D - I_S)/I_S = eps \Delta C l$$
 
@@ -56,15 +57,15 @@ $$ln(I_{max}/l_{min}) = -\Delta G - \epsilon \Delta C l$$
 
 $$R = ln(I_{max}/I_{min})_{660}/ln(I_{max}/I_{min})_{940} = [-\Delta G - \epsilon \Delta C l]_{660} / [-\Delta G - \epsilon \Delta C l]_{940}$$
 
-Assume $$\Delta G = 0$$ over cardiac cycle
+<h4> Assume $$\Delta G = 0$$ over cardiac cycle </h4>
 
 $$R = [\epsilon \Delta C l]_{660} / [\epsilon \Delta C l]_{940}$$
 
-Assume $$\Delta C$$ is the same for 660 and 940
+<h4> Assume $$\Delta C$$ is the same for 660 and 940 </h4>
 
 $$R = [\epsilon l]_{660}/[\epsilon l]_{940}$$
 
-Use $$\epsilon = \epsilon_O SaO_2 + \epsilon_D(1-SaO2)$$
+<h4> Use $$\epsilon = \epsilon_O SaO_2 + \epsilon_D(1-SaO2)$$ </h4>
 
 $$\epsilon_O$$: extinction coefficients for oxygenated
 
@@ -72,19 +73,19 @@ $$\epsilon_D$$: deoxygenated blood
 
 $$SpO_2 = (\epsilon_{D,660}-R(l_{940}/l_{660}) \eps_{D,940})/(R(l_{940}/l_{660})(\epsilon_{O,940} - \epsilon_{D,940}) + (\epsilon_{D,660} - \epsilon_{O,660}))$$
 
-Cardiac cycle assumptions:
+<h4> Cardiac cycle assumptions: </h4>
 1. Constant $$G$$
 2. Constant $$I$$
 3. Constant $$\epsilon$$
 4. Contact $$C$$
 
-Generalization assumptions:
+<h4> Generalization assumptions: </h4>
 1. $$\Delta C$$ approximately equal at two wavelengths
 2. $$l_{940}/l_{660}$$ remains constant across individuals
 
 Type of scattering (Rayleigh or Mie) is determined by the size of scatterer relative to the selected wavelength - found to be larger for individuals with darker skin. Photons tend to travel in a more forward direction (Mie scattering) in individuals with dark skin.
 
-Compromises:
+<h4> Compromises: </h4>
 1. Ground truth measures functional hemoglobin (includes carboxyhemoglobin (COHb) and methaemoglobin (MetHb). Can be influenced by high concentrations or partial pressures of carbon monoxide and/or other gases and chemical compounds. In visible spectrum, COHb has similar absorption profile to oxyhemoglobin - cannot distinguish. But effect size is small.
 2. Poor blood perfusion: pulse ox relies on optical measurements of arterial pulsations within tissue bed. But pulsations only make up 2-5% of total optical absorption profile and is dependent on adequate blood flow to measurement area.
 3. Absorption corrupted by nail polish or artificial fingernails.
