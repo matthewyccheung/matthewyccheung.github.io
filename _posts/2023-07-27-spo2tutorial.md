@@ -63,7 +63,7 @@ $$ln(\frac{I_{max}}{I_0}) - ln(\frac{I_min}{I_0}) = -G_{max} - \epsilon C_{max} 
 
 $$ln(\frac{I_{max}}{l_{min}}) = -\Delta G - \epsilon \Delta C l$$
 
-$$R = \frac{ln(I_{max}/I_{min})_{660}}{ln(I_{max}/I_{min})_{940}} = \frac{[-\Delta G - \epsilon \Delta C l]_{660}}{[-\Delta G - \epsilon \Delta C l]_{940}}$$
+$$R = \frac{ln(I_{max}/I_{min})_{660}}{ln(I_{max}/I_{min})_{940}} = \frac{[-\Delta G - \epsilon Delta C l]_{660}}{[-\Delta G - \epsilon \Delta C l]_{940}}$$
 
 <h4> Assume $\Delta G = 0$ over cardiac cycle </h4>
 
