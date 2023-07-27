@@ -20,8 +20,8 @@ comments: true
         src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
-DOI: 10.1088/1361-6579/acd51a
-link: https://iopscience.iop.org/article/10.1088/1361-6579/acd51a/meta
+
+[Paper Link, DOI: 10.1088/1361-6579/acd51a](https://iopscience.iop.org/article/10.1088/1361-6579/acd51a/meta)
 
 Summary: Review presents an introduction to the technique of pulse oximetry including its basic principle of operation, technology, and limitations, with a focus on skin pigmentation.
 
@@ -29,27 +29,45 @@ Summary: Review presents an introduction to the technique of pulse oximetry incl
 
 Modified Beer Lambert
 $$I_t = I_0 exp(-G-\epsilon C l)$$
+
 $$G$$: light loss due to scattering
+
 $$d$$ or $$l$$: pathlength or optical path length (actual distance traveled by light), which is longer than the path length due to scattering
+
 $$I_t$$: intensity of transmitted light
+
 $$I_0$$: intensity of incident light
+
 $$\epsilon$$: molar extinction concentration of tissue layers and chromophores such as hemoglobin, melanin, water, etc.
+
 $$C$$: concentrations of tissue layers and chromophores
 
 Find change in concentration:
+
 $$(I_D - I_S)/I_S = eps \Delta C l$$
+
 $$\Delta C$$: maximal change in hemoglobin in cardiac cycle
+
 $$ln(I_t/I_0) = -G-\epsilon C l$$
+
 $$ln(I_{max}/I_0) - ln(I_min/I_0) = -G_{max} - \epsilon C_{max} l + G_{min} + eps C_{min} l$$
+
 $$ln(I_{max}/l_{min}) = -\Delta G - \epsilon \Delta C l$$
+
 $$R = ln(I_{max}/I_{min})_{660}/ln(I_{max}/I_{min})_{940} = [-\Delta G - \epsilon \Delta C l]_{660} / [-\Delta G - \epsilon \Delta C l]_{940}$$
+
 Assume $$\Delta G = 0$$ over cardiac cycle
+
 $$R = [\epsilon \Delta C l]_{660} / [\epsilon \Delta C l]_{940}$$
+
 Assume $$\Delta C$$ is the same for 660 and 940
+
 $$R = [\epsilon l]_{660}/[\epsilon l]_{940}$$
 
 Use $$\epsilon = \epsilon_O SaO_2 + \epsilon_D(1-SaO2)$$
+
 $$\epsilon_O$$: extinction coefficients for oxygenated
+
 $$\epsilon_D$$: deoxygenated blood
 
 $$SpO_2 = (\epsilon_{D,660}-R(l_{940}/l_{660}) \eps_{D,940})/(R(l_{940}/l_{660})(\epsilon_{O,940} - \epsilon_{D,940}) + (\epsilon_{D,660} - \epsilon_{O,660}))$$
