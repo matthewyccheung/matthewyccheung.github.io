@@ -59,7 +59,7 @@ $$\Delta C$$: maximal change in hemoglobin in cardiac cycle
 
 $$ln(\frac{I_t}{I_0}) = -G-\epsilon C l$$
 
-$$ln(\frac{I_{max}}{I_0}) - ln(\frac{I_{min}}{I_0}) = -G_{max} - \epsilon C_{max} l + G_{min} + eps C_{min} l$$
+$$ln(\frac{I_{max}}{I_0}) - ln(\frac{I_{min}}{I_0}) = -G_{max} - \epsilon C_{max} l + G_{min} + \epsilon C_{min} l$$
 
 $$ln(\frac{I_{max}}{l_{min}}) = -\Delta G - \epsilon \Delta C l$$
 
