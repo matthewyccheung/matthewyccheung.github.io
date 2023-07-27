@@ -25,7 +25,7 @@ comments: true
 
 Summary: Review presents an introduction to the technique of pulse oximetry including its basic principle of operation, technology, and limitations, with a focus on skin pigmentation.
 
-Importance: PulseOxs have been known for a while now to perform worse on people with darker skin. Understanding why this is the case is important for fairness.
+Importance: PulseOxs have been known for a while now to perform worse on people with darker skin. Understanding why this is the case is important for fairness. This is manifested in the assumptions we make in the derivation.
 
 <h2> SpO2 derivation </h2>
 
