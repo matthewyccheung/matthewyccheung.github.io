@@ -25,7 +25,9 @@ comments: true
 
 Summary: Review presents an introduction to the technique of pulse oximetry including its basic principle of operation, technology, and limitations, with a focus on skin pigmentation.
 
-<h2> Pulse Oximetry Principles </h2>
+Importance: PulseOxs have been known for a while now to perform worse on people with darker skin. Understanding why this is the case is important for fairness.
+
+<h2> Spo2 derivation </h2>
 
 <h4> Modified Beer Lambert </h4>
 
