@@ -68,7 +68,7 @@ $$R = \frac{ln(I_{max}/I_{min})_{660}}{ln(I_{max}/I_{min})_{940}} = \frac{[-\Del
 
 <h4> Assume $\Delta G = 0$ over cardiac cycle </h4>
 
-$$R = \frac{[\epsilon \Delta C l]_{660}{[\epsilon \Delta C l]_{940}}$$
+$$R = \frac{[\epsilon \Delta C l]_{660}}{[\epsilon \Delta C l]_{940}}$$
 
 <h4> Assume $\Delta C$ is the same for 660 and 940 </h4>
 
