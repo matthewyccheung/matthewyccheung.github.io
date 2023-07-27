@@ -29,6 +29,8 @@ Summary: Review presents an introduction to the technique of pulse oximetry incl
 
 <h4> Modified Beer Lambert </h4>
 
+Light absorption through skin can be modeled using the modified beer-lambert law.
+
 $$I_t = I_0 exp(-G-\epsilon C l)$$
 
 $$G$$: light loss due to scattering
@@ -45,7 +47,11 @@ $$C$$: concentrations of tissue layers and chromophores
 
 <h4> Find change in concentration:</h4>
 
-$$(I_D - I_S)/I_S = eps \Delta C l$$
+$$(I_D - I_S)/I_S = \epsilon \Delta C l$$
+
+$$I_D$$: maximum absorption in PPG 
+
+$$I_S$$: minimum absorption in PPG
 
 $$\Delta C$$: maximal change in hemoglobin in cardiac cycle
 
@@ -57,7 +63,7 @@ $$ln(I_{max}/l_{min}) = -\Delta G - \epsilon \Delta C l$$
 
 $$R = ln(I_{max}/I_{min})_{660}/ln(I_{max}/I_{min})_{940} = [-\Delta G - \epsilon \Delta C l]_{660} / [-\Delta G - \epsilon \Delta C l]_{940}$$
 
-<h4> Assume $$\Delta G = 0$$ over cardiac cycle </h4>
+<h4> Assume $\Delta G = 0$ over cardiac cycle </h4>
 
 $$R = [\epsilon \Delta C l]_{660} / [\epsilon \Delta C l]_{940}$$
 
