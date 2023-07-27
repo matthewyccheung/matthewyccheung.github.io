@@ -67,11 +67,11 @@ $$R = ln(I_{max}/I_{min})_{660}/ln(I_{max}/I_{min})_{940} = [-\Delta G - \epsilo
 
 $$R = [\epsilon \Delta C l]_{660} / [\epsilon \Delta C l]_{940}$$
 
-<h4> Assume $$\Delta C$$ is the same for 660 and 940 </h4>
+<h4> Assume $\Delta C$ is the same for 660 and 940 </h4>
 
 $$R = [\epsilon l]_{660}/[\epsilon l]_{940}$$
 
-<h4> Use $$\epsilon = \epsilon_O SaO_2 + \epsilon_D(1-SaO2)$$ </h4>
+<h4> Use $\epsilon = \epsilon_O SaO_2 + \epsilon_D(1-SaO_2)$ </h4>
 
 $$\epsilon_O$$: extinction coefficients for oxygenated
 
