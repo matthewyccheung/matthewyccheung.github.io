@@ -71,7 +71,7 @@ $$\epsilon_O$$: extinction coefficients for oxygenated
 
 $$\epsilon_D$$: deoxygenated blood
 
-$$SpO_2 = (\epsilon_{D,660}-R(l_{940}/l_{660}) \eps_{D,940})/(R(l_{940}/l_{660})(\epsilon_{O,940} - \epsilon_{D,940}) + (\epsilon_{D,660} - \epsilon_{O,660}))$$
+$$SpO_2 = (\epsilon_{D,660}-R(l_{940}/l_{660}) \epsilon_{D,940})/(R(l_{940}/l_{660})(\epsilon_{O,940} - \epsilon_{D,940}) + (\epsilon_{D,660} - \epsilon_{O,660}))$$
 
 <h4> Cardiac cycle assumptions: </h4>
 1. Constant $$G$$
