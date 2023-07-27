@@ -27,7 +27,7 @@ Summary: Review presents an introduction to the technique of pulse oximetry incl
 
 Importance: PulseOxs have been known for a while now to perform worse on people with darker skin. Understanding why this is the case is important for fairness.
 
-<h2> Spo2 derivation </h2>
+<h2> SpO2 derivation </h2>
 
 <h4> Modified Beer Lambert </h4>
 
@@ -80,6 +80,8 @@ $$\epsilon_O$$: extinction coefficients for oxygenated
 $$\epsilon_D$$: deoxygenated blood
 
 $$SpO_2 = \frac{(\epsilon_{D,660}-R(l_{940}/l_{660}) \epsilon_{D,940})}{(R(l_{940}/l_{660})(\epsilon_{O,940} - \epsilon_{D,940}) + (\epsilon_{D,660} - \epsilon_{O,660}))}$$
+
+<h2> Major Assumptions and Compromises </h2>
 
 <h4> Cardiac cycle assumptions: </h4>
 1. Constant $$G$$
