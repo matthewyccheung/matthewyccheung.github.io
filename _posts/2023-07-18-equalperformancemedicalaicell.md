@@ -8,6 +8,7 @@ comments: true
 ---
 
 The path toward equal performance in medical machine learning
+
 [Paper link, DOI: 10.1016/j.patter.2023.100790](https://www.cell.com/patterns/pdf/S2666-3899(23)00145-9.pdf)
 
 Summary: The paper analyzes why medical AI algorithms can be biased (i.e. imbalanced datasets). The paper does an analysis through the bias-variance equation conditioned on group, and finds that we can only get so fair algorithmically and that we need to get better data. My interpretation of this article from an ECE perspective: we will always be limited by the data quality. We should make data quality better through better hardware/data collection processes.
