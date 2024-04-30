@@ -16,6 +16,10 @@ author_profile: true
 
 ----
 
+![metric guided overview fig](./images/metric_guidance_overview_fig.png)
+
+April 24 2024: Our paper [Metric-guided Image Reconstruction Bounds via Conformal Prediction](https://arxiv.org/abs/2404.15274) is on arxiv!
+
 July 14 2023: [wearablebp.github.io](https://wearablebp.github.io) is live! This website accompanies our timely review (publication soon). The goal of this website is to allow researchers to understand the state of Wearable BP.
 
 May 5 2023: Defended M.S. thesis on Wearable Blood Pressure Monitoring and Study Design
