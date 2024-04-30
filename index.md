@@ -22,7 +22,7 @@ April 24 2024: Our paper [Metric-guided Image Reconstruction Bounds via Conforma
 
 July 14 2023: [wearablebp.github.io](https://wearablebp.github.io) is live! This website accompanies our timely review (publication soon). The goal of this website is to allow researchers to understand the state of Wearable BP.
 
-May 5 2023: Defended M.S. thesis on Wearable Blood Pressure Monitoring and Study Design
+May 5 2023: Defended M.S. thesis on [Wearable Blood Pressure Monitoring and Study Design](https://repository.rice.edu/items/dc23828a-80aa-41b9-95c9-554ddf6bea96)
 
 Mar 25 2023: Appointed to the [National Library of Medicine (NLM) Training Program in Biomedical Informatics and Data Science](https://www.gulfcoastconsortia.org/home/training/bmi-nlm/#1556808353573-bb3f1459-2252)!
 
