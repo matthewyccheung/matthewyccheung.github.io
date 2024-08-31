@@ -23,7 +23,7 @@ plugins:
 author:
   name: "Matt Y. Cheung"
   avatar: "/images/me2.JPG"
-  bio: "Ph.D. Student @ Rice ECE working on fair and demoratic MedTech"
+  bio: "PhD student at Rice ECE working on advancing the fairness and safety of medical devices and medical AI."
   location: "Houston, TX"
   links:
     - label: "GitHub"
