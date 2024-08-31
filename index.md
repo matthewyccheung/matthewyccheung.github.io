@@ -16,6 +16,8 @@ author_profile: true
 
 ----
 
+July 18 2024: After several years of dedicated work, our paper [Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation](https://ieeexplore.ieee.org/document/10623798) is accepted and available on IEEE transactions on Biomedical Engineering!
+
 ![metric guided overview fig](./images/metric_guidance_overview_fig.png)
 
 April 24 2024: Our paper [Metric-guided Image Reconstruction Bounds via Conformal Prediction](https://arxiv.org/abs/2404.15274) is on arxiv!
