@@ -8,9 +8,9 @@ permalink: /Publications/
 
 ----
 
-<b> Cheung, M. Y. </b>, Zorek, S., Netherton, T. J., Court, L. E., Al-Kindi, S., Veeraraghavan, A., & Balakrishnan, G. (2025). When are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT. IEEE International Symposium on Biomedical Imaging (2025, accepted).
+<b> Cheung, M.Y. </b>, Netherton, T.J., Court, L.E., Veeraraghavan, A. and Balakrishnan, G., 2025. Metric-Guided Conformal Bounds for Probabilistic Image Reconstruction. (2025, accepted at UNSURE @ MICCAI)
 
-<b> Cheung, M.Y. </b>, Netherton, T.J., Court, L.E., Veeraraghavan, A. and Balakrishnan, G., 2024. Metric-guided Conformal Bounds for Probabilistic Image Reconstruction. arXiv preprint arXiv:2404.15274.
+<b> Cheung, M.Y. </b>, Zorek, S., Netherton, T.J., Court, L.E., Al-Kindi, S., Veeraraghavan, A. and Balakrishnan, G., 2025, April. When are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT. In 2025 IEEE 22nd International Symposium on Biomedical Imaging (ISBI) (pp. 1-4). IEEE.
 
 Topalli, G., Fan, Y., <b> Cheung, M. Y. </b>, Veeraraghavan, A., Hirzallah, M., & Chi, T. (2024). An Ultrasonic Transceiver for Non-Invasive Intracranial Pressure Sensing. IEEE Transactions on Biomedical Circuits and Systems.
 

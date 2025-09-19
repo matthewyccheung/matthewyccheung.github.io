@@ -18,17 +18,17 @@ author_profile: true
 
 ![metric guided overview fig](./images/metric_guidance_overview_fig.png)
 
-Mar 4 2025: Our paper [Metric-guided Conformal Bounds for Probabilistic Image Reconstruction](https://arxiv.org/abs/2404.15274) is on arxiv.
+July 21 2025: Our paper [Metric-guided Conformal Bounds for Probabilistic Image Reconstruction](https://arxiv.org/abs/2404.15274) was accepted at UNSURE @ MICCAI as an Oral Presentation.
 
 Jan 2 2025: Our paper [When are Diffusion Priors Helpful in Sparse Reconstruction? A Study With Sparse-View CT](./assets/halluphase_downstream_ct.pdf) has been accepted at IEEE ISBI 2025.
 
-Oct 16 2024: Collaborative follow-up work on developing an ultra-sound based non-invasive intracranial pressure monitoring device "An Ultrasonic Transceiver for Non-Invasive Intracranial Pressure Sensing" has been accepted at IEEE Transactions on Biomedical Circuits and Systems.
+Oct 16 2024: Collaborative follow-up work on developing an ultra-sound based non-invasive intracranial pressure monitoring device [An Ultrasonic Transceiver for Non-Invasive Intracranial Pressure Sensing](https://ieeexplore.ieee.org/document/10720530) has been accepted at IEEE Transactions on Biomedical Circuits and Systems.
 
 Oct 7 2024: Our paper [Regression Conformal Prediction under Bias](https://arxiv.org/abs/2410.05263) is available on arxiv.
 
 Jul 18 2024: After several years of dedicated work, our paper [Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation](https://ieeexplore.ieee.org/document/10623798) is accepted and available on IEEE transactions on Biomedical Engineering.
 
-Mar 13 2024: Collaborative work on developing an ultra-sound based non-invasive intracranial pressure monitoring device "17.11 A 9mW Ultrasonic Through Transmission Transceiver for Non-Invasive Intracranial Pressure Sensing" was accepted at IEEE International Solid-State Circuits Conference.
+Mar 13 2024: Collaborative work on developing an ultra-sound based non-invasive intracranial pressure monitoring device [17.11 A 9mW Ultrasonic Through Transmission Transceiver for Non-Invasive Intracranial Pressure Sensing](https://ieeexplore.ieee.org/document/10454476) was accepted at IEEE International Solid-State Circuits Conference.
 
 Jul 14 2023: [wearablebp.github.io](https://wearablebp.github.io) is live! This website accompanies our timely review at IEEE transactions on Biomedical Engineering. The goal of this website is to allow researchers to understand the state of Wearable BP.
 
