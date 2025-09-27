@@ -15,6 +15,9 @@ author_profile: true
 <h4>Announcements </h4>
 
 ----
+![compass overview fig](./images/compass_overview_fig.png)
+
+Sep 26 2025: Check out our new pre-print [COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics](./assets/latent_cp_segmentation_arxiv.pdf)
 
 ![metric guided overview fig](./images/metric_guidance_overview_fig.png)
 
