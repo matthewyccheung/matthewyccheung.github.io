@@ -17,13 +17,13 @@ author_profile: true
 ----
 ![compass overview fig](./images/compass_overview_fig.png)
 
-Sep 26 2025: Check out our new pre-print [COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics](./assets/latent_cp_segmentation_arxiv.pdf)
+Sep 26 2025: Check out our new pre-print [COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics](https://arxiv.org/abs/2509.22240)
 
 ![metric guided overview fig](./images/metric_guidance_overview_fig.png)
 
 July 21 2025: Our paper [Metric-guided Conformal Bounds for Probabilistic Image Reconstruction](https://arxiv.org/abs/2404.15274) was accepted at UNSURE @ MICCAI as an Oral Presentation.
 
-Jan 2 2025: Our paper [When are Diffusion Priors Helpful in Sparse Reconstruction? A Study With Sparse-View CT](./assets/halluphase_downstream_ct.pdf) has been accepted at IEEE ISBI 2025.
+Jan 2 2025: Our paper [When are Diffusion Priors Helpful in Sparse Reconstruction? A Study With Sparse-View CT](https://ieeexplore.ieee.org/abstract/document/10981058) has been accepted at IEEE ISBI 2025.
 
 Oct 16 2024: Collaborative follow-up work on developing an ultra-sound based non-invasive intracranial pressure monitoring device [An Ultrasonic Transceiver for Non-Invasive Intracranial Pressure Sensing](https://ieeexplore.ieee.org/document/10720530) has been accepted at IEEE Transactions on Biomedical Circuits and Systems.
 
