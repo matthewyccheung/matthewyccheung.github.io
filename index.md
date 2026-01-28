@@ -27,7 +27,7 @@ Jan 13 2026: Our paper [Bias-Aware Conformal Prediction for Metric-Based Imaging
 
 July 21 2025: Our paper [Metric-guided Conformal Bounds for Probabilistic Image Reconstruction](https://arxiv.org/abs/2404.15274) was accepted at UNSURE @ MICCAI as an Oral Presentation.
 
-![diffusion priors fig](./images/metric_guidance_overview_fig.png)
+![halluphase fig](./images/halluphase_fig.png)
 
 Jan 2 2025: Our paper [When are Diffusion Priors Helpful in Sparse Reconstruction? A Study With Sparse-View CT](https://ieeexplore.ieee.org/abstract/document/10981058) has been accepted at IEEE ISBI 2025.
 
