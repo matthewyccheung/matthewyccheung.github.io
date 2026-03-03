@@ -15,6 +15,11 @@ author_profile: true
 <h4>Announcements </h4>
 
 ----
+
+![convolt overview fig](./images/convolt.png)
+
+Mar 2 2026: New paper on arXiv [Efficient Conformal Volumetry for Template-Based Segmentation](https://arxiv.org/abs/2603.00798)!
+
 ![compass overview fig](./images/compass_overview_fig.png)
 
 Jan 26 2026: Our paper [COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics](https://openreview.net/forum?id=uBy4TCgGiT&noteId=uBy4TCgGiT) was accepted at ICLR 2026.
