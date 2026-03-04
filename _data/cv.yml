@@ -1,0 +1,97 @@
+cv:
+  name: Matt Y. Cheung
+  label: PhD Student, Electrical and Computer Engineering
+  location: Houston, TX
+
+  sections:
+    Education:
+      - institution: Rice University
+        location: Houston, TX
+        area: Electrical and Computer Engineering
+        studyType: Ph.D.
+        start_date: 2023-08
+        end_date: 2026-12
+        highlights:
+          - Expected graduation: Dec. 2026
+
+      - institution: Rice University
+        location: Houston, TX
+        area: Electrical and Computer Engineering
+        studyType: M.S.
+        start_date: 2020-08
+        end_date: 2023-12
+
+      - institution: University of California, Davis
+        location: Davis, CA
+        area: Electrical Engineering
+        studyType: B.S. (cum laude)
+        start_date: 2015-09
+        end_date: 2020-06
+
+    Experience:
+      - company: Rice University
+        position: Graduate Research Assistant
+        location: Houston, TX
+        start_date: 2020-12
+        end_date:
+        summary: Advised by Ashok Veeraraghavan and Guha Balakrishnan
+        highlights:
+          - Trainee in the NIH NLM Training Program in Biomedical Informatics and Data Science.
+          - Topics of interest include uncertainty quantification for image reconstruction, segmentation, and classification, medical image reconstruction, and distribution shift.
+          - First-author work at ICLR, IEEE ISBI, UNSURE@MICCAI, and IEEE TBME.
+          - Reviewer for ICLR, MICCAI, IEEE BHI, IEEE PAMI, IEEE ICHI, Biomedical Optics Express, and MobiCom.
+
+      - company: Yang Research Laboratory
+        position: Undergraduate Research Assistant
+        location: Davis, CA
+        start_date: 2018-09
+        end_date: 2020-07
+
+      - company: Kovnir Group
+        position: Undergraduate Research Assistant
+        location: Davis, CA
+        start_date: 2016-03
+        end_date: 2017-05
+
+      - company: Texas Instruments
+        position: Quality Reliability Engineering Intern
+        location: Dallas, TX
+        start_date: 2019-06
+        end_date: 2019-09
+
+      - company: Enovix Corporation
+        position: Software Development Intern (R&D, Engineering)
+        location: Fremont, CA
+        start_date: 2017-06
+        end_date: 2019-01
+
+    Skills:
+      - name: Deep Learning
+        keywords:
+          - Time-series
+          - Generative Models
+          - Image Reconstruction
+          - Segmentation
+          - Diffusion
+          - INR
+
+      - name: Programming
+        keywords:
+          - Python
+          - PyTorch
+          - TensorFlow
+          - NumPy
+          - SciPy
+          - Pandas
+          - scikit-learn
+          - Matplotlib
+          - HuggingFace
+          - transformers
+          - diffusers
+          - MATLAB
+
+      - name: Math and Statistics
+        keywords:
+          - Conformal Prediction
+          - Meta-Analysis
+          - Linear Regression
