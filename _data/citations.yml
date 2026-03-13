@@ -1,3 +1,115 @@
+featured_publications:
+  - title: Efficient Conformal Volumetry for Template-Based Segmentation
+    venue: Under Review
+    year: 2026
+    image: assets/img/convolt.png
+    image_alt: Efficient Conformal Volumetry for Template-Based Segmentation
+    description: Efficient conformal uncertainty quantification for volumetry in template-based segmentation pipelines, producing prediction sets with guaranteed coverage while staying practical for large-scale medical imaging workflows.
+    links:
+      - label: arXiv
+        url: https://arxiv.org/abs/2603.00798
+
+  - title: "COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics"
+    venue: ICLR
+    year: 2026
+    image: assets/img/compass.png
+    image_alt: COMPASS overview
+    description: A feature-based conformal framework for building reliable prediction intervals and sets for segmentation metrics, designed to remain robust under distribution shift and aligned with clinical evaluation metrics.
+    links:
+      - label: OpenReview
+        url: https://openreview.net/forum?id=uBy4TCgGiT&noteId=uBy4TCgGiT
+      - label: arXiv
+        url: https://arxiv.org/abs/2509.22240
+
+  - title: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
+    venue: IEEE ISBI
+    year: 2026
+    image: assets/img/bias_fig.png
+    image_alt: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
+    description: Conformal calibration for metric-based imaging pipelines with explicit attention to bias, aiming to preserve statistical guarantees while accounting for heterogeneous errors across cohorts and measurement conditions.
+    links:
+      - label: arXiv
+        url: https://arxiv.org/abs/2410.05263
+
+  - title: Metric-Guided Conformal Bounds for Probabilistic Image Reconstruction
+    venue: UNSURE @ MICCAI (Long Oral)
+    year: 2025
+    image: assets/img/metric_guidance_overview_fig.png
+    image_alt: Metric-guided conformal bounds overview
+    description: Instead of calibrating pixel-level uncertainty, this work calibrates conformal bounds on clinically meaningful derived metrics from probabilistic reconstructions, enabling interpretable uncertainty and flagging plausible-looking but statistically unlikely reconstructions.
+    links:
+      - label: arXiv
+        url: https://arxiv.org/abs/2404.15274
+
+  - title: "When Are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT"
+    venue: IEEE ISBI
+    year: 2025
+    image: assets/img/halluphase_fig.png
+    image_alt: Diffusion priors in sparse-view CT
+    description: A systematic study of diffusion priors for sparse-view CT showing that diffusion can recover detail with very few projections, but can also plateau and produce convincing failure modes that require careful evaluation in high-stakes settings.
+    links:
+      - label: IEEE
+        url: https://ieeexplore.ieee.org/document/10981058
+      - label: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/39975437/
+      - label: arXiv
+        url: https://arxiv.org/abs/2502.02771
+
+other_publications:
+  - title: "Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation"
+    venue: IEEE TBME
+    year: 2024
+    image: assets/img/publications/wearablebp_fig.png
+    image_alt: Wearable blood pressure monitoring review
+    description: A systematic review of cuffless wearable blood pressure devices, emphasizing how protocol and evaluation design choices drive heterogeneous reported performance and proposing directions for more comparable and safer validation.
+    links:
+      - label: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/39106139/
+      - label: Project
+        url: https://wearablebp.github.io
+
+  - title: An Ultrasonic Transceiver for Non-Invasive Intracranial Pressure Sensing
+    venue: IEEE TBCAS
+    year: 2024
+    image: assets/img/ppll_fig.png
+    image_alt: Ultrasonic transceiver for non-invasive intracranial pressure sensing
+    description: A low-power ultrasonic through-transmission transceiver for portable, non-invasive intracranial pressure monitoring using time-of-flight measurements, validated on phantom setups with strong correlation to invasive sensing.
+    links:
+      - label: PubMed
+        url: https://pubmed.ncbi.nlm.nih.gov/39412968/
+      - label: IEEE
+        url: https://ieeexplore.ieee.org/document/10720530
+
+  - title: "17.11 A 9mW ultrasonic through transmission transceiver for non-invasive intracranial pressure sensing"
+    venue: ISSCC
+    year: 2024
+    image_alt: ISSCC 2024 ultrasonic through-transmission transceiver for ICP sensing
+    description: An energy-efficient ultrasonic through-transmission transceiver architecture for non-invasive intracranial pressure sensing, focused on enabling practical, portable monitoring hardware.
+    links:
+      - label: IEEE
+        url: https://ieeexplore.ieee.org/document/10454476
+
+  - title: "Portable non-invasive intracranial pressure sensor"
+    venue: Patent
+    year: 2025
+    description: Patent work on a portable non-invasive intracranial pressure sensing system extending the ultrasonic ICP monitoring line of research.
+    links: []
+
+  - title: "Wearing a mask: Compressed representations of variable-length sequences using recurrent neural tangent kernels"
+    venue: IEEE ICASSP
+    year: 2021
+    image: assets/img/rntk_pca.png
+    image_alt: Wearing a MASK recurrent neural tangent kernel method
+    description: A representation method for variable-length sequences based on recurrent neural tangent kernels, producing fixed-length compressed features for downstream learning tasks.
+    links:
+      - label: arXiv
+        url: https://arxiv.org/abs/2010.13975
+
+github_code:
+  - title: GitHub Profile
+    url: https://github.com/matthewyccheung
+    description: Research code, experiments, and supporting implementations for ongoing projects.
+
 metadata:
   last_updated: '2026-03-09'
 papers:
