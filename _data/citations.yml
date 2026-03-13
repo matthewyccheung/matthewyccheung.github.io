@@ -108,6 +108,8 @@ other_publications:
     image_alt: Wearing a MASK recurrent neural tangent kernel method
     description: A representation method for variable-length sequences based on recurrent neural tangent kernels, producing fixed-length compressed features for downstream learning tasks.
     links:
+      - label: IEEE
+        url: https://ieeexplore.ieee.org/document/9413450
       - label: arXiv
         url: https://arxiv.org/abs/2010.13975
 
