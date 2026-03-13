@@ -8,6 +8,8 @@ featured_publications:
     links:
       - label: arXiv
         url: https://arxiv.org/abs/2603.00798
+      - label: GitHub
+        url: https://github.com/matthewyccheung/convolt
 
   - title: "COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics"
     venue: ICLR
@@ -20,6 +22,8 @@ featured_publications:
         url: https://openreview.net/forum?id=uBy4TCgGiT&noteId=uBy4TCgGiT
       - label: arXiv
         url: https://arxiv.org/abs/2509.22240
+      - label: GitHub
+        url: https://github.com/matthewyccheung/compass
 
   - title: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
     venue: IEEE ISBI
@@ -40,6 +44,8 @@ featured_publications:
     links:
       - label: arXiv
         url: https://arxiv.org/abs/2404.15274
+      - label: GitHub
+        url: https://github.com/matthewyccheung/conformal-metric
 
   - title: "When Are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT"
     venue: IEEE ISBI
@@ -65,7 +71,7 @@ other_publications:
     links:
       - label: PubMed
         url: https://pubmed.ncbi.nlm.nih.gov/39106139/
-      - label: Project
+      - label: Project Page
         url: https://wearablebp.github.io
 
   - title: An Ultrasonic Transceiver for Non-Invasive Intracranial Pressure Sensing
