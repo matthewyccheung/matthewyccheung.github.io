@@ -65,12 +65,12 @@ other_publications:
   - title: "Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation"
     venue: IEEE TBME
     year: 2024
-    image: assets/img/publications/wearablebp_fig.png
+    image: assets/img/wearablebp_fig.png
     image_alt: Wearable blood pressure monitoring review
     description: A systematic review of cuffless wearable blood pressure devices, emphasizing how protocol and evaluation design choices drive heterogeneous reported performance and proposing directions for more comparable and safer validation.
     links:
-      - label: PubMed
-        url: https://pubmed.ncbi.nlm.nih.gov/39106139/
+      - label: IEEE
+        url: https://ieeexplore.ieee.org/document/10623798
       - label: Project Page
         url: https://wearablebp.github.io
 
