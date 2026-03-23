@@ -1,5 +1,189 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-12T20:48:26-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">blank</title><subtitle>PhD student at Rice ECE working on gently pushing the limits of medical devices and AI.
-</subtitle><entry><title type="html">Transformers 0: A Simple Mental Model</title><link href="http://localhost:4000/blog/2026/transfomer/" rel="alternate" type="text/html" title="Transformers 0: A Simple Mental Model" /><published>2026-03-12T00:00:00-05:00</published><updated>2026-03-12T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/transfomer</id><content type="html" xml:base="http://localhost:4000/blog/2026/transfomer/"><![CDATA[<p>A transformer is a system that <strong>routes information across tokens</strong> and then <strong>rewrites features within each token</strong>, repeating this process many times. More formally, let the input be a sequence of tokens</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-23T17:58:58-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">blank</title><subtitle>PhD student at Rice ECE working on gently pushing the limits of medical devices and AI.
+</subtitle><entry><title type="html">Split Conformal Prediction and Non-Exchangeable Data</title><link href="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/" rel="alternate" type="text/html" title="Split Conformal Prediction and Non-Exchangeable Data" /><published>2026-03-23T00:00:00-05:00</published><updated>2026-03-23T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog</id><content type="html" xml:base="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/"><![CDATA[<p>*Based on Oliveira, Orenstein, Ramos, and Romano, <a href="https://jmlr.org/papers/v25/23-1553.html"><strong>“Split Conformal Prediction and Non-Exchangeable Data”</strong> (JMLR, 2024).*</a></p>
+
+<p>Conformal prediction is famous for one simple promise: if your data are exchangeable, then your prediction sets achieve the target coverage level without strong modeling assumptions. But many real datasets are not exchangeable at all. Time series are temporally dependent. Spatial data are correlated across nearby locations. Spatiotemporal data combine both. The main message of Oliveira et al. is that <strong>standard split conformal prediction often still works surprisingly well under dependence</strong>, and there is a clean way to quantify the price paid for non-exchangeability.</p>
+
+<p>The paper replaces exact exchangeability arguments with two kinds of corrections:</p>
+
+<ul>
+  <li>a <strong>concentration correction</strong> that measures how well the calibration empirical CDF tracks its population counterpart;</li>
+  <li>a <strong>decoupling correction</strong> that measures how far a test point is from behaving like an independent fresh draw.</li>
+</ul>
+
+<p>These are summarized by small error terms such as $\epsilon_{\mathrm{cal}}$, $\epsilon_{\mathrm{train}}$, and $\epsilon_{\mathrm{test}}$, together with failure probabilities like $\delta_{\mathrm{cal}}$ and $\delta_{\mathrm{test}}$.</p>
+
+<h2 id="standard-split-cp-setup">Standard Split CP Setup</h2>
+
+<p>Suppose we observe data</p>
+
+\[(X_i, Y_i)_{i=1}^n,\]
+
+<p>split into a training set $I_{\mathrm{train}}$, a calibration set $I_{\mathrm{cal}}$, and a test set $I_{\mathrm{test}}$. We fit a predictor on the training set and define a nonconformity score</p>
+
+\[\widehat s_{\mathrm{train}}(x,y) := s\big((X_i,Y_i)_{i\in I_{\mathrm{train}}}, (x,y)\big).\]
+
+<p>For example, in regression one can use an absolute residual score,</p>
+
+\[\widehat s_{\mathrm{train}}(x,y) = |y - \widehat\mu(x)|.\]
+
+<p>Then the empirical calibration quantile is</p>
+
+\[\widehat q_{\phi,\mathrm{cal}} := \inf\left\{t\in\mathbb R:
+\frac{1}{n_{\mathrm{cal}}}\sum_{i\in I_{\mathrm{cal}}}
+\mathbf 1\{\widehat s_{\mathrm{train}}(X_i,Y_i)\le t\} \ge \phi\right\}.\]
+
+<p>The split conformal prediction set at level $\phi$ is</p>
+
+\[C_\phi(x) := \{y\in\mathcal Y: \widehat s_{\mathrm{train}}(x,y) \le \widehat q_{\phi,\mathrm{cal}}\}.\]
+
+<p>Under exchangeability, choosing $\phi = 1-\alpha$ yields coverage near $1-\alpha$. The paper asks what survives when exchangeability fails.</p>
+
+<h2 id="non-exchangeability-penalty">Non-exchangeability Penalty</h2>
+
+<p>The paper defines, for any training-dependent threshold $q_{\mathrm{train}}$,</p>
+
+\[P_{q,\mathrm{train}} := \mathbb P\big[\widehat s_{\mathrm{train}}(X_*,Y_*) \le q_{\mathrm{train}} \,\big|\, (X_i,Y_i)_{i\in I_{\mathrm{train}}}\big],\]
+
+<p>where $(X_*,Y_*)$ is an idealized fresh draw independent of the training set.</p>
+
+<p>The key assumptions are:</p>
+
+<ol>
+  <li>The empirical calibration CDF at the training-dependent threshold is close to the population probability, meaning the calibration sample should still estimate the score distribution reasonably well.</li>
+</ol>
+
+\[\mathbb P\left[
+\left|
+\frac{1}{n_{\mathrm{cal}}}\sum_{i \in I_{\mathrm{cal}}}
+\mathbf 1\{\widehat s_{\mathrm{train}}(X_i,Y_i) \le q_{\mathrm{train}}\}
+- P_{q,\mathrm{train}}
+\right| \le \epsilon_{\mathrm{cal}}
+\right] \ge 1-\delta_{\mathrm{cal}}.\]
+
+<ol>
+  <li>Test decoupling or test concentration: For marginal guarantees, the test point should behave approximately like an independent fresh draw:</li>
+</ol>
+
+\[\left|
+\mathbb P[\widehat s_{\mathrm{train}}(X_i,Y_i)\le q_{\mathrm{train}}]
+-
+\mathbb P[\widehat s_{\mathrm{train}}(X_*,Y_*)\le q_{\mathrm{train}}]
+\right|
+\le \epsilon_{\mathrm{train}}.\]
+
+<p>This is the paper’s replacement for exact exchangeability on the test side: even though data are dependent, the distribution of the test residual is close to that of a fresh point.</p>
+
+<ol>
+  <li>For empirical guarantees over the whole test block, one instead assumes concentration of the <strong>test empirical CDF</strong> around the same population target, with error $\epsilon_{\mathrm{test}}$ and failure probability $\delta_{\mathrm{test}}$.
+This gives a very useful mental model:
+    <ul>
+      <li>$\epsilon$ terms measure <strong>how wrong the exchangeability heuristic is</strong>;</li>
+      <li>$\delta$ terms measure <strong>how often the concentration event fails</strong>.</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="marginal-versus-empirical-guarantees">Marginal versus empirical guarantees</h2>
+
+<p>This distinction is one of the most important points in the paper.</p>
+
+<p><strong>Marginal coverage</strong> concerns a single test point:
+\(\mathbb P\big[Y_i \in C_{1-\alpha}(X_i)\big].\) This is an average-probability statement over the randomness in the data-generating process. It says that if you sample one test example from the test regime, the prediction set covers with high probability.</p>
+
+<p><strong>Empirical coverage</strong> concerns the <strong>fraction of covered points in the realized test set</strong>:
+\(\frac{1}{n_{\mathrm{test}}}\sum_{i\in I_{\mathrm{test}}}
+\mathbf 1\{Y_i \in C_{1-\alpha}(X_i)\}.\)
+This is stronger in a different sense: it controls the actual realized coverage rate over a block of test points, not just the average for one point. In dependent data, these are not the same because many positively correlated successes or failures can happen together.</p>
+
+<p>The paper unifies them by showing how both degrade through explicit $\epsilon$ and $\delta$ corrections**.</p>
+
+<h2 id="theorem-1-marginal-coverage-under-non-exchangeability">Theorem 1: marginal coverage under non-exchangeability</h2>
+
+<p>Theorem 1 states that if the calibration concentration condition and the test decoupling condition hold, then for every test index $i$,</p>
+
+\[\mathbb P\big[Y_i \in C_{1-\alpha}(X_i)\big]
+\ge 1-\alpha-\epsilon_{\mathrm{cal}}-\delta_{\mathrm{cal}}-\epsilon_{\mathrm{train}}.\]
+
+<p>If the score distribution is conditionally continuous, then the deviation from the nominal level is bounded on both sides:</p>
+
+\[\left|
+\mathbb P\big[Y_i \in C_{1-\alpha}(X_i)\big] - (1-\alpha)
+\right|
+\le
+\epsilon_{\mathrm{cal}}+\delta_{\mathrm{cal}}+\epsilon_{\mathrm{train}}.\]
+
+<p>Interpretation: the classical split conformal proof is no longer exact, but it is approximately correct up to three penalties:</p>
+
+<ol>
+  <li>calibration estimation error $\epsilon_{\mathrm{cal}}$;</li>
+  <li>calibration failure probability $\delta_{\mathrm{cal}}$;</li>
+  <li>mismatch between the test point and an independent fresh point, $\epsilon_{\mathrm{train}}$.</li>
+</ol>
+
+<h2 id="theorem-2-empirical-coverage-over-the-test-block">Theorem 2: empirical coverage over the test block</h2>
+
+<p>Theorem 2 replaces the single-point decoupling assumption with concentration of the test empirical CDF. It shows that, with probability at least $1-\delta_{\mathrm{cal}}-\delta_{\mathrm{test}}$,</p>
+
+\[\frac{1}{n_{\mathrm{test}}}\sum_{i\in I_{\mathrm{test}}}
+\mathbf 1\{Y_i \in C_{1-\alpha}(X_i)\}
+\ge 1-\alpha-\eta,
+\qquad
+\eta = \epsilon_{\mathrm{cal}} + \epsilon_{\mathrm{test}}.\]
+
+<p>Under conditional continuity of the score distribution, the realized empirical coverage stays within $\eta$ of $1-\alpha$ with probability at least $1-2\delta_{\mathrm{cal}}-2\delta_{\mathrm{test}}$.</p>
+
+<p>The important idea is that <strong>empirical coverage does not depend on a pointwise test-decoupling term</strong>. Instead, it depends on whether the whole test block has a stable empirical score distribution.</p>
+
+<h2 id="theorem-3-conditional-coverage-on-sets">Theorem 3: conditional coverage on sets</h2>
+
+<p>The paper also extends split conformal guarantees to set-conditional statements. For a family of subsets $\mathcal A \subseteq \mathcal X$, it defines localized calibration quantiles and proves that for each $A\in\mathcal A$,</p>
+
+\[\mathbb P\big[Y_i \in C_{1-\alpha}(X_i;A) \mid X_i\in A\big]
+\ge 1-\alpha-\epsilon_{\mathrm{cal}}-\delta_{\mathrm{cal}}-\epsilon_{\mathrm{train}}.\]
+
+<p>Again, with continuity, the deviation from $1-\alpha$ is bounded in absolute value by the same correction terms.</p>
+
+<p>This is not full conditional coverage in the impossible sense of conditioning on $X=x$, but rather a practical group-conditional guarantee over a structured collection of sets.</p>
+
+<h2 id="epsilon-and-delta-under-beta-mixing">$\epsilon$ and $\delta$ under $\beta$-mixing</h2>
+
+<p>A major strength of the paper is that it does not stop at abstract assumptions. It verifies them for <strong>stationary $\beta$-mixing processes</strong>, a broad class including many Markov, hidden Markov, and ARMA-type systems. The paper derives $\epsilon$ and $\delta$ equations for different applications.</p>
+
+<p>Theorems 4 and 5 instantiate the general framework for stationary $\beta$-mixing data. In this setting:</p>
+
+<ul>
+  <li>the marginal coverage bound becomes
+\(\mathbb P[Y_i\in C_{1-\alpha}(X_i)] \ge 1-\alpha-\eta,\)
+with $\eta = \epsilon_{\mathrm{cal}}+\epsilon_{\mathrm{train}}+\delta_{\mathrm{cal}}$;</li>
+  <li>the empirical coverage bound becomes
+\(\frac{1}{n_{\mathrm{test}}}\sum_{i\in I_{\mathrm{test}}}\mathbf 1\{Y_i\in C_{1-\alpha}(X_i)\}
+\gtrsim 1-\alpha-(\epsilon_{\mathrm{cal}}+\epsilon_{\mathrm{test}})\)
+with high probability.</li>
+</ul>
+
+<p>When the mixing coefficients decay fast enough, these error terms can have the <strong>same asymptotic order as the iid bounds</strong>. That is the paper’s strongest theoretical message: some dependent processes are not much worse than iid for split conformal purposes.</p>
+
+<h2 id="takeaways">Takeaways</h2>
+
+<p>Exchangeability is not the only route to conformal validity. What split conformal really needs is that calibration scores and test scores behave enough like samples from the same score distribution, and that this behavior can be quantified by concentration plus decoupling.</p>
+
+<p>That viewpoint unifies several regimes:</p>
+<ul>
+  <li>iid data: all correction terms are the familiar concentration errors</li>
+  <li>weakly dependent data: add small dependence penalties</li>
+  <li>strongly dependent data: those penalties can become large, and coverage may deteriorate</li>
+</ul>
+
+<p>So the paper does not claim that conformal prediction is magically distribution-free under arbitrary dependence. Rather, it shows that <strong>non-exchangeability can be turned into explicit, auditable error terms</strong>.</p>
+
+<p>For people already using split CP, the practical lesson is reassuring:</p>
+<ul>
+  <li>you often do <strong>not</strong> need a radically new conformal algorithm just because your data are dependent</li>
+  <li>standard split CP can remain competitive when dependence is moderate</li>
+  <li>the main question is whether your calibration and test blocks are “effectively large enough” after accounting for dependence</li>
+</ul>
+
+<p>In other words, dependence reduces the <strong>effective sample size</strong>, and the $\epsilon$ corrections are a mathematical way to account for that loss.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[*Based on Oliveira, Orenstein, Ramos, and Romano, “Split Conformal Prediction and Non-Exchangeable Data” (JMLR, 2024).*]]></summary></entry><entry><title type="html">Transformers 0: A Simple Mental Model</title><link href="http://localhost:4000/blog/2026/transfomer/" rel="alternate" type="text/html" title="Transformers 0: A Simple Mental Model" /><published>2026-03-12T00:00:00-05:00</published><updated>2026-03-12T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/transfomer</id><content type="html" xml:base="http://localhost:4000/blog/2026/transfomer/"><![CDATA[<p>A transformer is a system that <strong>routes information across tokens</strong> and then <strong>rewrites features within each token</strong>, repeating this process many times. More formally, let the input be a sequence of tokens</p>
 
 <p>\[
 X = \begin{bmatrix} x_1^\top \\ x_2^\top \\ \vdots \\ x_n^\top \end{bmatrix} \in \mathbb{R}^{n \times d}, \qquad x_i \in \mathbb{R}^d.
