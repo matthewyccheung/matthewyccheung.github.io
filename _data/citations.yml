@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-04-10'
+  last_updated: '2026-04-24'
 papers:
   6d3hfUcAAAAJ:4DMP91E08xMC:
     citations: 0
@@ -20,7 +20,7 @@ papers:
   6d3hfUcAAAAJ:M3ejUd6NZC8C:
     citations: 0
     title: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
-    year: '2025'
+    year: Unknown Year
   6d3hfUcAAAAJ:Se3iqnhoufwC:
     citations: 0
     title: When are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT
@@ -30,7 +30,7 @@ papers:
     title: 'COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics'
     year: '2025'
   6d3hfUcAAAAJ:WF5omc3nYNoC:
-    citations: 12
+    citations: 13
     title: 'Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation'
     year: '2024'
   6d3hfUcAAAAJ:Zph67rFs4hoC:
