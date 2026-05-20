@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-04-27'
+  last_updated: '2026-05-20'
 papers:
   6d3hfUcAAAAJ:4DMP91E08xMC:
     citations: 0
@@ -20,7 +20,7 @@ papers:
   6d3hfUcAAAAJ:M3ejUd6NZC8C:
     citations: 0
     title: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
-    year: Unknown Year
+    year: '2026'
   6d3hfUcAAAAJ:Se3iqnhoufwC:
     citations: 0
     title: When are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT
