@@ -1,5 +1,5 @@
 metadata:
-  last_updated: '2026-05-20'
+  last_updated: '2026-05-25'
 papers:
   6d3hfUcAAAAJ:4DMP91E08xMC:
     citations: 0
@@ -10,7 +10,7 @@ papers:
     title: 17.11 A 9mW ultrasonic through transmission transceiver for non-invasive intracranial pressure sensing
     year: '2024'
   6d3hfUcAAAAJ:KlAtU1dfN6UC:
-    citations: 5
+    citations: 6
     title: Metric-Guided Conformal Bounds for Probabilistic Image Reconstruction
     year: '2025'
   6d3hfUcAAAAJ:LkGwnXOMwfcC:
@@ -37,6 +37,10 @@ papers:
     citations: 0
     title: Portable non-invasive intracranial pressure sensor
     year: '2025'
+  6d3hfUcAAAAJ:mVmsd5A6BfQC:
+    citations: 5
+    title: Laurence E Court, Ashok Veeraraghavan, and Guha Balakrishnan
+    year: '2024'
   6d3hfUcAAAAJ:u5HHmVD_uO8C:
     citations: 7
     title: 'Wearing a mask: Compressed representations of variable-length sequences using recurrent neural tangent kernels'
