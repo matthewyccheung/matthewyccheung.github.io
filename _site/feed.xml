@@ -1,5 +1,68 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-23T18:00:04-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">blank</title><subtitle>PhD student at Rice ECE working on gently pushing the limits of medical devices and AI.
-</subtitle><entry><title type="html">Split Conformal Prediction and Non-Exchangeable Data</title><link href="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/" rel="alternate" type="text/html" title="Split Conformal Prediction and Non-Exchangeable Data" /><published>2026-03-23T00:00:00-05:00</published><updated>2026-03-23T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog</id><content type="html" xml:base="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/"><![CDATA[<p>*Based on Oliveira, Orenstein, Ramos, and Romano, <a href="https://jmlr.org/papers/v25/23-1553.html"><strong>“Split Conformal Prediction and Non-Exchangeable Data”</strong> (JMLR, 2024).*</a></p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-28T19:39:02-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">blank</title><subtitle>PhD student at Rice ECE working on gently pushing the limits of medical devices and AI.
+</subtitle><entry><title type="html">Survey of Conformal Predictions for LLMs</title><link href="http://localhost:4000/blog/2026/cpllms/" rel="alternate" type="text/html" title="Survey of Conformal Predictions for LLMs" /><published>2026-03-28T00:00:00-05:00</published><updated>2026-03-28T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/cpllms</id><content type="html" xml:base="http://localhost:4000/blog/2026/cpllms/"><![CDATA[<p>The field has split into four main directions.</p>
+
+<ol>
+  <li>Discrete-answer settings (multiple-choice QA): CP looks closest to classical classification</li>
+  <li>Open-ended generation/factuality filtering: output is free-form text and the guarantee is usually on whether the final response, or its claims, are correct</li>
+  <li>Decoding-time/token- or sequence-level CP, where CP is integrated into sampling or beam search itself</li>
+  <li>Deployment-oriented extensions: domain shift, abstention, OOD detection, RAG, and evaluation of LLM judges.</li>
+</ol>
+
+<h1 id="mcqa">MCQA</h1>
+
+<ol>
+  <li><a href="https://arxiv.org/pdf/2305.18404">Conformal Prediction with Large Language Models for Multi-Choice Question Answering (Kumar et al., 2023)</a>, ICML 2023 Neural Conversational AI TEACH workshop:
+    <ul>
+      <li>Motivation: UQ is needed for LLM MCQA</li>
+      <li>Contribution: First work to apply CP to MCQA</li>
+      <li>Method: Treats the answer choices as a finite label set and constructing prediction sets of options with coverage guarantees like in classical classification problems. Uses model scores over answer choices, calibrate on held-out QA instances, and return a set of plausible choices rather than one answer.</li>
+      <li>Experiments: Calibrated on same topic and on OOD datasets.</li>
+      <li>Findings: Softmax outputs are reasonably calibrated on average, but models suffer from underconfidence and overconfidence, especially at the tail ends of probability distribution.</li>
+    </ul>
+  </li>
+  <li><a href="https://aclanthology.org/2024.findings-emnlp.54.pdf">API Is Enough: Conformal Prediction for LLMs Without Logit-Access (Su et al., 2024)</a>, EMNLP 2024:
+    <ul>
+      <li>Motivation: Many APIs only provide responese and not logits, and logits are known to be miscalibrated anyways.</li>
+      <li>Contribution: First CP work dedicated to LLMs without logit-access that provides
+a coverage guarantee for the prediction set.</li>
+      <li>Method: Propose to sample responses for a certain number of times (e.g., 30) for each input and then utilize the frequency of each response as a coarse-grained uncertainty notion to reduce sampling requirements. Formulate nonconformity measures using both coarse-grained (i.e., sample frequency) and fine-grained uncertainty notions (e.g., semantic similarity). Propose two additional fine-grained uncertainty notions: normalized entropy (NE) that measures prompt-wise self-consistency to alleviate concentration issues across different prompts, and semantic similarity (SS) that measures response-wise similarity to the most frequent response within the same prompt, to mitigate internal concentration issues specific to the prompt. NE measures uncertainty or diversity in the model’s predictions when generating responses to a given prompt (entropy of frequency). SS semantically assesses the similarity between each non-top1 response and the top-1 response within a prompt. The non-conformity score is a weighted sum of -frequency and NE and SS measures.</li>
+      <li>Findings: Superior performance compared to logit-based and logit-free baselines.</li>
+    </ul>
+  </li>
+  <li><a href="https://proceedings.mlr.press/v267/vishwakarma25b.html">Prune ’n Predict: Optimizing LLM Decision-making with Conformal Prediction (Vishwakarma et al., 2025)</a>, ICML 2025
+    <ul>
+      <li>Motivation: A commonly taught strategy for human test takers to solve multi-choice questions (MCQs) is the process of elimination (pruning) of incorrect (distractor) answer choices. Expect LLMs to be more accurate on revised questions with fewer choices.</li>
+      <li>Contribution: Uses CP not only for uncertainty quantification but to improve downstream task accuracy. One of the clearest examples where CP becomes part of a decision loop, not just an uncertainty wrapper.</li>
+      <li>Method(s): Propose two different methods. Propose conformal revision of questions (CROQ), which revises the question by narrowing down the available choices to those in the prediction set and asking the LLM the revised question, then applying standard split CP. But commonly used logit scores often lead to large sets, diminishing CROQ’s effectiveness. Propose CP-OPT, an optimization framework to learn scores that minimize set sizes while maintaining coverage. Cast set size and coverage in differentiable form like conformal risk training and add regularization. To find the flexible score function, use a data driven method using optimization - input is logits and the penultimate layer’s representations, model is simple MLP, and ouptut is . Then calibration done on the thresholds.</li>
+      <li>Findings: Reducing the number of response options leads to an improvement in accuracy, and this improvement is very nearly monotone. Empirical evaluation shows that this approach consistently improves accuracy compared to prompting the LLM with the original MCQ.</li>
+    </ul>
+  </li>
+  <li><a href="https://aclanthology.org/2025.uncertainlp-main.4.pdf">Do Large Language Models Know When Not to Answer in Medical QA?</a>, UncertaiNLP Workshop ACL 2025
+    <ul>
+      <li>Contribution: Early results suggest a positive link between uncertainty estimates and abstention decisions, with this effect amplified under higher difficulty and adversarial perturbations.</li>
+      <li>Method: Tests three different types:
+        <ul>
+          <li>Abstention: Introduces an explicit abstention option to each question, allowing the model to refrain from answering when uncertain.</li>
+          <li>No-Abstention+Perturb: Aims to assess the model’s confidence when essential information is missing</li>
+          <li>Abstention+Perturb: Combines both abstention and perturbation. Model presented with questions where some necessary information has been removed, along with the option to abstain from answering.</li>
+        </ul>
+      </li>
+      <li>Findings: strong, positive uncertainty–abstention relationship and a consistently negative association between both APS/LAC and accuracy.</li>
+      <li>Follow up benchmark work: <a href="https://arxiv.org/pdf/2601.12471">Knowing When to Abstain: Medical LLMs Under Clinical Uncertainty (Machcha et al., 2026)</a>. Experiments on open and closed source LLMs reveals that even state-of-the-art, high-accuracy models often fail to abstain with uncertain. Notably, providing explicit abstention options consistently increases model uncertainty and safer abstention, far more than input perturbations, while scaling model size or advanced prompting brings little improvement.</li>
+    </ul>
+  </li>
+</ol>
+
+<h1 id="open-ended-generation-factuality-and-claim-filtering">Open-ended generation, factuality, and claim filtering</h1>
+
+<ol>
+  <li><a href="https://arxiv.org/abs/2306.10193">Conformal Language Modeling (Quach et al. 2024)</a>, ICLR 2024
+    <ul>
+      <li>Contribution: Landmark paper for open-ended generation. Contribution is to extend CP from finite labels to sets of generated sequences by calibrating a stopping rule for sampling candidate responses from an LM, together with a rejection rule for noisy candidates. Guarantee is that the sampled candidate set contains at least one acceptable response with high probability.</li>
+      <li></li>
+    </ul>
+  </li>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[The field has split into four main directions.]]></summary></entry><entry><title type="html">Learn-then-Test</title><link href="http://localhost:4000/blog/2026/learnthentest/" rel="alternate" type="text/html" title="Learn-then-Test" /><published>2026-03-28T00:00:00-05:00</published><updated>2026-03-28T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/learnthentest</id><content type="html" xml:base="http://localhost:4000/blog/2026/learnthentest/"><![CDATA[]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Split Conformal Prediction and Non-Exchangeable Data</title><link href="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/" rel="alternate" type="text/html" title="Split Conformal Prediction and Non-Exchangeable Data" /><published>2026-03-23T00:00:00-05:00</published><updated>2026-03-23T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog</id><content type="html" xml:base="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/"><![CDATA[<p>*Based on Oliveira, Orenstein, Ramos, and Romano, <a href="https://jmlr.org/papers/v25/23-1553.html"><strong>“Split Conformal Prediction and Non-Exchangeable Data”</strong> (JMLR, 2024).*</a></p>
 
 <p>Conformal prediction is famous for one simple promise: if your data are exchangeable, then your prediction sets achieve the target coverage level without strong modeling assumptions. But many real datasets are not exchangeable at all. Time series are temporally dependent. Spatial data are correlated across nearby locations. Spatiotemporal data combine both. The main message of Oliveira et al. is that <strong>standard split conformal prediction often still works surprisingly well under dependence</strong>, and there is a clean way to quantify the price paid for non-exchangeability.</p>
 
