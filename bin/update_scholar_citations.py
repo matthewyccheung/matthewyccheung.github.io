@@ -40,12 +40,13 @@ def get_scholar_citations() -> None:
     """Fetch and update Google Scholar citation data."""
     print(f"Fetching citations for Google Scholar ID: {SCHOLAR_USER_ID}")
     today = datetime.now().strftime("%Y-%m-%d")
+    existing_data = {}
 
     # Check if the output file was already updated today
     if os.path.exists(OUTPUT_FILE):
         try:
             with open(OUTPUT_FILE, "r") as f:
-                existing_data = yaml.safe_load(f)
+                existing_data = yaml.safe_load(f) or {}
             if (
                 existing_data
                 and "metadata" in existing_data
@@ -60,7 +61,9 @@ def get_scholar_citations() -> None:
                 f"Warning: Could not read existing citation data from {OUTPUT_FILE}: {e}. The file may be missing or corrupted."
             )
 
-    citation_data = {"metadata": {"last_updated": today}, "papers": {}}
+    citation_data = existing_data.copy()
+    citation_data["metadata"] = {"last_updated": today}
+    citation_data["papers"] = {}
 
     scholarly.set_timeout(15)
     scholarly.set_retries(3)
@@ -108,14 +111,13 @@ def get_scholar_citations() -> None:
                 f"Error processing publication '{pub.get('bib', {}).get('title', 'Unknown')}': {e}. This publication will be skipped."
             )
 
-    # Compare new data with existing data
     if existing_data and existing_data.get("papers") == citation_data["papers"]:
         print("No changes in citation data. Skipping file update.")
         return
 
     try:
         with open(OUTPUT_FILE, "w") as f:
-            yaml.dump(citation_data, f, width=1000, sort_keys=True)
+            yaml.safe_dump(citation_data, f, width=1000, sort_keys=False)
         print(f"Citation data saved to {OUTPUT_FILE}")
     except Exception as e:
         print(
