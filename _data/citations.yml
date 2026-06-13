@@ -12,7 +12,7 @@ featured_publications:
         url: https://github.com/matthewyccheung/crop
 
   - title: Efficient Conformal Volumetry for Template-Based Segmentation
-    venue: Under Review
+    venue: MICCAI
     year: 2026
     image: assets/img/convolt.png
     image_alt: Efficient Conformal Volumetry for Template-Based Segmentation
