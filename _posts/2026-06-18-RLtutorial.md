@@ -14,59 +14,59 @@ The reinforcement-learning parts are grounded in the OmniSafe TRPO and PPO tutor
 
 Many optimization problems are written in the standard constrained form
 
-\[
+$$\[
 \min_x f(x)
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 h_i(x)\le 0,\qquad i=1,\dots,m
-\]
+\]$$
 
 and
 
-\[
+$$\[
 \ell_j(x)=0,\qquad j=1,\dots,r.
-\]
+\]$$
 
 This is not a special restriction. It is just a standard way to write constraints.
 
 For example,
 
-\[
+$$\[
 x\le 5
-\]
+\]$$
 
 can be rewritten as
 
-\[
+$$\[
 x-5\le 0.
-\]
+\]$$
 
 Likewise,
 
-\[
+$$\[
 x\ge 5
-\]
+\]$$
 
 can be rewritten as
 
-\[
+$$\[
 5-x\le 0.
-\]
+\]$$
 
 Equality constraints are written similarly. For example,
 
-\[
+$$\[
 x+y=3
-\]
+\]$$
 
 becomes
 
-\[
+$$\[
 x+y-3=0.
-\]
+\]$$
 
 So \(h_i(x)\le 0\) means “the \(i\)-th inequality constraint is satisfied,” and \(\ell_j(x)=0\) means “the \(j\)-th equality constraint is exactly satisfied.”
 
@@ -76,21 +76,21 @@ So \(h_i(x)\le 0\) means “the \(i\)-th inequality constraint is satisfied,” 
 
 The **primal problem** is the original constrained optimization problem:
 
-\[
+$$\[
 \min_x f(x)
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 h_i(x)\le 0,\qquad \ell_j(x)=0.
-\]
+\]$$
 
 The variable being optimized is \(x\). The constraints describe which \(x\)'s are feasible.
 
 The **Lagrangian** is the function
 
-\[
+$$\[
 L(x,u,v)
 =
 f(x)
@@ -98,13 +98,13 @@ f(x)
 \sum_i u_i h_i(x)
 +
 \sum_j v_j \ell_j(x).
-\]
+\]$$
 
 Here,
 
-\[
+$$\[
 u_i\ge 0
-\]
+\]$$
 
 are the multipliers for inequality constraints, and \(v_j\) are the multipliers for equality constraints.
 
@@ -112,25 +112,25 @@ The Lagrangian is not yet the dual problem. It is a bridge between the primal an
 
 The **dual function** is
 
-\[
+$$\[
 g(u,v)
 =
 \inf_x L(x,u,v).
-\]
+\]$$
 
 For fixed multipliers \(u,v\), we minimize over \(x\). The result is a function only of \(u,v\).
 
 The **dual problem** is
 
-\[
+$$\[
 \max_{u,v} g(u,v)
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 u\ge 0.
-\]
+\]$$
 
 So the three objects are:
 
@@ -148,21 +148,21 @@ For a minimization primal problem, every feasible dual point gives a lower bound
 
 The Lagrangian is
 
-\[
+$$\[
 L(x,u,v)
 =
 f(x)+u^T h(x)+v^T\ell(x).
-\]
+\]$$
 
 If \(x\) is fixed, then \(L\) is affine in \(u,v\). That means it is a plane or hyperplane as a function of the dual variables.
 
 The dual function is
 
-\[
+$$\[
 g(u,v)
 =
 \inf_x L(x,u,v).
-\]
+\]$$
 
 So \(g\) is the pointwise infimum of many affine functions.
 
@@ -170,9 +170,9 @@ The pointwise infimum of affine functions is always concave. Intuitively, \(g\) 
 
 The dual problem is
 
-\[
+$$\[
 \max_{u\ge 0,v} g(u,v).
-\]
+\]$$
 
 Maximizing a concave function over a convex feasible set is a convex optimization problem.
 
@@ -188,51 +188,51 @@ In reinforcement learning, an agent repeatedly interacts with an environment.
 
 At time \(t\), the agent observes a state
 
-\[
+$$\[
 s_t.
-\]
+\]$$
 
 It samples or selects an action
 
-\[
+$$\[
 a_t\sim \pi_\theta(\cdot\mid s_t).
-\]
+\]$$
 
 The environment then returns a reward and the next state:
 
-\[
+$$\[
 s_t \xrightarrow{a_t} (r_t,s_{t+1}).
-\]
+\]$$
 
 So a rollout or trajectory looks like
 
-\[
+$$\[
 \tau=(s_0,a_0,r_0,s_1,a_1,r_1,s_2,\dots).
-\]
+\]$$
 
 The policy is
 
-\[
+$$\[
 \pi_\theta(a\mid s),
-\]
+\]$$
 
 which means “the probability of choosing action \(a\) in state \(s\), under parameters \(\theta\).”
 
 For continuous action spaces, the policy is often a Gaussian distribution:
 
-\[
+$$\[
 \pi_\theta(a\mid s)
 =
 \mathcal N(\mu_\theta(s),\Sigma_\theta).
-\]
+\]$$
 
 For discrete action spaces, the policy is often a softmax distribution:
 
-\[
+$$\[
 \pi_\theta(a\mid s)
 =
 \mathrm{softmax}(f_\theta(s)).
-\]
+\]$$
 
 ---
 
@@ -242,14 +242,14 @@ The reward \(r_t\) is usually designed by the environment creator. It is not pre
 
 For a robot-arm grasping task, a reward function might be
 
-\[
+$$\[
 r_t
 =
 -\|x_{\text{gripper},t}-x_{\text{object},t}\|_2
 -0.01\|a_t\|^2
 +
 10\cdot \mathbf 1\{\text{object grasped}\}.
-\]
+\]$$
 
 This gives:
 
@@ -259,47 +259,47 @@ This gives:
 
 Example:
 
-\[
+$$\[
 \|x_{\text{gripper},t}-x_{\text{object},t}\|_2=0.20,\qquad \|a_t\|^2=3,
-\]
+\]$$
 
 and the object is not grasped. Then
 
-\[
+$$\[
 r_t=-0.20-0.01(3)+0=-0.23.
-\]
+\]$$
 
 If the object is grasped, the reward might become
 
-\[
+$$\[
 r_t=-0.04-0.01(1)+10=9.95.
-\]
+\]$$
 
 The important clarification is:
 
-\[
+$$\[
 r_{t+1}
-\]
+\]$$
 
 is not computed at time \(t\) unless the agent has a predictive model of the environment. In ordinary model-free RL, the agent must take the next action, transition to the next state, and observe \(r_{t+1}\).
 
 The timeline is:
 
-\[
+$$\[
 s_t \xrightarrow{a_t} (r_t,s_{t+1})
-\]
+\]$$
 
 then
 
-\[
+$$\[
 s_{t+1} \xrightarrow{a_{t+1}} (r_{t+1},s_{t+2}).
-\]
+\]$$
 
 Only after collecting the trajectory do we have
 
-\[
+$$\[
 r_t,r_{t+1},r_{t+2},\dots
-\]
+\]$$
 
 available for computing returns and advantages.
 
@@ -309,39 +309,39 @@ available for computing returns and advantages.
 
 The discounted return from time \(t\) is
 
-\[
+$$\[
 G_t
 =
 r_t+\gamma r_{t+1}+\gamma^2r_{t+2}+\gamma^3r_{t+3}+\cdots.
-\]
+\]$$
 
 Equivalently,
 
-\[
+$$\[
 G_t
 =
 \sum_{k=0}^{\infty}\gamma^k r_{t+k}.
-\]
+\]$$
 
 The discount factor satisfies
 
-\[
+$$\[
 0\le \gamma \le 1.
-\]
+\]$$
 
 The exponent appears because we discount once per time step.
 
 For example, if
 
-\[
+$$\[
 \gamma=0.9,
-\]
+\]$$
 
 then the weights are
 
-\[
+$$\[
 1,\;0.9,\;0.81,\;0.729,\dots
-\]
+\]$$
 
 So a reward two steps in the future is worth \(0.9^2=0.81\) times as much as an immediate reward.
 
@@ -361,19 +361,19 @@ Some actions look bad immediately but are good because of later consequences.
 
 Suppose a robot arm gets
 
-\[
+$$\[
 r_t=-1,\qquad r_{t+1}=-1,\qquad r_{t+2}=10.
-\]
+\]$$
 
 With
 
-\[
+$$\[
 \gamma=0.9,
-\]
+\]$$
 
 the return is
 
-\[
+$$\[
 G_t
 =
 -1+0.9(-1)+0.9^2(10)
@@ -381,7 +381,7 @@ G_t
 -1-0.9+8.1
 =
 6.2.
-\]
+\]$$
 
 The immediate reward is negative, but the long-term return is positive. Without future rewards, the algorithm would incorrectly think this action was bad.
 
@@ -393,7 +393,7 @@ The immediate reward is negative, but the long-term return is positive. Without 
 
 The value function under policy \(\pi\) is
 
-\[
+$$\[
 V^\pi(s)
 =
 \mathbb E_\pi
@@ -401,7 +401,7 @@ V^\pi(s)
 \sum_{k=0}^{\infty}\gamma^k r_{t+k}
 \mid s_t=s
 \right].
-\]
+\]$$
 
 It answers:
 
@@ -413,9 +413,9 @@ For example, a robot standing near a cliff is not inherently good or bad. A caut
 
 In neural-network actor-critic methods, we usually approximate the value function with a learned critic:
 
-\[
+$$\[
 V_\phi(s)\approx V^\pi(s).
-\]
+\]$$
 
 Here \(\phi\) are the critic parameters.
 
@@ -427,29 +427,29 @@ The value function is learned during RL training, not usually known beforehand.
 
 The training loop is:
 
-\[
+$$\[
 \text{collect trajectories}
 \rightarrow
 \text{compute return targets}
 \rightarrow
 \text{fit }V_\phi(s)\text{ to those targets}.
-\]
+\]$$
 
 For example, suppose one robot trajectory has rewards
 
-\[
+$$\[
 r_0=-0.20,\qquad r_1=-0.15,\qquad r_2=-0.08,\qquad r_3=9.95.
-\]
+\]$$
 
 With
 
-\[
+$$\[
 \gamma=0.99,
-\]
+\]$$
 
 the return target for \(s_0\) is
 
-\[
+$$\[
 G_0
 =
 -0.20
@@ -457,28 +457,28 @@ G_0
 +0.99^2(-0.08)
 +0.99^3(9.95)
 \approx 9.23.
-\]
+\]$$
 
 So the critic should learn
 
-\[
+$$\[
 V_\phi(s_0)\approx 9.23.
-\]
+\]$$
 
 The critic is trained by regression:
 
-\[
+$$\[
 \min_\phi
 \frac{1}{N}
 \sum_{t=1}^N
 \left(
 V_\phi(s_t)-G_t
 \right)^2.
-\]
+\]$$
 
 In longer tasks, we often use a bootstrapped target:
 
-\[
+$$\[
 \widehat G_t^{(K)}
 =
 r_t+\gamma r_{t+1}
@@ -486,7 +486,7 @@ r_t+\gamma r_{t+1}
 +\gamma^{K-1}r_{t+K-1}
 +
 \gamma^K V_\phi(s_{t+K}).
-\]
+\]$$
 
 This means: use observed rewards for \(K\) steps, then use the value function to estimate the rest.
 
@@ -496,21 +496,21 @@ This means: use observed rewards for \(K\) steps, then use the value function to
 
 For a small tabular environment, \(V\) can literally be a table:
 
-\[
+$$\[
 V(s_1)=3.2,\qquad V(s_2)=5.7,\qquad V(s_3)=-1.0.
-\]
+\]$$
 
 For a simple continuous problem, it can be linear:
 
-\[
+$$\[
 V_\phi(s)=\phi^Ts.
-\]
+\]$$
 
 For modern TRPO and PPO implementations, it is usually a neural network:
 
-\[
+$$\[
 V_\phi(s)=\mathrm{MLP}_\phi(s).
-\]
+\]$$
 
 For a robot arm, the state might include joint angles, velocities, gripper position, and object position. The value network outputs one scalar number: the predicted future return.
 
@@ -520,11 +520,11 @@ For a robot arm, the state might include joint angles, velocities, gripper posit
 
 The advantage function is
 
-\[
+$$\[
 A^\pi(s,a)
 =
 Q^\pi(s,a)-V^\pi(s).
-\]
+\]$$
 
 It answers:
 
@@ -532,15 +532,15 @@ It answers:
 
 Here,
 
-\[
+$$\[
 V^\pi(s)
-\]
+\]$$
 
 is the expected return if the policy behaves normally starting from \(s\), while
 
-\[
+$$\[
 Q^\pi(s,a)
-\]
+\]$$
 
 is the expected return if we force the first action to be \(a\), then follow policy \(\pi\) afterward.
 
@@ -562,43 +562,43 @@ The policy update uses this signal:
 
 The temporal-difference residual is
 
-\[
+$$\[
 \delta_t^V
 =
 r_t+\gamma V(s_{t+1})-V(s_t).
-\]
+\]$$
 
 This is a one-step estimate of advantage.
 
 The term
 
-\[
+$$\[
 r_t+\gamma V(s_{t+1})
-\]
+\]$$
 
 is an estimate of the return after taking action \(a_t\). Subtracting
 
-\[
+$$\[
 V(s_t)
-\]
+\]$$
 
 compares that result to what was expected from \(s_t\).
 
 Example:
 
-\[
+$$\[
 r_t=-0.08,\qquad V(s_t)=5.0,\qquad V(s_{t+1})=6.0,\qquad \gamma=0.99.
-\]
+\]$$
 
 Then
 
-\[
+$$\[
 \delta_t^V
 =
 -0.08+0.99(6.0)-5.0
 =
 0.86.
-\]
+\]$$
 
 Even though the immediate reward was negative, the action was good because it moved the robot into a more promising state.
 
@@ -608,43 +608,43 @@ Even though the immediate reward was negative, the action was good because it mo
 
 A one-step estimate is
 
-\[
+$$\[
 \widehat A_t^{(1)}
 =
 \delta_t^V.
-\]
+\]$$
 
 A two-step estimate is
 
-\[
+$$\[
 \widehat A_t^{(2)}
 =
 \delta_t^V+\gamma\delta_{t+1}^V.
-\]
+\]$$
 
 This equals
 
-\[
+$$\[
 \widehat A_t^{(2)}
 =
 -V(s_t)+r_t+\gamma r_{t+1}+\gamma^2V(s_{t+2}).
-\]
+\]$$
 
 A \(k\)-step estimate is
 
-\[
+$$\[
 \widehat A_t^{(k)}
 =
 \sum_{\ell=0}^{k-1}\gamma^\ell\delta_{t+\ell}^V.
-\]
+\]$$
 
 Equivalently,
 
-\[
+$$\[
 \widehat A_t^{(k)}
 =
 -V(s_t)+r_t+\gamma r_{t+1}+\cdots+\gamma^{k-1}r_{t+k-1}+\gamma^kV(s_{t+k}).
-\]
+\]$$
 
 Small \(k\) uses more bootstrapping from \(V\). It tends to have lower variance but more bias.
 
@@ -656,7 +656,7 @@ Large \(k\) uses more observed rewards. It tends to have lower bias but more var
 
 GAE combines the \(k\)-step estimators with exponentially decaying weights:
 
-\[
+$$\[
 \widehat A_t^{\mathrm{GAE}}
 =
 (1-\lambda)
@@ -668,47 +668,47 @@ GAE combines the \(k\)-step estimators with exponentially decaying weights:
 \lambda^2\widehat A_t^{(3)}
 +\cdots
 \right).
-\]
+\]$$
 
 This simplifies to
 
-\[
+$$\[
 \widehat A_t^{\mathrm{GAE}}
 =
 \sum_{\ell=0}^{\infty}
 (\gamma\lambda)^\ell
 \delta_{t+\ell}^V.
-\]
+\]$$
 
 The parameter \(\lambda\) controls the bias-variance tradeoff.
 
 If
 
-\[
+$$\[
 \lambda=0,
-\]
+\]$$
 
 then
 
-\[
+$$\[
 \widehat A_t^{\mathrm{GAE}}=\delta_t^V.
-\]
+\]$$
 
 This is low variance but can be biased because it relies heavily on \(V\).
 
 If
 
-\[
+$$\[
 \lambda=1,
-\]
+\]$$
 
 then
 
-\[
+$$\[
 \widehat A_t^{\mathrm{GAE}}
 =
 \sum_{\ell=0}^{\infty}\gamma^\ell r_{t+\ell}-V(s_t).
-\]
+\]$$
 
 This is Monte Carlo return minus the value baseline. It has lower bias but higher variance.
 
@@ -724,46 +724,46 @@ Yes. The policy is trained during RL, alongside the value function.
 
 The policy is the actor:
 
-\[
+$$\[
 \pi_\theta(a\mid s).
-\]
+\]$$
 
 The value function is the critic:
 
-\[
+$$\[
 V_\phi(s).
-\]
+\]$$
 
 The typical loop is:
 
-\[
+$$\[
 \text{initialize actor and critic}
-\]
+\]$$
 
-\[
+$$\[
 \rightarrow
 \text{collect trajectories with current actor}
-\]
+\]$$
 
-\[
+$$\[
 \rightarrow
 \text{compute returns and advantages}
-\]
+\]$$
 
-\[
+$$\[
 \rightarrow
 \text{update actor}
-\]
+\]$$
 
-\[
+$$\[
 \rightarrow
 \text{update critic}
-\]
+\]$$
 
-\[
+$$\[
 \rightarrow
 \text{repeat}.
-\]
+\]$$
 
 They are trained in parallel but with different objectives.
 
@@ -777,23 +777,23 @@ Most commonly, the policy is initialized randomly, using normal neural-network i
 
 For a continuous-control robot, the initial policy might be
 
-\[
+$$\[
 \pi_{\theta_0}(a\mid s)=\mathcal N(\mu_{\theta_0}(s),\Sigma_{\theta_0}).
-\]
+\]$$
 
 The mean network \(\mu_{\theta_0}(s)\) may output small near-zero values or random small values. The covariance or standard deviation controls exploration.
 
 For a discrete action environment, a randomly initialized softmax policy often begins close to uniform:
 
-\[
+$$\[
 \pi_{\theta_0}(\text{left}\mid s)\approx 0.25,\quad
 \pi_{\theta_0}(\text{right}\mid s)\approx 0.25,
-\]
+\]$$
 
-\[
+$$\[
 \pi_{\theta_0}(\text{up}\mid s)\approx 0.25,\quad
 \pi_{\theta_0}(\text{down}\mid s)\approx 0.25.
-\]
+\]$$
 
 Sometimes the policy is initialized from imitation learning, a hand-coded controller, or a pretrained model. But in standard TRPO/PPO, random initialization is common.
 
@@ -805,7 +805,7 @@ Sometimes the policy is initialized from imitation learning, a hand-coded contro
 
 The OmniSafe TRPO tutorial writes the performance difference between two policies as
 
-\[
+$$\[
 J^R(\pi')
 =
 J^R(\pi)
@@ -814,7 +814,7 @@ J^R(\pi)
 \left[
 \sum_{t=0}^{\infty}\gamma^tA_\pi^R(s_t,a_t)
 \right].
-\]
+\]$$
 
 This says:
 
@@ -828,16 +828,16 @@ The expectation is over trajectories generated by \(\pi'\).
 
 Start with
 
-\[
+$$\[
 \mathbb E_{\tau\sim\pi'}
 \left[
 \sum_{t=0}^{\infty}\gamma^tA_\pi(s_t,a_t)
 \right].
-\]
+\]$$
 
 By linearity of expectation,
 
-\[
+$$\[
 =
 \sum_{t=0}^{\infty}
 \gamma^t
@@ -845,40 +845,40 @@ By linearity of expectation,
 \left[
 A_\pi(s_t,a_t)
 \right].
-\]
+\]$$
 
 Now expand the expectation over possible state-action pairs:
 
-\[
+$$\[
 \mathbb E[A_\pi(s_t,a_t)]
 =
 \sum_s\sum_a
 P(s_t=s,a_t=a\mid \pi')
 A_\pi(s,a).
-\]
+\]$$
 
 Factor the joint probability:
 
-\[
+$$\[
 P(s_t=s,a_t=a\mid \pi')
 =
 P(s_t=s\mid\pi')\pi'(a\mid s).
-\]
+\]$$
 
 Therefore,
 
-\[
+$$\[
 \mathbb E[A_\pi(s_t,a_t)]
 =
 \sum_s
 P(s_t=s\mid\pi')
 \sum_a
 \pi'(a\mid s)A_\pi(s,a).
-\]
+\]$$
 
 Substituting back gives
 
-\[
+$$\[
 J^R(\pi')
 =
 J^R(\pi)
@@ -889,27 +889,27 @@ P(s_t=s\mid\pi')
 \sum_a
 \pi'(a\mid s)
 \gamma^tA_\pi(s,a).
-\]
+\]$$
 
 Define the discounted state visitation measure
 
-\[
+$$\[
 d_{\pi'}(s)
 =
 \sum_{t=0}^{\infty}
 \gamma^tP(s_t=s\mid\pi').
-\]
+\]$$
 
 Then
 
-\[
+$$\[
 J^R(\pi')
 =
 J^R(\pi)
 +
 \sum_s d_{\pi'}(s)
 \sum_a \pi'(a\mid s)A_\pi(s,a).
-\]
+\]$$
 
 This form is useful because it separates:
 
@@ -922,53 +922,53 @@ This form is useful because it separates:
 
 The exact expression is
 
-\[
+$$\[
 J^R(\pi')
 =
 J^R(\pi)
 +
 \sum_s d_{\pi'}(s)
 \sum_a \pi'(a\mid s)A_\pi(s,a).
-\]
+\]$$
 
 The hard part is
 
-\[
+$$\[
 d_{\pi'}(s),
-\]
+\]$$
 
 because it depends on the new policy \(\pi'\). Computing the future state distribution under every candidate new policy is hard.
 
 TRPO therefore uses the surrogate
 
-\[
+$$\[
 L_\pi(\pi')
 =
 J^R(\pi)
 +
 \sum_s d_\pi(s)
 \sum_a \pi'(a\mid s)A_\pi(s,a).
-\]
+\]$$
 
 The approximation is:
 
-\[
+$$\[
 d_{\pi'}(s)\approx d_\pi(s).
-\]
+\]$$
 
 This is the crucial clarification:
 
-\[
+$$\[
 \boxed{\text{TRPO is not approximating }\pi'\text{ with }\pi.}
-\]
+\]$$
 
 It is approximating the new policy’s state visitation distribution with the old policy’s state visitation distribution.
 
 The new policy still appears inside
 
-\[
+$$\[
 \pi'(a\mid s).
-\]
+\]$$
 
 So the surrogate asks:
 
@@ -982,50 +982,50 @@ This approximation is only reasonable when the new policy stays close to the old
 
 In practice, the data are collected from the old policy
 
-\[
+$$\[
 \pi_{\theta_k}.
-\]
+\]$$
 
 But the surrogate evaluates a candidate new policy
 
-\[
+$$\[
 \pi_\theta.
-\]
+\]$$
 
 To use old-policy data for a new-policy objective, we use the probability ratio
 
-\[
+$$\[
 \rho_t(\theta)
 =
 \frac{\pi_\theta(a_t\mid s_t)}
 {\pi_{\theta_k}(a_t\mid s_t)}.
-\]
+\]$$
 
 Here I write \(\rho_t(\theta)\) instead of \(r_t(\theta)\) to avoid confusion with reward \(r_t\).
 
 The sampled surrogate is
 
-\[
+$$\[
 \widehat L_k(\theta)
 =
 \frac{1}{N}
 \sum_{t=1}^{N}
 \rho_t(\theta)\widehat A_t.
-\]
+\]$$
 
 If
 
-\[
+$$\[
 \widehat A_t>0,
-\]
+\]$$
 
 then maximizing \(\widehat L_k\) increases the probability of action \(a_t\) in state \(s_t\).
 
 If
 
-\[
+$$\[
 \widehat A_t<0,
-\]
+\]$$
 
 then maximizing \(\widehat L_k\) decreases the probability of action \(a_t\) in state \(s_t\).
 
@@ -1039,9 +1039,9 @@ After rollout, we know what happened under the old policy. But the policy has no
 
 The point of optimizing the surrogate is to update future behavior:
 
-\[
+$$\[
 \theta_k\rightarrow \theta_{k+1}.
-\]
+\]$$
 
 The data say which actions were better or worse than expected. The objective changes the policy so that next time, in similar states, better actions are more likely and worse actions are less likely.
 
@@ -1049,13 +1049,13 @@ This is analogous to supervised learning. Once you have a dataset of images and 
 
 In RL:
 
-\[
+$$\[
 \text{rollout} = \text{training data},
-\]
+\]$$
 
-\[
+$$\[
 \widehat L_k(\theta)=\text{policy training objective}.
-\]
+\]$$
 
 ---
 
@@ -1067,19 +1067,19 @@ TRPO tries to improve the surrogate objective while keeping the new policy close
 
 The practical constrained problem is
 
-\[
+$$\[
 \max_\theta L_{\theta_{\text{old}}}(\theta)
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta)\le \delta.
-\]
+\]$$
 
 The average KL divergence is
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta)
 =
 \mathbb E_{s}
@@ -1091,7 +1091,7 @@ D_{\mathrm{KL}}
 \pi_\theta(\cdot\mid s)
 \right)
 \right].
-\]
+\]$$
 
 The KL constraint says:
 
@@ -1107,78 +1107,78 @@ TRPO imposes the KL constraint as a constrained optimization problem, not merely
 
 It solves approximately:
 
-\[
+$$\[
 \max_\theta L_{\theta_{\text{old}}}(\theta)
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta)\le \delta.
-\]
+\]$$
 
 Locally, let
 
-\[
+$$\[
 \Delta\theta=\theta-\theta_{\text{old}}.
-\]
+\]$$
 
 Linearize the objective:
 
-\[
+$$\[
 L(\theta_{\text{old}}+\Delta\theta)
 \approx
 L(\theta_{\text{old}})+g^T\Delta\theta.
-\]
+\]$$
 
 Quadratically approximate the KL constraint:
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta_{\text{old}}+\Delta\theta)
 \approx
 \frac{1}{2}\Delta\theta^TH\Delta\theta.
-\]
+\]$$
 
 Then TRPO solves the local subproblem
 
-\[
+$$\[
 \max_{\Delta\theta} g^T\Delta\theta
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 \frac{1}{2}\Delta\theta^TH\Delta\theta\le \delta.
-\]
+\]$$
 
 The natural-gradient direction is approximately
 
-\[
+$$\[
 s\approx H^{-1}g.
-\]
+\]$$
 
 Rather than compute \(H^{-1}\), TRPO solves
 
-\[
+$$\[
 Hs=g
-\]
+\]$$
 
 using conjugate gradient.
 
 The step is scaled by
 
-\[
+$$\[
 \beta=
 \sqrt{
 \frac{2\delta}{s^THs}
 }.
-\]
+\]$$
 
 So the full candidate step is
 
-\[
+$$\[
 \Delta\theta_{\mathrm{full}}=\beta s.
-\]
+\]$$
 
 Then TRPO performs backtracking line search to make sure the actual neural-network update improves the surrogate objective and satisfies the KL constraint.
 
@@ -1190,28 +1190,28 @@ Suppose the task is robot-arm grasping.
 
 State:
 
-\[
+$$\[
 s_t=
 \text{joint angles, velocities, gripper position, object position}.
-\]
+\]$$
 
 Action:
 
-\[
+$$\[
 a_t=
 \text{motor torque command}.
-\]
+\]$$
 
 Reward:
 
-\[
+$$\[
 r_t
 =
 -\|x_{\text{gripper},t}-x_{\text{object},t}\|_2
 -0.01\|a_t\|^2
 +
 10\cdot\mathbf 1\{\text{object grasped}\}.
-\]
+\]$$
 
 Algorithm:
 
@@ -1219,38 +1219,38 @@ Algorithm:
 
 2. At iteration \(k\), collect trajectories using
 
-\[
+$$\[
 a_t\sim\pi_{\theta_k}(\cdot\mid s_t).
-\]
+\]$$
 
 3. Observe rollout data:
 
-\[
+$$\[
 \mathcal D_k=
 \{(s_t,a_t,r_t,s_{t+1})\}_{t=1}^{N}.
-\]
+\]$$
 
 4. Use the value function to compute TD residuals:
 
-\[
+$$\[
 \delta_t^V
 =
 r_t+\gamma V_{\phi_k}(s_{t+1})-V_{\phi_k}(s_t).
-\]
+\]$$
 
 5. Compute GAE advantages:
 
-\[
+$$\[
 \widehat A_t
 =
 \sum_{\ell=0}^{\infty}
 (\gamma\lambda)^\ell
 \delta_{t+\ell}^V.
-\]
+\]$$
 
 6. Define the sampled surrogate:
 
-\[
+$$\[
 \widehat L_k(\theta)
 =
 \frac{1}{N}
@@ -1258,11 +1258,11 @@ r_t+\gamma V_{\phi_k}(s_{t+1})-V_{\phi_k}(s_t).
 \frac{\pi_\theta(a_t\mid s_t)}
 {\pi_{\theta_k}(a_t\mid s_t)}
 \widehat A_t.
-\]
+\]$$
 
 7. Define the average KL constraint:
 
-\[
+$$\[
 \widehat{\bar D}_{\mathrm{KL}}(\theta_k,\theta)
 =
 \frac{1}{N}
@@ -1273,69 +1273,69 @@ D_{\mathrm{KL}}
 \;\|\;
 \pi_\theta(\cdot\mid s_t)
 \right).
-\]
+\]$$
 
 8. Approximate the constrained problem locally:
 
-\[
+$$\[
 \max_{\Delta\theta}g^T\Delta\theta
-\]
+\]$$
 
 subject to
 
-\[
+$$\[
 \frac{1}{2}\Delta\theta^TH\Delta\theta\le \delta.
-\]
+\]$$
 
 9. Use conjugate gradient to solve
 
-\[
+$$\[
 Hs=g.
-\]
+\]$$
 
 10. Scale the step:
 
-\[
+$$\[
 \Delta\theta_{\mathrm{full}}
 =
 \sqrt{\frac{2\delta}{s^THs}}\,s.
-\]
+\]$$
 
 11. Backtrack until both conditions hold:
 
-\[
+$$\[
 \widehat L_k(\theta_k+\alpha\Delta\theta_{\mathrm{full}})
 \ge
 \widehat L_k(\theta_k)
-\]
+\]$$
 
 and
 
-\[
+$$\[
 \widehat{\bar D}_{\mathrm{KL}}
 (\theta_k,\theta_k+\alpha\Delta\theta_{\mathrm{full}})
 \le
 \delta.
-\]
+\]$$
 
 12. Accept:
 
-\[
+$$\[
 \theta_{k+1}
 =
 \theta_k+\alpha\Delta\theta_{\mathrm{full}}.
-\]
+\]$$
 
 13. Update the value function by regression:
 
-\[
+$$\[
 \min_\phi
 \frac{1}{N}
 \sum_t
 \left(
 V_\phi(s_t)-\widehat G_t
 \right)^2.
-\]
+\]$$
 
 For the robot, TRPO makes successful reaching and grasping actions more likely, while using the KL constraint to prevent the motor-control policy from changing too violently between updates.
 
@@ -1349,37 +1349,37 @@ CPI stands for **Conservative Policy Iteration**.
 
 CPI updates the policy by mixing the old policy with an improved policy:
 
-\[
+$$\[
 \pi_{\mathrm{new}}
 =
 (1-\alpha)\pi_{\mathrm{old}}+\alpha\pi^*.
-\]
+\]$$
 
 The small mixture coefficient \(\alpha\) makes the update conservative.
 
 TRPO generalizes this idea. Instead of explicitly mixing policies, TRPO constrains the distance between the old and new policies:
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\pi_{\mathrm{old}},\pi_{\mathrm{new}})\le \delta.
-\]
+\]$$
 
 So the connection is:
 
-\[
+$$\[
 \text{CPI conservatism via mixture coefficient }\alpha
-\]
+\]$$
 
 becomes
 
-\[
+$$\[
 \text{TRPO conservatism via KL trust region }\delta.
-\]
+\]$$
 
 The temporal discounting term
 
-\[
+$$\[
 d_\pi(s)=\sum_{t=0}^{\infty}\gamma^tP(s_t=s\mid\pi)
-\]
+\]$$
 
 appears because the objective is discounted return. It is not what distinguishes CPI from TRPO.
 
@@ -1399,28 +1399,28 @@ The most common version is PPO-Clip.
 
 Define the probability ratio
 
-\[
+$$\[
 \rho_t(\theta)
 =
 \frac{\pi_\theta(a_t\mid s_t)}
 {\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)}.
-\]
+\]$$
 
 The unclipped objective would be
 
-\[
+$$\[
 \rho_t(\theta)\widehat A_t.
-\]
+\]$$
 
 PPO clips the ratio into the interval
 
-\[
+$$\[
 [1-\varepsilon,1+\varepsilon].
-\]
+\]$$
 
 The PPO-Clip objective is
 
-\[
+$$\[
 L^{\mathrm{CLIP}}(\theta)
 =
 \widehat{\mathbb E}_t
@@ -1431,7 +1431,7 @@ L^{\mathrm{CLIP}}(\theta)
 \operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon)\widehat A_t
 \right)
 \right].
-\]
+\]$$
 
 This objective discourages very large policy updates without requiring TRPO’s conjugate-gradient and line-search machinery.
 
@@ -1441,59 +1441,59 @@ This objective discourages very large policy updates without requiring TRPO’s 
 
 Suppose
 
-\[
+$$\[
 \varepsilon=0.2.
-\]
+\]$$
 
 Then PPO clips the probability ratio into
 
-\[
+$$\[
 [0.8,1.2].
-\]
+\]$$
 
 ### Good action
 
 Suppose the robot moved toward the object, so
 
-\[
+$$\[
 \widehat A_t=+2.
-\]
+\]$$
 
 The old policy assigned probability
 
-\[
+$$\[
 \pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)=0.20.
-\]
+\]$$
 
 The new policy assigns
 
-\[
+$$\[
 \pi_\theta(a_t\mid s_t)=0.30.
-\]
+\]$$
 
 Then
 
-\[
+$$\[
 \rho_t(\theta)=\frac{0.30}{0.20}=1.5.
-\]
+\]$$
 
 Unclipped:
 
-\[
+$$\[
 1.5(2)=3.0.
-\]
+\]$$
 
 Clipped:
 
-\[
+$$\[
 1.2(2)=2.4.
-\]
+\]$$
 
 PPO uses
 
-\[
+$$\[
 \min(3.0,2.4)=2.4.
-\]
+\]$$
 
 The policy still gets credit for making the good action more likely, but it does not get unlimited extra credit for making a large jump.
 
@@ -1501,45 +1501,45 @@ The policy still gets credit for making the good action more likely, but it does
 
 Suppose the robot moved away from the object, so
 
-\[
+$$\[
 \widehat A_t=-2.
-\]
+\]$$
 
 The old probability was
 
-\[
+$$\[
 0.20,
-\]
+\]$$
 
 and the new probability is
 
-\[
+$$\[
 0.05.
-\]
+\]$$
 
 Then
 
-\[
+$$\[
 \rho_t(\theta)=0.25.
-\]
+\]$$
 
 Unclipped:
 
-\[
+$$\[
 0.25(-2)=-0.5.
-\]
+\]$$
 
 Clipped:
 
-\[
+$$\[
 0.8(-2)=-1.6.
-\]
+\]$$
 
 PPO uses
 
-\[
+$$\[
 \min(-0.5,-1.6)=-1.6.
-\]
+\]$$
 
 Since PPO maximizes the objective, \(-1.6\) is worse than \(-0.5\). This prevents the objective from rewarding a huge one-step suppression of a bad action too much.
 
@@ -1556,47 +1556,47 @@ The general rule is:
 
 2. At iteration \(k\), collect rollouts using the current policy:
 
-\[
+$$\[
 a_t\sim\pi_{\theta_k}(\cdot\mid s_t).
-\]
+\]$$
 
 3. Store
 
-\[
+$$\[
 (s_t,a_t,r_t,s_{t+1},\log\pi_{\theta_k}(a_t\mid s_t)).
-\]
+\]$$
 
 4. Compute TD residuals:
 
-\[
+$$\[
 \delta_t^V
 =
 r_t+\gamma V_{\phi_k}(s_{t+1})-V_{\phi_k}(s_t).
-\]
+\]$$
 
 5. Compute GAE advantages:
 
-\[
+$$\[
 \widehat A_t
 =
 \sum_{\ell=0}^{\infty}
 (\gamma\lambda)^\ell
 \delta_{t+\ell}^V.
-\]
+\]$$
 
 6. Compute critic targets:
 
-\[
+$$\[
 \widehat G_t
 =
 \widehat A_t+V_{\phi_k}(s_t).
-\]
+\]$$
 
 7. For several epochs, sample minibatches from the collected rollout data.
 
 8. Compute the probability ratio:
 
-\[
+$$\[
 \rho_t(\theta)
 =
 \exp
@@ -1605,11 +1605,11 @@ r_t+\gamma V_{\phi_k}(s_{t+1})-V_{\phi_k}(s_t).
 -
 \log\pi_{\theta_k}(a_t\mid s_t)
 \right).
-\]
+\]$$
 
 9. Maximize the PPO-Clip objective:
 
-\[
+$$\[
 L^{\mathrm{CLIP}}(\theta)
 =
 \widehat{\mathbb E}_t
@@ -1620,20 +1620,20 @@ L^{\mathrm{CLIP}}(\theta)
 \operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon)\widehat A_t
 \right)
 \right].
-\]
+\]$$
 
 In code, this is often implemented as minimizing the negative objective:
 
-\[
+$$\[
 \mathcal L_{\mathrm{actor}}(\theta)
 =
 -
 L^{\mathrm{CLIP}}(\theta).
-\]
+\]$$
 
 10. Update the value function by minimizing
 
-\[
+$$\[
 \mathcal L_{\mathrm{critic}}(\phi)
 =
 \widehat{\mathbb E}_t
@@ -1642,11 +1642,11 @@ L^{\mathrm{CLIP}}(\theta).
 V_\phi(s_t)-\widehat G_t
 \right)^2
 \right].
-\]
+\]$$
 
 11. Optionally monitor KL divergence:
 
-\[
+$$\[
 \widehat D_{\mathrm{KL}}
 =
 \widehat{\mathbb E}_t
@@ -1658,16 +1658,16 @@ D_{\mathrm{KL}}
 \pi_\theta(\cdot\mid s_t)
 \right)
 \right].
-\]
+\]$$
 
 Some PPO implementations stop early if the KL gets too large.
 
 12. Set the updated parameters to
 
-\[
+$$\[
 \theta_{k+1}\leftarrow \theta,\qquad
 \phi_{k+1}\leftarrow \phi.
-\]
+\]$$
 
 13. Discard the old batch and collect a fresh batch with the new policy.
 
@@ -1688,15 +1688,15 @@ PPO is still on-policy. It reuses a fresh batch for multiple minibatch epochs, b
 
 TRPO says:
 
-\[
+$$\[
 \text{Improve the policy, but stay inside this KL ball.}
-\]
+\]$$
 
 PPO says:
 
-\[
+$$\[
 \text{Improve the policy, but the objective stops rewarding excessive probability-ratio changes.}
-\]
+\]$$
 
 ---
 
@@ -1708,21 +1708,21 @@ Clarification:
 
 The surrogate does not replace \(\pi'\) with \(\pi\). It replaces
 
-\[
+$$\[
 d_{\pi'}(s)
-\]
+\]$$
 
 with
 
-\[
+$$\[
 d_\pi(s).
-\]
+\]$$
 
 The new policy \(\pi'\) still appears in the action probabilities:
 
-\[
+$$\[
 \sum_a \pi'(a\mid s)A_\pi(s,a).
-\]
+\]$$
 
 So the approximation is about state visitation frequencies, not the action policy itself.
 
@@ -1774,17 +1774,17 @@ Clarification:
 
 CPI is conservative because it mixes old and new policies:
 
-\[
+$$\[
 \pi_{\mathrm{new}}
 =
 (1-\alpha)\pi_{\mathrm{old}}+\alpha\pi^*.
-\]
+\]$$
 
 TRPO is conservative because it constrains KL divergence:
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\pi_{\mathrm{old}},\pi_{\mathrm{new}})\le\delta.
-\]
+\]$$
 
 Temporal discounting appears in both because the return objective is discounted, but that is not the defining CPI-to-TRPO relationship.
 
@@ -1798,28 +1798,28 @@ There is a notation collision in RL.
 
 Often,
 
-\[
+$$\[
 r_t
-\]
+\]$$
 
 means reward.
 
 But in PPO/TRPO derivations, many authors use
 
-\[
+$$\[
 r_t(\theta)
 =
 \frac{\pi_\theta(a_t\mid s_t)}
 {\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)}
-\]
+\]$$
 
 to mean the probability ratio.
 
 To avoid confusion, these notes used
 
-\[
+$$\[
 \rho_t(\theta)
-\]
+\]$$
 
 for the probability ratio.
 
@@ -1837,15 +1837,15 @@ TRPO and PPO both follow this template:
 
 TRPO prevents large updates with a KL constraint:
 
-\[
+$$\[
 \bar D_{\mathrm{KL}}(\pi_{\mathrm{old}},\pi_{\mathrm{new}})\le\delta.
-\]
+\]$$
 
 PPO prevents large updates with clipping:
 
-\[
+$$\[
 \operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon).
-\]
+\]$$
 
 The value function is a helper. It predicts expected future return so that the algorithm can estimate whether an action was better or worse than expected.
 
