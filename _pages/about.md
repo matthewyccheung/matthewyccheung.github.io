@@ -24,4 +24,6 @@ latest_posts:
   limit: 5 # leave blank to include all the blog posts
 ---
 
-I am a PhD student in Electrical and Computer Engineering at Rice University advised by [Ashok Veeraraghavan](https://computationalimaging.rice.edu/) and [Guha Balakrishnan](https://www.guhabalakrishnan.com/). I work on uncertainty quantification, specifically Conformal Prediction for medical imaging problems, as well as generative models and hallucinations. I am also a trainee in the [NIH NLM Training Program in Biomedical Informatics and Data Science](https://www.gulfcoastconsortia.org/home/training/bmi-nlm/). I received my M.S. in Electrical and Computer Engineering from Rice University in 2023 and my B.S. in Electrical Engineering (cum laude) from UC Davis in 2020.
+I am a PhD student in Electrical and Computer Engineering at Rice University advised by [Ashok Veeraraghavan](https://computationalimaging.rice.edu/) and [Guha Balakrishnan](https://www.guhabalakrishnan.com/). I work on uncertainty quantification, specifically Conformal Prediction for medical imaging problems, as well as generative models and hallucinations. I was a trainee in the [NIH NLM Training Program in Biomedical Informatics and Data Science](https://www.gulfcoastconsortia.org/home/training/bmi-nlm/). I received my M.S. in Electrical and Computer Engineering from Rice University in 2023 and my B.S. in Electrical Engineering (cum laude) from UC Davis in 2020.
+
+📢 I am looking for full-time opportunities in the Bay Area CA!

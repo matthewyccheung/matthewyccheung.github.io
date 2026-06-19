@@ -1,5 +1,1898 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-03-28T19:39:02-05:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">blank</title><subtitle>PhD student at Rice ECE working on gently pushing the limits of medical devices and AI.
-</subtitle><entry><title type="html">Survey of Conformal Predictions for LLMs</title><link href="http://localhost:4000/blog/2026/cpllms/" rel="alternate" type="text/html" title="Survey of Conformal Predictions for LLMs" /><published>2026-03-28T00:00:00-05:00</published><updated>2026-03-28T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/cpllms</id><content type="html" xml:base="http://localhost:4000/blog/2026/cpllms/"><![CDATA[<p>The field has split into four main directions.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://matthewyccheung.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://matthewyccheung.github.io/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-06-19T15:48:31-07:00</updated><id>https://matthewyccheung.github.io/feed.xml</id><title type="html">blank</title><subtitle>PhD student at Rice ECE working on gently pushing the limits of medical devices and AI.
+</subtitle><entry><title type="html">A Tutorial Guide to TRPO and PPO</title><link href="https://matthewyccheung.github.io/blog/2026/RLtutorial/" rel="alternate" type="text/html" title="A Tutorial Guide to TRPO and PPO" /><published>2026-06-18T00:00:00-07:00</published><updated>2026-06-18T00:00:00-07:00</updated><id>https://matthewyccheung.github.io/blog/2026/RLtutorial</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/RLtutorial/"><![CDATA[<p>TRPO and PPO can look intimidating because they sit at the intersection of constrained optimization, probability ratios, value functions, and rollout data. The good news is that the core story is much simpler than the notation first suggests: collect data with the current policy, estimate which actions were better than expected, then update the policy without moving it too far.</p>
+
+<p>This tutorial walks through that story from the ground up. We start with the constrained-optimization language behind TRPO, move into the reinforcement-learning objects that PPO and TRPO share, and then connect the pieces to GAE, surrogate objectives, trust regions, clipping, and the most common points of confusion. The reinforcement-learning sections are grounded in the OmniSafe TRPO and PPO tutorials, with additional context from the original TRPO, PPO, and GAE papers.</p>
+
+<h2 id="1-constrained-optimization-background">1. Constrained optimization background</h2>
+
+<p>TRPO is built around a constrained policy update, so it helps to first recall how constrained optimization is usually written. A standard minimization problem looks like this:</p>
+
+\[\min_x f(x)\]
+
+<p>subject to inequality constraints</p>
+
+\[h_i(x)\le 0,\qquad i=1,\dots,m\]
+
+<p>and equality constraints</p>
+
+\[\ell_j(x)=0,\qquad j=1,\dots,r.\]
+
+<p>This format is not restrictive; it is just a convenient convention. If a constraint is written in a different direction, we move everything to the left-hand side. For example,</p>
+
+\[x\le 5\]
+
+<p>can be rewritten as</p>
+
+\[x-5\le 0.\]
+
+<p>Likewise,</p>
+
+\[x\ge 5\]
+
+<p>can be rewritten as</p>
+
+\[5-x\le 0.\]
+
+<p>Equality constraints work the same way. The equation</p>
+
+\[x+y=3\]
+
+<p>becomes</p>
+
+\[x+y-3=0.\]
+
+<p>So when you see $h_i(x)\le 0$, read it as “the $i$-th inequality constraint is satisfied.” When you see $\ell_j(x)=0$, read it as “the $j$-th equality constraint is exactly satisfied.”</p>
+
+<h2 id="2-primal-problem-lagrangian-and-dual-problem">2. Primal problem, Lagrangian, and dual problem</h2>
+
+<p>The <strong>primal problem</strong> is the original problem we actually care about:</p>
+
+\[\min_x f(x)\]
+
+<p>subject to</p>
+
+\[h_i(x)\le 0,\qquad \ell_j(x)=0.\]
+
+<p>Here $x$ is the variable being optimized, and the constraints describe which values of $x$ are feasible.</p>
+
+<p>The <strong>Lagrangian</strong> folds the objective and constraints into one function:</p>
+
+\[L(x,u,v)
+=
+f(x)
++
+\sum_i u_i h_i(x)
++
+\sum_j v_j \ell_j(x).\]
+
+<p>The inequality multipliers satisfy</p>
+
+\[u_i\ge 0\]
+
+<p>and the equality multipliers $v_j$ can be positive, negative, or zero. The Lagrangian is not the dual problem yet; it is the bridge that lets us move from the primal variables to the dual variables.</p>
+
+<p>The <strong>dual function</strong> minimizes that bridge over the primal variable:</p>
+
+\[g(u,v) = \inf_x L(x,u,v).\]
+
+<p>For fixed multipliers $u,v$, we search over $x$. After that minimization, the result depends only on the multipliers.</p>
+
+<p>The <strong>dual problem</strong> then chooses the best multipliers:</p>
+
+\[\max_{u,v} g(u,v)\]
+
+<p>subject to</p>
+
+\[u\ge 0.\]
+
+<p>It is useful to keep the three layers separate:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Object</th>
+      <th style="text-align: right">What it optimizes over</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Primal problem</td>
+      <td style="text-align: right">$x$</td>
+      <td>Original constrained problem</td>
+    </tr>
+    <tr>
+      <td>Lagrangian</td>
+      <td style="text-align: right">$x,u,v$</td>
+      <td>Objective plus weighted constraints</td>
+    </tr>
+    <tr>
+      <td>Dual problem</td>
+      <td style="text-align: right">$u,v$</td>
+      <td>Best lower bound on the primal optimum</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For a minimization primal problem, every feasible dual point gives a lower bound on the primal optimum. The dual problem searches for the tightest lower bound it can prove.</p>
+
+<h2 id="3-why-the-dual-is-a-convex-optimization-problem">3. Why the dual is a convex optimization problem</h2>
+
+<p>One pleasant fact about the dual is that it has a convex-optimization structure even when the original primal problem is not convex. Start with the Lagrangian:</p>
+
+\[L(x,u,v) = f(x) + u^T h(x) + v^T\ell(x).\]
+
+<p>If $x$ is fixed, then $L$ is affine in $u,v$. As a function of the dual variables, it is a plane or hyperplane.</p>
+
+<p>The dual function takes the infimum over all those affine functions:</p>
+
+\[g(u,v) = \inf_x L(x,u,v).\]
+
+<p>That makes $g$ the pointwise infimum of many affine functions. The pointwise infimum of affine functions is always concave. Intuitively, $g$ is the lower envelope of a collection of planes, and a lower envelope bends downward rather than upward.</p>
+
+<p>The dual problem is</p>
+
+\[\max_{u\ge 0,v} g(u,v).\]
+
+<p>Maximizing a concave function over a convex feasible set is a convex optimization problem. This remains true even if the primal problem itself is not convex, because the concavity comes from the construction of the dual function.</p>
+
+<h1 id="reinforcement-learning-setup">Reinforcement learning setup</h1>
+
+<h2 id="4-states-actions-rewards-policies-and-trajectories">4. States, actions, rewards, policies, and trajectories</h2>
+
+<p>In reinforcement learning, an agent repeatedly interacts with an environment. At time $t$, it observes a state $s_t$, samples or selects an action, and then receives a reward plus the next state:</p>
+
+\[a_t\sim \pi_\theta(\cdot\mid s_t).\]
+
+\[s_t \xrightarrow{a_t} (r_t,s_{t+1}).\]
+
+<p>Repeating this interaction gives a rollout, also called a trajectory:</p>
+
+\[\tau=(s_0,a_0,r_0,s_1,a_1,r_1,s_2,\dots).\]
+
+<p>The policy is the distribution over actions:</p>
+
+\[\pi_\theta(a\mid s),\]
+
+<p>which means “the probability of choosing action $a$ in state $s$, under parameters $\theta$.”</p>
+
+<p>For continuous action spaces, the policy is often a Gaussian:</p>
+
+\[\pi_\theta(a\mid s) = \mathcal N(\mu_\theta(s),\Sigma_\theta).\]
+
+<p>For discrete action spaces, it is often a softmax distribution:</p>
+
+\[\pi_\theta(a\mid s) = \mathrm{softmax}(f_\theta(s)).\]
+
+<h2 id="5-how-rewards-are-computed-in-practice">5. How rewards are computed in practice</h2>
+
+<p>The reward $r_t$ is usually designed by the environment creator. It is not predicted by the policy, and it is not known before the action is taken. The policy chooses an action, the environment responds, and only then does the agent observe the reward.</p>
+
+<p>For a robot-arm grasping task, a reward function might combine distance, control effort, and task success:</p>
+
+\[r_t
+=
+-\|x_{\text{gripper},t}-x_{\text{object},t}\|_2
+-0.01\|a_t\|^2
++
+10\cdot \mathbf 1\{\text{object grasped}\}.\]
+
+<p>This reward gives a penalty for being far from the object, a small penalty for large motor commands, and a large bonus for successfully grasping the object.</p>
+
+<p>For example, suppose</p>
+
+\[\|x_{\text{gripper},t}-x_{\text{object},t}\|_2=0.20,\qquad \|a_t\|^2=3,\]
+
+<p>and the object is not grasped. The reward is then</p>
+
+\[r_t=-0.20-0.01(3)+0=-0.23.\]
+
+<p>If the object is grasped, the reward might become</p>
+
+\[r_t=-0.04-0.01(1)+10=9.95.\]
+
+<p>The timing matters. In ordinary model-free RL, $r_{t+1}$ is not available at time $t$. The agent must first take the next action, transition again, and observe the next reward. The timeline is:</p>
+
+\[s_t \xrightarrow{a_t} (r_t,s_{t+1})\]
+
+<p>then</p>
+
+\[s_{t+1} \xrightarrow{a_{t+1}} (r_{t+1},s_{t+2}).\]
+
+<p>Only after collecting the rollout do we have the reward sequence</p>
+
+\[r_t,r_{t+1},r_{t+2},\dots\]
+
+<p>available for computing returns and advantages. That distinction is the source of many confusions about GAE and policy updates: the policy acts online, but the training calculation happens after data collection.</p>
+
+<h2 id="6-discounted-returns-and-the-role-of-gamma">6. Discounted returns and the role of $\gamma$</h2>
+
+<p>The discounted return from time $t$ is the future reward stream, with later rewards multiplied by powers of $\gamma$:</p>
+
+\[G_t = r_t + \gamma r_{t + 1} + \gamma^2r_{t + 2} + \gamma^3r_{t + 3} + \cdots.\]
+
+<p>Equivalently,</p>
+
+\[G_t = \sum_{k = 0}^{\infty}\gamma^k r_{t + k}.\]
+
+<p>The discount factor satisfies</p>
+
+\[0\le \gamma \le 1.\]
+
+<p>The exponent appears because we discount once per time step. If</p>
+
+\[\gamma=0.9,\]
+
+<p>then the future rewards are weighted by</p>
+
+\[1,\;0.9,\;0.81,\;0.729,\dots\]
+
+<p>so a reward two steps in the future is worth $0.9^2=0.81$ times as much as an immediate reward.</p>
+
+<p>There are three main reasons for discounting:</p>
+
+<ol>
+  <li>Future rewards are usually less directly attributable to the current action.</li>
+  <li>Future rewards may be more uncertain.</li>
+  <li>In infinite-horizon tasks, discounting helps keep the sum finite.</li>
+</ol>
+
+<p>A higher $\gamma$ makes the agent more far-sighted. A lower $\gamma$ makes it more short-sighted.</p>
+
+<h2 id="7-why-use-future-rewards-at-all">7. Why use future rewards at all?</h2>
+
+<p>The reason we care about future rewards is that some actions look bad immediately but are good because of what they make possible later. Suppose a robot arm gets</p>
+
+\[r_t=-1,\qquad r_{t+1}=-1,\qquad r_{t+2}=10.\]
+
+<p>With</p>
+
+\[\gamma=0.9,\]
+
+<p>the return is</p>
+
+\[G_t
+=
+-1+0.9(-1)+0.9^2(10)
+=
+-1-0.9+8.1
+=
+6.2.\]
+
+<p>The immediate reward is negative, but the long-term return is positive. Without future rewards, the algorithm would incorrectly punish an action that set up later success.</p>
+
+<h1 id="value-functions-and-advantage-functions">Value functions and advantage functions</h1>
+
+<h2 id="8-what-the-value-function-means">8. What the value function means</h2>
+
+<p>The value function under policy $\pi$ is</p>
+
+\[V^\pi(s)
+=
+\mathbb E_\pi
+\left[
+\sum_{k=0}^{\infty}\gamma^k r_{t+k}
+\mid s_t=s
+\right].\]
+
+<p>It answers:</p>
+
+<blockquote>
+  <p>If I start in state $s$, and then follow policy $\pi$, how much discounted future reward do I expect?</p>
+</blockquote>
+
+<p>The value of a state depends on the policy. The same state can be good under one policy and bad under another.</p>
+
+<p>For example, a robot standing near a cliff is not inherently good or bad. A cautious policy may move away from the cliff, so the state has high value. A reckless policy may fall off, so the state has low value.</p>
+
+<p>In neural-network actor-critic methods, we usually approximate the value function with a learned critic:</p>
+
+\[V_\phi(s)\approx V^\pi(s).\]
+
+<p>Here $\phi$ are the critic parameters.</p>
+
+<h2 id="9-how-the-value-function-is-learned">9. How the value function is learned</h2>
+
+<p>The value function is learned during RL training, not usually known beforehand.</p>
+
+<p>The training loop is:</p>
+
+\[\text{collect trajectories}
+\rightarrow
+\text{compute return targets}
+\rightarrow
+\text{fit }V_\phi(s)\text{ to those targets}.\]
+
+<p>For example, suppose one robot trajectory has rewards</p>
+
+\[r_0=-0.20,\qquad r_1=-0.15,\qquad r_2=-0.08,\qquad r_3=9.95.\]
+
+<p>With</p>
+
+\[\gamma=0.99,\]
+
+<p>the return target for $s_0$ is</p>
+
+\[G_0
+=
+-0.20
++0.99(-0.15)
++0.99^2(-0.08)
++0.99^3(9.95)
+\approx 9.23.\]
+
+<p>So the critic should learn</p>
+
+\[V_\phi(s_0)\approx 9.23.\]
+
+<p>The critic is trained by regression:</p>
+
+\[\min_\phi
+\frac{1}{N}
+\sum_{t=1}^N
+\left(
+V_\phi(s_t)-G_t
+\right)^2.\]
+
+<p>In longer tasks, we often use a bootstrapped target:</p>
+
+\[\widehat G_t^{(K)}
+=
+r_t+\gamma r_{t+1}
++\cdots
++\gamma^{K-1}r_{t+K-1}
++
+\gamma^K V_\phi(s_{t+K}).\]
+
+<p>This means: use observed rewards for $K$ steps, then use the value function to estimate the rest.</p>
+
+<h2 id="10-what-function-class-is-used-for-v_phis">10. What function class is used for $V_\phi(s)$?</h2>
+
+<p>For a small tabular environment, $V$ can literally be a table:</p>
+
+\[V(s_1)=3.2,\qquad V(s_2)=5.7,\qquad V(s_3)=-1.0.\]
+
+<p>For a simple continuous problem, it can be linear:</p>
+
+\[V_\phi(s)=\phi^Ts.\]
+
+<p>For modern TRPO and PPO implementations, it is usually a neural network:</p>
+
+\[V_\phi(s)=\mathrm{MLP}_\phi(s).\]
+
+<p>For a robot arm, the state might include joint angles, velocities, gripper position, and object position. The value network outputs one scalar number: the predicted future return.</p>
+
+<h2 id="11-advantage-function">11. Advantage function</h2>
+
+<p>The advantage function is</p>
+
+\[A^\pi(s,a) = Q^\pi(s,a)-V^\pi(s).\]
+
+<p>It answers:</p>
+
+<blockquote>
+  <p>Was action $a$ better or worse than what policy $\pi$ usually does in state $s$?</p>
+</blockquote>
+
+<p>Here,</p>
+
+\[V^\pi(s)\]
+
+<p>is the expected return if the policy behaves normally starting from $s$, while</p>
+
+\[Q^\pi(s,a)\]
+
+<p>is the expected return if we force the first action to be $a$, then follow policy $\pi$ afterward.</p>
+
+<p>So:</p>
+
+<ul>
+  <li>$A^\pi(s,a)&gt;0$: action $a$ was better than expected.</li>
+  <li>$A^\pi(s,a)&lt;0$: action $a$ was worse than expected.</li>
+</ul>
+
+<p>The policy update uses this signal:</p>
+
+<ul>
+  <li>Increase probability of actions with positive advantage.</li>
+  <li>Decrease probability of actions with negative advantage.</li>
+</ul>
+
+<h1 id="gae-generalized-advantage-estimation">GAE: Generalized Advantage Estimation</h1>
+
+<h2 id="12-the-one-step-td-residual">12. The one-step TD residual</h2>
+
+<p>The temporal-difference residual is</p>
+
+\[\delta_t^V = r_t + \gamma V(s_{t + 1})-V(s_t).\]
+
+<p>This is a one-step estimate of advantage.</p>
+
+<p>The term</p>
+
+\[r_t+\gamma V(s_{t+1})\]
+
+<p>is an estimate of the return after taking action $a_t$. Subtracting</p>
+
+\[V(s_t)\]
+
+<p>compares that result to what was expected from $s_t$.</p>
+
+<p>Example:</p>
+
+\[r_t=-0.08,\qquad V(s_t)=5.0,\qquad V(s_{t+1})=6.0,\qquad \gamma=0.99.\]
+
+<p>Then</p>
+
+\[\delta_t^V
+=
+-0.08+0.99(6.0)-5.0
+=
+0.86.\]
+
+<p>Even though the immediate reward was negative, the action was good because it moved the robot into a more promising state.</p>
+
+<h2 id="13-k-step-advantage-estimates">13. $k$-step advantage estimates</h2>
+
+<p>A one-step estimate is</p>
+
+\[\widehat A_t^{(1)} = \delta_t^V.\]
+
+<p>A two-step estimate is</p>
+
+\[\widehat A_t^{(2)} = \delta_t^V + \gamma\delta_{t + 1}^V.\]
+
+<p>This equals</p>
+
+\[\widehat A_t^{(2)} = -V(s_t) + r_t + \gamma r_{t + 1} + \gamma^2V(s_{t + 2}).\]
+
+<p>A $k$-step estimate is</p>
+
+\[\widehat A_t^{(k)} = \sum_{\ell = 0}^{k-1}\gamma^\ell\delta_{t + \ell}^V.\]
+
+<p>Equivalently,</p>
+
+\[\widehat A_t^{(k)} = -V(s_t) + r_t + \gamma r_{t + 1} + \cdots + \gamma^{k-1}r_{t + k-1} + \gamma^kV(s_{t + k}).\]
+
+<p>Small $k$ uses more bootstrapping from $V$. It tends to have lower variance but more bias.</p>
+
+<p>Large $k$ uses more observed rewards. It tends to have lower bias but more variance.</p>
+
+<h2 id="14-gae-formula">14. GAE formula</h2>
+
+<p>GAE combines the $k$-step estimators with exponentially decaying weights:</p>
+
+\[\widehat A_t^{\mathrm{GAE}}
+=
+(1-\lambda)
+\left(
+\widehat A_t^{(1)}
++
+\lambda \widehat A_t^{(2)}
++
+\lambda^2\widehat A_t^{(3)}
++\cdots
+\right).\]
+
+<p>This simplifies to</p>
+
+\[\widehat A_t^{\mathrm{GAE}}
+=
+\sum_{\ell=0}^{\infty}
+(\gamma\lambda)^\ell
+\delta_{t+\ell}^V.\]
+
+<p>The parameter $\lambda$ controls the bias-variance tradeoff.</p>
+
+<p>If</p>
+
+\[\lambda=0,\]
+
+<p>then</p>
+
+\[\widehat A_t^{\mathrm{GAE}}=\delta_t^V.\]
+
+<p>This is low variance but can be biased because it relies heavily on $V$.</p>
+
+<p>If</p>
+
+\[\lambda=1,\]
+
+<p>then</p>
+
+\[\widehat A_t^{\mathrm{GAE}} = \sum_{\ell = 0}^{\infty}\gamma^\ell r_{t + \ell}-V(s_t).\]
+
+<p>This is Monte Carlo return minus the value baseline. It has lower bias but higher variance.</p>
+
+<p>Intermediate $\lambda$ values compromise between the two.</p>
+
+<h3 id="141-when-can-gae-use-future-timesteps">14.1 When can GAE use future timesteps?</h3>
+
+<p>GAE does not give the acting policy access to the future. At time $t$, the policy only observes $s_t$ and samples $a_t$. Future rewards such as $r_{t+1}$ and states such as $s_{t+2}$ are only available after the rollout has already happened.</p>
+
+<p>During training, after the trajectory is collected, GAE can compute</p>
+
+\[\widehat A_t^{\mathrm{GAE}}
+=
+\delta_t^V
++
+\gamma\lambda\delta_{t+1}^V
++
+(\gamma\lambda)^2\delta_{t+2}^V
++\cdots.\]
+
+<p>So the advantage estimate at time $t$ is forward-looking relative to $t$, but it is computed afterward from observed rollout data. If an implementation loops backward through the rollout, that is only a dynamic-programming trick using</p>
+
+\[\widehat A_t = \delta_t^V + \gamma\lambda\widehat A_{t + 1}.\]
+
+<p>The formula still means that $\widehat A_t$ contains information from later observed timesteps.</p>
+
+<p>For a finite rollout ending at $T$, the estimator is</p>
+
+\[\widehat A_t^{\mathrm{GAE}} = \sum_{\ell = 0}^{T-t-1}(\gamma\lambda)^\ell\delta_{t + \ell}^V.\]
+
+<p>If the episode truly terminates at $T$, the terminal value is usually set to $V(s_T)=0$. If the rollout is truncated but the episode has not ended, the algorithm bootstraps from $V(s_T)$ to estimate the unobserved continuation.</p>
+
+<h3 id="142-what-is-gae-bias-biased-toward">14.2 What is GAE bias biased toward?</h3>
+
+<p>Yes: in the GAE bias-variance tradeoff, “bias” means bias in the estimator $\widehat A_t$ of the true advantage $A^\pi(s_t,a_t)$. The bias usually comes from bootstrapping with an imperfect value function $V_\phi(s)$, and from truncating rollouts.</p>
+
+<p>Lower $\lambda$ relies more heavily on short-horizon TD estimates and $V_\phi$, so it usually has lower variance but more bias if the critic is inaccurate. Higher $\lambda$ uses more observed future rewards, so it usually has lower bias but higher variance.</p>
+
+<h1 id="policy-training-and-initialization">Policy training and initialization</h1>
+
+<h2 id="15-is-the-policy-trained-during-rl">15. Is the policy trained during RL?</h2>
+
+<p>Yes. The policy is trained during RL, alongside the value function. The policy is the actor,</p>
+
+\[\pi_\theta(a\mid s).\]
+
+<p>and the value function is the critic,</p>
+
+\[V_\phi(s).\]
+
+<p>One training cycle looks like this:</p>
+
+\[\text{initialize actor and critic}
+\rightarrow
+\text{collect trajectories with current actor}
+\rightarrow
+\text{compute returns and advantages}
+\rightarrow
+\text{update actor}
+\rightarrow
+\text{update critic}
+\rightarrow
+\text{repeat}.\]
+
+<p>They are trained in parallel but with different objectives.</p>
+
+<p>The policy is trained to choose better actions. The value function is trained to predict future returns.</p>
+
+<h2 id="16-how-is-the-policy-initialized">16. How is the policy initialized?</h2>
+
+<p>Most commonly, the policy is initialized randomly, using normal neural-network initialization methods such as Xavier initialization or orthogonal initialization.</p>
+
+<p>For a continuous-control robot, the initial policy might be</p>
+
+\[\pi_{\theta_0}(a\mid s)=\mathcal N(\mu_{\theta_0}(s),\Sigma_{\theta_0}).\]
+
+<p>The mean network $\mu_{\theta_0}(s)$ may output small near-zero values or random small values. The covariance or standard deviation controls exploration.</p>
+
+<p>For a discrete action environment, a randomly initialized softmax policy often begins close to uniform:</p>
+
+\[\pi_{\theta_0}(\text{left}\mid s)\approx 0.25,\quad \pi_{\theta_0}(\text{right}\mid s)\approx 0.25,\]
+
+\[\pi_{\theta_0}(\text{up}\mid s)\approx 0.25,\quad \pi_{\theta_0}(\text{down}\mid s)\approx 0.25.\]
+
+<p>Sometimes the policy is initialized from imitation learning, a hand-coded controller, or a pretrained model. But in standard TRPO/PPO, random initialization is common.</p>
+
+<h1 id="performance-difference-and-surrogate-objectives">Performance difference and surrogate objectives</h1>
+
+<h2 id="17-performance-difference-lemma">17. Performance difference lemma</h2>
+
+<p>The OmniSafe TRPO tutorial writes the performance difference between two policies as</p>
+
+\[J^R(\pi')
+=
+J^R(\pi)
++
+\mathbb E_{\tau\sim\pi'}
+\left[
+\sum_{t=0}^{\infty}\gamma^tA_\pi^R(s_t,a_t)
+\right].\]
+
+<p>This says:</p>
+
+<blockquote>
+  <p>The return of the new policy equals the return of the old policy plus the expected discounted advantages of the new policy’s actions, evaluated relative to the old policy.</p>
+</blockquote>
+
+<p>The expectation is over trajectories generated by $\pi’$.</p>
+
+<h2 id="18-rewriting-trajectory-expectation-into-state-action-probabilities">18. Rewriting trajectory expectation into state-action probabilities</h2>
+
+<p>Start with</p>
+
+\[\mathbb E_{\tau\sim\pi'}
+\left[
+\sum_{t=0}^{\infty}\gamma^tA_\pi(s_t,a_t)
+\right].\]
+
+<p>By linearity of expectation,</p>
+
+<h1>$$</h1>
+<p>\sum_{t=0}^{\infty}
+\gamma^t
+\mathbb E_{\tau\sim\pi’}
+\left[
+A_\pi(s_t,a_t)
+\right].
+$$</p>
+
+<p>Now expand the expectation over possible state-action pairs:</p>
+
+\[\mathbb E[A_\pi(s_t,a_t)]
+=
+\sum_s\sum_a
+P(s_t=s,a_t=a\mid \pi')
+A_\pi(s,a).\]
+
+<p>Factor the joint probability:</p>
+
+\[P(s_t = s,a_t = a\mid \pi') = P(s_t = s\mid\pi')\pi'(a\mid s).\]
+
+<p>Therefore,</p>
+
+\[\mathbb E[A_\pi(s_t,a_t)]
+=
+\sum_s
+P(s_t=s\mid\pi')
+\sum_a
+\pi'(a\mid s)A_\pi(s,a).\]
+
+<p>Substituting back gives</p>
+
+\[J^R(\pi')
+=
+J^R(\pi)
++
+\sum_{t=0}^{\infty}
+\sum_s
+P(s_t=s\mid\pi')
+\sum_a
+\pi'(a\mid s)
+\gamma^tA_\pi(s,a).\]
+
+<p>Define the discounted state visitation measure</p>
+
+\[d_{\pi'}(s) = \sum_{t = 0}^{\infty} \gamma^tP(s_t = s\mid\pi').\]
+
+<p>Then</p>
+
+\[J^R(\pi')
+=
+J^R(\pi)
++
+\sum_s d_{\pi'}(s)
+\sum_a \pi'(a\mid s)A_\pi(s,a).\]
+
+<p>This form is useful because it separates:</p>
+
+<ol>
+  <li>how often the new policy visits each state, and</li>
+  <li>what actions the new policy takes in those states.</li>
+</ol>
+
+<h2 id="19-surrogate-objective-what-is-being-approximated">19. Surrogate objective: what is being approximated?</h2>
+
+<p>The exact expression is</p>
+
+\[J^R(\pi')
+=
+J^R(\pi)
++
+\sum_s d_{\pi'}(s)
+\sum_a \pi'(a\mid s)A_\pi(s,a).\]
+
+<p>The hard part is</p>
+
+\[d_{\pi'}(s),\]
+
+<p>because it depends on the new policy $\pi’$. Computing the future state distribution under every candidate new policy is hard.</p>
+
+<p>TRPO therefore uses the surrogate</p>
+
+\[L_\pi(\pi')
+=
+J^R(\pi)
++
+\sum_s d_\pi(s)
+\sum_a \pi'(a\mid s)A_\pi(s,a).\]
+
+<p>The approximation is:</p>
+
+\[d_{\pi'}(s)\approx d_\pi(s).\]
+
+<p>This is the crucial clarification:</p>
+
+\[\boxed{\text{TRPO is not approximating }\pi'\text{ with }\pi.}\]
+
+<p>It is approximating the new policy’s state visitation distribution with the old policy’s state visitation distribution.</p>
+
+<p>The new policy still appears inside</p>
+
+\[\pi'(a\mid s).\]
+
+<p>So the surrogate asks:</p>
+
+<blockquote>
+  <p>If the states we visit stayed approximately the same as under the old policy, would the new policy choose better actions in those states?</p>
+</blockquote>
+
+<p>This approximation is only reasonable when the new policy stays close to the old one. That is why TRPO uses a KL trust region.</p>
+
+<h2 id="20-importance-sampling-ratio">20. Importance-sampling ratio</h2>
+
+<p>In practice, the data are collected from the old policy</p>
+
+\[\pi_{\theta_k}.\]
+
+<p>But the surrogate evaluates a candidate new policy</p>
+
+\[\pi_\theta.\]
+
+<p>To use old-policy data for a new-policy objective, we use the probability ratio</p>
+
+\[\rho_t(\theta) = \frac{\pi_\theta(a_t\mid s_t)} {\pi_{\theta_k}(a_t\mid s_t)}.\]
+
+<p>Here I write $\rho_t(\theta)$ instead of $r_t(\theta)$ to avoid confusion with reward $r_t$.</p>
+
+<p>The sampled surrogate is</p>
+
+\[\widehat L_k(\theta)
+=
+\frac{1}{N}
+\sum_{t=1}^{N}
+\rho_t(\theta)\widehat A_t.\]
+
+<p>If</p>
+
+\[\widehat A_t&gt;0,\]
+
+<p>then maximizing $\widehat L_k$ increases the probability of action $a_t$ in state $s_t$.</p>
+
+<p>If</p>
+
+\[\widehat A_t&lt;0,\]
+
+<p>then maximizing $\widehat L_k$ decreases the probability of action $a_t$ in state $s_t$.</p>
+
+<h2 id="21-why-optimize-after-the-trajectory-is-already-observed">21. Why optimize after the trajectory is already observed?</h2>
+
+<p>The observed trajectory is not the final goal. It is a training sample.</p>
+
+<p>After rollout, we know what happened under the old policy. But the policy has not yet been improved.</p>
+
+<p>The point of optimizing the surrogate is to update future behavior:</p>
+
+\[\theta_k\rightarrow \theta_{k+1}.\]
+
+<p>The data say which actions were better or worse than expected. The objective changes the policy so that next time, in similar states, better actions are more likely and worse actions are less likely.</p>
+
+<p>This is analogous to supervised learning. Once you have a dataset of images and labels, you still optimize a loss function because you want the model to perform better on future images.</p>
+
+<p>In RL:</p>
+
+\[\text{rollout} = \text{training data},\]
+
+\[\widehat L_k(\theta)=\text{policy training objective}.\]
+
+<h1 id="trpo">TRPO</h1>
+
+<h2 id="22-trpo-core-idea">22. TRPO core idea</h2>
+
+<p>TRPO tries to improve the surrogate objective while keeping the new policy close to the old policy.</p>
+
+<p>The practical constrained problem is</p>
+
+\[\max_\theta L_{\theta_{\text{old}}}(\theta)\]
+
+<p>subject to</p>
+
+\[\bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta)\le \delta.\]
+
+<p>The average KL divergence is</p>
+
+\[\bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta)
+=
+\mathbb E_{s}
+\left[
+D_{\mathrm{KL}}
+\left(
+\pi_{\theta_{\text{old}}}(\cdot\mid s)
+\;\|\;
+\pi_\theta(\cdot\mid s)
+\right)
+\right].\]
+
+<p>The KL constraint says:</p>
+
+<blockquote>
+  <p>Improve the policy, but do not change it so much that the old trajectory becomes irrelevant.</p>
+</blockquote>
+
+<p>The OmniSafe TRPO tutorial notes that the theoretical maximum-state KL constraint is impractical, so practical TRPO uses an average KL approximation.</p>
+
+<h2 id="23-how-the-kl-constraint-is-imposed-in-trpo">23. How the KL constraint is imposed in TRPO</h2>
+
+<p>TRPO imposes the KL constraint as a constrained optimization problem, not merely as a regular loss term.</p>
+
+<p>It solves approximately:</p>
+
+\[\max_\theta L_{\theta_{\text{old}}}(\theta)\]
+
+<p>subject to</p>
+
+\[\bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta)\le \delta.\]
+
+<p>Locally, let</p>
+
+\[\Delta\theta=\theta-\theta_{\text{old}}.\]
+
+<p>Linearize the objective:</p>
+
+\[L(\theta_{\text{old}} + \Delta\theta) \approx L(\theta_{\text{old}}) + g^T\Delta\theta.\]
+
+<p>Quadratically approximate the KL constraint:</p>
+
+\[\bar D_{\mathrm{KL}}(\theta_{\text{old}},\theta_{\text{old}} + \Delta\theta) \approx \frac{1}{2}\Delta\theta^TH\Delta\theta.\]
+
+<p>Then TRPO solves the local subproblem</p>
+
+\[\max_{\Delta\theta} g^T\Delta\theta\]
+
+<p>subject to</p>
+
+\[\frac{1}{2}\Delta\theta^TH\Delta\theta\le \delta.\]
+
+<p>The natural-gradient direction is approximately</p>
+
+\[s\approx H^{-1}g.\]
+
+<p>Rather than compute $H^{-1}$, TRPO solves</p>
+
+\[Hs=g\]
+
+<p>using conjugate gradient.</p>
+
+<p>The step is scaled by</p>
+
+\[\beta = \sqrt{ \frac{2\delta}{s^THs} }.\]
+
+<p>So the full candidate step is</p>
+
+\[\Delta\theta_{\mathrm{full}}=\beta s.\]
+
+<p>Then TRPO performs backtracking line search to make sure the actual neural-network update improves the surrogate objective and satisfies the KL constraint.</p>
+
+<h2 id="24-trpo-algorithm-with-robot-arm-example">24. TRPO algorithm with robot-arm example</h2>
+
+<p>Suppose the task is robot-arm grasping.</p>
+
+<p>State:</p>
+
+\[s_t = \text{joint angles, velocities, gripper position, object position}.\]
+
+<p>Action:</p>
+
+\[a_t = \text{motor torque command}.\]
+
+<p>Reward:</p>
+
+\[r_t
+=
+-\|x_{\text{gripper},t}-x_{\text{object},t}\|_2
+-0.01\|a_t\|^2
++
+10\cdot\mathbf 1\{\text{object grasped}\}.\]
+
+<p>Algorithm:</p>
+
+<ol>
+  <li>
+    <p>Initialize policy parameters $\theta_0$ and value parameters $\phi_0$.</p>
+  </li>
+  <li>
+    <p>At iteration $k$, collect trajectories using</p>
+  </li>
+</ol>
+
+\[a_t\sim\pi_{\theta_k}(\cdot\mid s_t).\]
+
+<ol>
+  <li>Observe rollout data:</li>
+</ol>
+
+\[\mathcal D_k = \{(s_t,a_t,r_t,s_{t + 1})\}_{t = 1}^{N}.\]
+
+<ol>
+  <li>Use the value function to compute TD residuals:</li>
+</ol>
+
+\[\delta_t^V = r_t + \gamma V_{\phi_k}(s_{t + 1})-V_{\phi_k}(s_t).\]
+
+<ol>
+  <li>Compute GAE advantages:</li>
+</ol>
+
+\[\widehat A_t
+=
+\sum_{\ell=0}^{\infty}
+(\gamma\lambda)^\ell
+\delta_{t+\ell}^V.\]
+
+<ol>
+  <li>Define the sampled surrogate:</li>
+</ol>
+
+\[\widehat L_k(\theta)
+=
+\frac{1}{N}
+\sum_{t=1}^{N}
+\frac{\pi_\theta(a_t\mid s_t)}
+{\pi_{\theta_k}(a_t\mid s_t)}
+\widehat A_t.\]
+
+<ol>
+  <li>Define the average KL constraint:</li>
+</ol>
+
+\[\widehat{\bar D}_{\mathrm{KL}}(\theta_k,\theta)
+=
+\frac{1}{N}
+\sum_{t=1}^{N}
+D_{\mathrm{KL}}
+\left(
+\pi_{\theta_k}(\cdot\mid s_t)
+\;\|\;
+\pi_\theta(\cdot\mid s_t)
+\right).\]
+
+<ol>
+  <li>Approximate the constrained problem locally:</li>
+</ol>
+
+\[\max_{\Delta\theta}g^T\Delta\theta\]
+
+<p>subject to</p>
+
+\[\frac{1}{2}\Delta\theta^TH\Delta\theta\le \delta.\]
+
+<ol>
+  <li>Use conjugate gradient to solve</li>
+</ol>
+
+\[Hs=g.\]
+
+<ol>
+  <li>Scale the step:</li>
+</ol>
+
+\[\Delta\theta_{\mathrm{full}} = \sqrt{\frac{2\delta}{s^THs}}\,s.\]
+
+<ol>
+  <li>Backtrack until both conditions hold:</li>
+</ol>
+
+\[\widehat L_k(\theta_k + \alpha\Delta\theta_{\mathrm{full}}) \ge \widehat L_k(\theta_k)\]
+
+<p>and</p>
+
+\[\widehat{\bar D}_{\mathrm{KL}} (\theta_k,\theta_k + \alpha\Delta\theta_{\mathrm{full}}) \le \delta.\]
+
+<ol>
+  <li>Accept:</li>
+</ol>
+
+\[\theta_{k + 1} = \theta_k + \alpha\Delta\theta_{\mathrm{full}}.\]
+
+<ol>
+  <li>Update the value function by regression:</li>
+</ol>
+
+\[\min_\phi
+\frac{1}{N}
+\sum_t
+\left(
+V_\phi(s_t)-\widehat G_t
+\right)^2.\]
+
+<p>For the robot, TRPO makes successful reaching and grasping actions more likely, while using the KL constraint to prevent the motor-control policy from changing too violently between updates.</p>
+
+<h1 id="cpi-and-trpo">CPI and TRPO</h1>
+
+<h2 id="25-cpi-is-not-trpo-with-temporal-weighting">25. CPI is not “TRPO with temporal weighting”</h2>
+
+<p>CPI stands for <strong>Conservative Policy Iteration</strong>.</p>
+
+<p>CPI updates the policy by mixing the old policy with an improved policy:</p>
+
+\[\pi_{\mathrm{new}} = (1-\alpha)\pi_{\mathrm{old}} + \alpha\pi^*.\]
+
+<p>The small mixture coefficient $\alpha$ makes the update conservative.</p>
+
+<p>TRPO generalizes this idea. Instead of explicitly mixing policies, TRPO constrains the distance between the old and new policies:</p>
+
+\[\bar D_{\mathrm{KL}}(\pi_{\mathrm{old}},\pi_{\mathrm{new}})\le \delta.\]
+
+<p>So the connection is:</p>
+
+\[\text{CPI conservatism via mixture coefficient }\alpha\]
+
+<p>becomes</p>
+
+\[\text{TRPO conservatism via KL trust region }\delta.\]
+
+<p>The temporal discounting term</p>
+
+\[d_\pi(s)=\sum_{t=0}^{\infty}\gamma^tP(s_t=s\mid\pi)\]
+
+<p>appears because the objective is discounted return. It is not what distinguishes CPI from TRPO.</p>
+
+<h1 id="ppo">PPO</h1>
+
+<h2 id="26-ppo-core-idea">26. PPO core idea</h2>
+
+<p>PPO has the same broad goal as TRPO:</p>
+
+<blockquote>
+  <p>Improve the policy using current data, but do not move the new policy too far from the old policy.</p>
+</blockquote>
+
+<p>TRPO uses a hard KL-constrained optimization problem. PPO replaces that with a simpler first-order objective.</p>
+
+<p>The most common version is PPO-Clip.</p>
+
+<p>Define the probability ratio</p>
+
+\[\rho_t(\theta) = \frac{\pi_\theta(a_t\mid s_t)} {\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)}.\]
+
+<p>The unclipped objective would be</p>
+
+\[\rho_t(\theta)\widehat A_t.\]
+
+<p>PPO clips the ratio into the interval</p>
+
+\[[1-\varepsilon,1+\varepsilon].\]
+
+<p>The PPO-Clip objective is</p>
+
+\[L^{\mathrm{CLIP}}(\theta)
+=
+\widehat{\mathbb E}_t
+\left[
+\min
+\left(
+\rho_t(\theta)\widehat A_t,
+\operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon)\widehat A_t
+\right)
+\right].\]
+
+<p>This objective discourages very large policy updates without requiring TRPO’s conjugate-gradient and line-search machinery.</p>
+
+<h2 id="27-ppo-clipping-intuition">27. PPO clipping intuition</h2>
+
+<p>Suppose</p>
+
+\[\varepsilon=0.2.\]
+
+<p>Then PPO clips the probability ratio into</p>
+
+\[[0.8,1.2].\]
+
+<h3 id="good-action">Good action</h3>
+
+<p>Suppose the robot moved toward the object, so</p>
+
+\[\widehat A_t=+2.\]
+
+<p>The old policy assigned probability</p>
+
+\[\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)=0.20.\]
+
+<p>The new policy assigns</p>
+
+\[\pi_\theta(a_t\mid s_t)=0.30.\]
+
+<p>Then</p>
+
+\[\rho_t(\theta)=\frac{0.30}{0.20}=1.5.\]
+
+<p>Unclipped:</p>
+
+\[1.5(2)=3.0.\]
+
+<p>Clipped:</p>
+
+\[1.2(2)=2.4.\]
+
+<p>PPO uses</p>
+
+\[\min(3.0,2.4)=2.4.\]
+
+<p>The policy still gets credit for making the good action more likely, but it does not get unlimited extra credit for making a large jump.</p>
+
+<h3 id="bad-action">Bad action</h3>
+
+<p>Suppose the robot moved away from the object, so</p>
+
+\[\widehat A_t=-2.\]
+
+<p>The old probability was</p>
+
+\[0.20,\]
+
+<p>and the new probability is</p>
+
+\[0.05.\]
+
+<p>Then</p>
+
+\[\rho_t(\theta)=0.25.\]
+
+<p>Unclipped:</p>
+
+\[0.25(-2)=-0.5.\]
+
+<p>Clipped:</p>
+
+\[0.8(-2)=-1.6.\]
+
+<p>PPO uses</p>
+
+\[\min(-0.5,-1.6)=-1.6.\]
+
+<p>Since PPO maximizes the objective, $-1.6$ is worse than $-0.5$. This prevents the objective from rewarding a huge one-step suppression of a bad action too much.</p>
+
+<p>The general rule is:</p>
+
+<ul>
+  <li>If the action was good, PPO limits how much extra reward the objective gives for increasing its probability.</li>
+  <li>If the action was bad, PPO limits how much extra reward the objective gives for decreasing its probability.</li>
+</ul>
+
+<h2 id="28-ppo-algorithm-with-robot-arm-example">28. PPO algorithm with robot-arm example</h2>
+
+<ol>
+  <li>
+    <p>Initialize policy parameters $\theta_0$ and value parameters $\phi_0$.</p>
+  </li>
+  <li>
+    <p>At iteration $k$, collect rollouts using the current policy:</p>
+  </li>
+</ol>
+
+\[a_t\sim\pi_{\theta_k}(\cdot\mid s_t).\]
+
+<ol>
+  <li>Store</li>
+</ol>
+
+\[(s_t,a_t,r_t,s_{t+1},\log\pi_{\theta_k}(a_t\mid s_t)).\]
+
+<ol>
+  <li>Compute TD residuals:</li>
+</ol>
+
+\[\delta_t^V = r_t + \gamma V_{\phi_k}(s_{t + 1})-V_{\phi_k}(s_t).\]
+
+<ol>
+  <li>Compute GAE advantages:</li>
+</ol>
+
+\[\widehat A_t
+=
+\sum_{\ell=0}^{\infty}
+(\gamma\lambda)^\ell
+\delta_{t+\ell}^V.\]
+
+<ol>
+  <li>Compute critic targets:</li>
+</ol>
+
+\[\widehat G_t = \widehat A_t + V_{\phi_k}(s_t).\]
+
+<ol>
+  <li>
+    <p>For several epochs, sample minibatches from the collected rollout data.</p>
+  </li>
+  <li>
+    <p>Compute the probability ratio:</p>
+  </li>
+</ol>
+
+\[\rho_t(\theta)
+=
+\exp
+\left(
+\log\pi_\theta(a_t\mid s_t)
+-
+\log\pi_{\theta_k}(a_t\mid s_t)
+\right).\]
+
+<ol>
+  <li>Maximize the PPO-Clip objective:</li>
+</ol>
+
+\[L^{\mathrm{CLIP}}(\theta)
+=
+\widehat{\mathbb E}_t
+\left[
+\min
+\left(
+\rho_t(\theta)\widehat A_t,
+\operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon)\widehat A_t
+\right)
+\right].\]
+
+<p>In code, this is often implemented as minimizing the negative objective:</p>
+
+\[\mathcal L_{\mathrm{actor}}(\theta) = - L^{\mathrm{CLIP}}(\theta).\]
+
+<ol>
+  <li>Update the value function by minimizing</li>
+</ol>
+
+\[\mathcal L_{\mathrm{critic}}(\phi)
+=
+\widehat{\mathbb E}_t
+\left[
+\left(
+V_\phi(s_t)-\widehat G_t
+\right)^2
+\right].\]
+
+<ol>
+  <li>Optionally monitor KL divergence:</li>
+</ol>
+
+\[\widehat D_{\mathrm{KL}}
+=
+\widehat{\mathbb E}_t
+\left[
+D_{\mathrm{KL}}
+\left(
+\pi_{\theta_k}(\cdot\mid s_t)
+\;\|\;
+\pi_\theta(\cdot\mid s_t)
+\right)
+\right].\]
+
+<p>Some PPO implementations stop early if the KL gets too large.</p>
+
+<ol>
+  <li>Set the updated parameters to</li>
+</ol>
+
+\[\theta_{k + 1}\leftarrow \theta,\qquad \phi_{k + 1}\leftarrow \phi.\]
+
+<ol>
+  <li>Discard the old batch and collect a fresh batch with the new policy.</li>
+</ol>
+
+<p>PPO is still on-policy. It reuses a fresh batch for multiple minibatch epochs, but it cannot keep using old data indefinitely because the policy changes.</p>
+
+<h2 id="29-entropy-bonus-in-ppo">29. Entropy bonus in PPO</h2>
+
+<p>Many PPO implementations add an entropy bonus to encourage exploration. If the actor is optimized by minimizing a loss, a common form is</p>
+
+\[\mathcal L_{\mathrm{actor}}(\theta)
+=
+-
+L^{\mathrm{CLIP}}(\theta)
+-
+\eta\,\widehat{\mathbb E}_t\left[H(\pi_\theta(\cdot\mid s_t))\right].\]
+
+<p>The entropy term is subtracted from the loss. Because the optimizer minimizes the loss, subtracting entropy rewards higher entropy. This is intentional: higher entropy means the policy remains more stochastic, which encourages exploration and prevents premature collapse to a deterministic policy.</p>
+
+<p>For a robot arm, entropy helps the policy keep trying varied motor commands early in training instead of immediately committing to one motion pattern that may be locally bad.</p>
+
+<h2 id="30-trpo-versus-ppo-side-by-side">30. TRPO versus PPO side by side</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Concept</th>
+      <th>TRPO</th>
+      <th>PPO</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Full name</td>
+      <td>Trust Region Policy Optimization</td>
+      <td>Proximal Policy Optimization</td>
+    </tr>
+    <tr>
+      <td>Main idea</td>
+      <td>Improve the policy while enforcing a hard trust region</td>
+      <td>Improve the policy while softly discouraging large updates</td>
+    </tr>
+    <tr>
+      <td>Update mechanism</td>
+      <td>Constrained optimization</td>
+      <td>Unconstrained first-order optimization</td>
+    </tr>
+    <tr>
+      <td>Trust-region mechanism</td>
+      <td>Explicit KL-divergence constraint</td>
+      <td>Clipped probability ratio; sometimes KL early stopping or KL penalty</td>
+    </tr>
+    <tr>
+      <td>Main objective</td>
+      <td>Maximize the surrogate subject to a KL bound</td>
+      <td>Maximize the clipped surrogate objective</td>
+    </tr>
+    <tr>
+      <td>Optimization method</td>
+      <td>Natural-gradient-style step, conjugate gradient, step scaling, line search</td>
+      <td>Minibatch gradient descent or Adam</td>
+    </tr>
+    <tr>
+      <td>Complexity</td>
+      <td>More mathematically involved</td>
+      <td>Simpler and easier to implement</td>
+    </tr>
+    <tr>
+      <td>Data usage</td>
+      <td>On-policy</td>
+      <td>On-policy, but usually reuses each fresh batch for several epochs</td>
+    </tr>
+    <tr>
+      <td>Value function</td>
+      <td>Usually uses a learned critic $V_\phi(s)$</td>
+      <td>Usually uses a learned critic $V_\phi(s)$</td>
+    </tr>
+    <tr>
+      <td>Advantage estimation</td>
+      <td>Commonly uses GAE, but does not require it</td>
+      <td>Commonly uses GAE, but does not require it</td>
+    </tr>
+    <tr>
+      <td>What happens if update is too large?</td>
+      <td>Line search rejects or shrinks the update</td>
+      <td>Clipping removes much of the objective incentive for large ratio changes</td>
+    </tr>
+    <tr>
+      <td>Practical popularity</td>
+      <td>Strong theoretical motivation but harder to implement</td>
+      <td>Widely used because it is simpler and robust</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>TRPO solves</p>
+
+\[\max_\theta \widehat{\mathbb E}_t\left[\rho_t(\theta)\widehat A_t\right]\]
+
+<p>subject to</p>
+
+\[\widehat{\mathbb E}_t\left[D_{\mathrm{KL}}\left(\pi_{\theta_{\mathrm{old}}}(\cdot\mid s_t)\|\pi_\theta(\cdot\mid s_t)\right)\right]\le\delta.\]
+
+<p>PPO-Clip solves the unconstrained objective</p>
+
+\[\max_\theta\widehat{\mathbb E}_t\left[\min\left(\rho_t(\theta)\widehat A_t,\operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon)\widehat A_t\right)\right].\]
+
+<p>In one sentence: TRPO enforces a hard KL trust region; PPO approximates the same trust-region idea by clipping the policy probability ratio.</p>
+
+<p>Both TRPO and PPO commonly use GAE, but GAE is not part of the definition of either algorithm. TRPO/PPO are policy-update rules; GAE is a method for estimating $\widehat A_t$, the advantage values used inside those policy-update rules.</p>
+
+<h1 id="main-misunderstandings-and-clarifications">Main misunderstandings and clarifications</h1>
+
+<h2 id="31-misunderstanding-the-surrogate-approximates-pi-with-pi">31. Misunderstanding: “The surrogate approximates $\pi$ with $\pi’$.”</h2>
+
+<p>The surrogate does not replace $\pi’$ with $\pi$. The actual approximation is about where the new policy will take us. TRPO replaces</p>
+
+\[d_{\pi'}(s)\]
+
+<p>with</p>
+
+\[d_\pi(s).\]
+
+<p>The new policy $\pi’$ still appears in the action probabilities:</p>
+
+\[\sum_a \pi'(a\mid s)A_\pi(s,a).\]
+
+<p>So the approximation is about state visitation frequencies, not the action policy itself.</p>
+
+<h2 id="32-misunderstanding-if-we-already-observed-the-trajectory-why-optimize-anything">32. Misunderstanding: “If we already observed the trajectory, why optimize anything?”</h2>
+
+<p>The trajectory is training data. It tells us how good or bad past sampled actions were, and the objective uses that information to update the policy for future rollouts. The completed trajectory cannot be changed, but the policy that generates the next trajectory can.</p>
+
+<h2 id="33-misunderstanding-how-can-we-know-r_t1-at-time-t">33. Misunderstanding: “How can we know $r_{t+1}$ at time $t$?”</h2>
+
+<p>We usually do not know it at time $t$. In model-free RL, $r_{t+1}$ is observed later, after taking the next action. Returns and GAE are computed after rollout data are collected, not while the policy is choosing $a_t$.</p>
+
+<h2 id="34-misunderstanding-the-value-function-is-known-before-rl">34. Misunderstanding: “The value function is known before RL.”</h2>
+
+<p>Usually it is not known beforehand. It is learned during training as a critic. Early in training, $V_\phi(s)$ may be very inaccurate; it improves by fitting observed returns from rollouts.</p>
+
+<h2 id="35-misunderstanding-the-policy-is-fixed-before-rl">35. Misunderstanding: “The policy is fixed before RL.”</h2>
+
+<p>The policy is initialized before RL, often randomly, but it is not fixed. At iteration $k$, $\pi_{\theta_k}$ generates data. The update produces $\pi_{\theta_{k+1}}$, and that new policy generates the next batch.</p>
+
+<h2 id="36-misunderstanding-cpi-is-trpo-with-temporal-weighting">36. Misunderstanding: “CPI is TRPO with temporal weighting.”</h2>
+
+<p>CPI is conservative because it mixes old and new policies:</p>
+
+\[\pi_{\mathrm{new}} = (1-\alpha)\pi_{\mathrm{old}} + \alpha\pi^*.\]
+
+<p>TRPO is conservative for a different reason: it constrains KL divergence.</p>
+
+\[\bar D_{\mathrm{KL}}(\pi_{\mathrm{old}},\pi_{\mathrm{new}})\le\delta.\]
+
+<p>Temporal discounting appears in both because the return objective is discounted, but that is not the defining CPI-to-TRPO relationship.</p>
+
+<h2 id="37-misunderstanding-the-symbol-r_t-always-means-reward">37. Misunderstanding: “The symbol $r_t$ always means reward.”</h2>
+
+<p>There is a notation collision in RL. Often,</p>
+
+\[r_t\]
+
+<p>means reward.</p>
+
+<p>But in PPO/TRPO derivations, many authors use</p>
+
+\[r_t(\theta) = \frac{\pi_\theta(a_t\mid s_t)} {\pi_{\theta_{\mathrm{old}}}(a_t\mid s_t)}\]
+
+<p>to mean the probability ratio.</p>
+
+<p>To avoid confusion, these notes used</p>
+
+\[\rho_t(\theta)\]
+
+<p>for the probability ratio.</p>
+
+<h1 id="one-page-mental-model">One-page mental model</h1>
+
+<p>TRPO and PPO both follow this template:</p>
+
+<ol>
+  <li>Run the current policy and collect trajectories.</li>
+  <li>Use rewards and the value function to compute advantages.</li>
+  <li>Use advantages to tell whether sampled actions were better or worse than expected.</li>
+  <li>Update the policy to make good sampled actions more likely and bad sampled actions less likely.</li>
+  <li>Prevent the policy update from being too large.</li>
+</ol>
+
+<p>TRPO prevents large updates with a KL constraint:</p>
+
+\[\bar D_{\mathrm{KL}}(\pi_{\mathrm{old}},\pi_{\mathrm{new}})\le\delta.\]
+
+<p>PPO prevents large updates with clipping:</p>
+
+\[\operatorname{clip}(\rho_t(\theta),1-\varepsilon,1+\varepsilon).\]
+
+<p>The value function is a helper. It predicts expected future return so that the algorithm can estimate whether an action was better or worse than expected.</p>
+
+<p>GAE is a helper for the helper. It produces a stable advantage estimate by combining one-step and multi-step TD errors.</p>
+
+<p>The rollout is not the thing being optimized. The rollout is the dataset. The policy is what is optimized for future behavior.</p>
+
+<h1 id="minimal-python-demo-ppo-and-trpo-on-a-discrete-action-environment">Minimal Python demo: PPO and TRPO on a discrete-action environment</h1>
+
+<p>The following code is intentionally small and educational. It uses PyTorch and Gymnasium on a discrete-action task such as CartPole. PPO is relatively short because it uses ordinary gradient descent. TRPO is longer because it needs a KL Hessian-vector product, conjugate gradient, step scaling, and line search.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># pip install torch gymnasium
+</span>
+<span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="n">torch</span>
+<span class="kn">import</span> <span class="n">torch.nn</span> <span class="k">as</span> <span class="n">nn</span>
+<span class="kn">import</span> <span class="n">torch.optim</span> <span class="k">as</span> <span class="n">optim</span>
+<span class="kn">import</span> <span class="n">gymnasium</span> <span class="k">as</span> <span class="n">gym</span>
+<span class="kn">from</span> <span class="n">torch.distributions</span> <span class="kn">import</span> <span class="n">Categorical</span>
+<span class="kn">from</span> <span class="n">torch.distributions.kl</span> <span class="kn">import</span> <span class="n">kl_divergence</span>
+<span class="kn">from</span> <span class="n">torch.nn.utils</span> <span class="kn">import</span> <span class="n">parameters_to_vector</span><span class="p">,</span> <span class="n">vector_to_parameters</span>
+
+<span class="k">def</span> <span class="nf">mlp</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">,</span> <span class="n">hidden</span><span class="o">=</span><span class="mi">64</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Small neural network used for both the policy and value function.</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="n">nn</span><span class="p">.</span><span class="nc">Sequential</span><span class="p">(</span>
+        <span class="n">nn</span><span class="p">.</span><span class="nc">Linear</span><span class="p">(</span><span class="n">in_dim</span><span class="p">,</span> <span class="n">hidden</span><span class="p">),</span>
+        <span class="n">nn</span><span class="p">.</span><span class="nc">Tanh</span><span class="p">(),</span>
+        <span class="n">nn</span><span class="p">.</span><span class="nc">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">hidden</span><span class="p">),</span>
+        <span class="n">nn</span><span class="p">.</span><span class="nc">Tanh</span><span class="p">(),</span>
+        <span class="n">nn</span><span class="p">.</span><span class="nc">Linear</span><span class="p">(</span><span class="n">hidden</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">),</span>
+    <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ActorCritic</span><span class="p">(</span><span class="n">nn</span><span class="p">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Actor outputs an action distribution; critic outputs a scalar value.</span><span class="sh">"""</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">obs_dim</span><span class="p">,</span> <span class="n">act_dim</span><span class="p">):</span>
+        <span class="nf">super</span><span class="p">().</span><span class="nf">__init__</span><span class="p">()</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">pi</span> <span class="o">=</span> <span class="nf">mlp</span><span class="p">(</span><span class="n">obs_dim</span><span class="p">,</span> <span class="n">act_dim</span><span class="p">)</span>   <span class="c1"># policy logits for discrete actions
+</span>        <span class="n">self</span><span class="p">.</span><span class="n">v</span> <span class="o">=</span> <span class="nf">mlp</span><span class="p">(</span><span class="n">obs_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>          <span class="c1"># value estimate V_phi(s)
+</span>
+    <span class="k">def</span> <span class="nf">dist</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">pi</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nc">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="o">=</span><span class="n">logits</span><span class="p">),</span> <span class="n">logits</span>
+
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="nf">v</span><span class="p">(</span><span class="n">obs</span><span class="p">).</span><span class="nf">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">collect_rollout</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Collect on-policy data and compute GAE advantages.</span><span class="sh">"""</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="p">.</span><span class="nf">reset</span><span class="p">()</span>
+    <span class="n">obs_buf</span><span class="p">,</span> <span class="n">act_buf</span><span class="p">,</span> <span class="n">rew_buf</span><span class="p">,</span> <span class="n">next_obs_buf</span><span class="p">,</span> <span class="n">done_buf</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">logp_buf</span><span class="p">,</span> <span class="n">val_buf</span><span class="p">,</span> <span class="n">logits_buf</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">ep_returns</span><span class="p">,</span> <span class="n">ep_ret</span> <span class="o">=</span> <span class="p">[],</span> <span class="mf">0.0</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">obs_t</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">).</span><span class="nf">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="nf">no_grad</span><span class="p">():</span>
+            <span class="n">dist</span><span class="p">,</span> <span class="n">logits</span> <span class="o">=</span> <span class="n">ac</span><span class="p">.</span><span class="nf">dist</span><span class="p">(</span><span class="n">obs_t</span><span class="p">)</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="n">dist</span><span class="p">.</span><span class="nf">sample</span><span class="p">()</span>
+            <span class="n">logp</span> <span class="o">=</span> <span class="n">dist</span><span class="p">.</span><span class="nf">log_prob</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">ac</span><span class="p">.</span><span class="nf">value</span><span class="p">(</span><span class="n">obs_t</span><span class="p">)</span>
+
+        <span class="n">next_obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="p">.</span><span class="nf">step</span><span class="p">(</span><span class="n">action</span><span class="p">.</span><span class="nf">item</span><span class="p">())</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span>
+
+        <span class="n">obs_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">obs</span><span class="p">.</span><span class="nf">copy</span><span class="p">())</span>
+        <span class="n">act_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">action</span><span class="p">.</span><span class="nf">item</span><span class="p">())</span>
+        <span class="n">rew_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">reward</span><span class="p">)</span>
+        <span class="n">next_obs_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">next_obs</span><span class="p">.</span><span class="nf">copy</span><span class="p">())</span>
+        <span class="n">done_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">float</span><span class="p">(</span><span class="n">done</span><span class="p">))</span>
+        <span class="n">logp_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">logp</span><span class="p">.</span><span class="nf">item</span><span class="p">())</span>
+        <span class="n">val_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">value</span><span class="p">.</span><span class="nf">item</span><span class="p">())</span>
+        <span class="n">logits_buf</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">logits</span><span class="p">.</span><span class="nf">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nf">numpy</span><span class="p">())</span>
+
+        <span class="n">ep_ret</span> <span class="o">+=</span> <span class="n">reward</span>
+        <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+            <span class="n">ep_returns</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">ep_ret</span><span class="p">)</span>
+            <span class="n">ep_ret</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">obs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="p">.</span><span class="nf">reset</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="n">next_obs</span>
+
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">obs_buf</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">next_obs</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">next_obs_buf</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">acts</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">act_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="nb">long</span><span class="p">)</span>
+    <span class="n">rews</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">rew_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">dones</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">done_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">old_logp</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">logp_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">val_buf</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">old_logits</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">array</span><span class="p">(</span><span class="n">logits_buf</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="p">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">torch</span><span class="p">.</span><span class="nf">no_grad</span><span class="p">():</span>
+        <span class="n">next_vals</span> <span class="o">=</span> <span class="n">ac</span><span class="p">.</span><span class="nf">value</span><span class="p">(</span><span class="n">next_obs</span><span class="p">)</span>
+
+    <span class="c1"># One-step TD residual: delta_t = r_t + gamma V(s_{t+1}) - V(s_t).
+</span>    <span class="n">deltas</span> <span class="o">=</span> <span class="n">rews</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">dones</span><span class="p">)</span> <span class="o">*</span> <span class="n">next_vals</span> <span class="o">-</span> <span class="n">vals</span>
+
+    <span class="c1"># GAE is computed backward, but mathematically it is a forward-looking sum.
+</span>    <span class="n">adv</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">rews</span><span class="p">)</span>
+    <span class="n">last_adv</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nf">reversed</span><span class="p">(</span><span class="nf">range</span><span class="p">(</span><span class="n">steps</span><span class="p">)):</span>
+        <span class="n">last_adv</span> <span class="o">=</span> <span class="n">deltas</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">lam</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">dones</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">last_adv</span>
+        <span class="n">adv</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_adv</span>
+
+    <span class="n">returns</span> <span class="o">=</span> <span class="n">adv</span> <span class="o">+</span> <span class="n">vals</span>
+    <span class="n">adv</span> <span class="o">=</span> <span class="p">(</span><span class="n">adv</span> <span class="o">-</span> <span class="n">adv</span><span class="p">.</span><span class="nf">mean</span><span class="p">())</span> <span class="o">/</span> <span class="p">(</span><span class="n">adv</span><span class="p">.</span><span class="nf">std</span><span class="p">()</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>  <span class="c1"># normalization stabilizes training
+</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="sh">"</span><span class="s">obs</span><span class="sh">"</span><span class="p">:</span> <span class="n">obs</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">acts</span><span class="sh">"</span><span class="p">:</span> <span class="n">acts</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">old_logp</span><span class="sh">"</span><span class="p">:</span> <span class="n">old_logp</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">old_logits</span><span class="sh">"</span><span class="p">:</span> <span class="n">old_logits</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">adv</span><span class="sh">"</span><span class="p">:</span> <span class="n">adv</span><span class="p">.</span><span class="nf">detach</span><span class="p">(),</span>
+        <span class="sh">"</span><span class="s">returns</span><span class="sh">"</span><span class="p">:</span> <span class="n">returns</span><span class="p">.</span><span class="nf">detach</span><span class="p">(),</span>
+        <span class="sh">"</span><span class="s">ep_returns</span><span class="sh">"</span><span class="p">:</span> <span class="n">ep_returns</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">ppo_update</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pi_optimizer</span><span class="p">,</span> <span class="n">v_optimizer</span><span class="p">,</span> <span class="n">clip_eps</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">minibatch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">ent_coef</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">PPO update: clipped policy loss plus value regression.</span><span class="sh">"""</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">acts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">obs</span><span class="sh">"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">acts</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">old_logp</span><span class="p">,</span> <span class="n">adv</span><span class="p">,</span> <span class="n">returns</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">old_logp</span><span class="sh">"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">adv</span><span class="sh">"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">returns</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">obs</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="nf">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">minibatch_size</span><span class="p">):</span>
+            <span class="n">mb</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">as_tensor</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">minibatch_size</span><span class="p">])</span>
+            <span class="n">dist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ac</span><span class="p">.</span><span class="nf">dist</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="n">mb</span><span class="p">])</span>
+            <span class="n">logp</span> <span class="o">=</span> <span class="n">dist</span><span class="p">.</span><span class="nf">log_prob</span><span class="p">(</span><span class="n">acts</span><span class="p">[</span><span class="n">mb</span><span class="p">])</span>
+            <span class="n">ratio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">logp</span> <span class="o">-</span> <span class="n">old_logp</span><span class="p">[</span><span class="n">mb</span><span class="p">])</span>
+
+            <span class="n">unclipped</span> <span class="o">=</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">adv</span><span class="p">[</span><span class="n">mb</span><span class="p">]</span>
+            <span class="n">clipped</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">clamp</span><span class="p">(</span><span class="n">ratio</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">clip_eps</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">clip_eps</span><span class="p">)</span> <span class="o">*</span> <span class="n">adv</span><span class="p">[</span><span class="n">mb</span><span class="p">]</span>
+            <span class="n">policy_loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="p">.</span><span class="nf">min</span><span class="p">(</span><span class="n">unclipped</span><span class="p">,</span> <span class="n">clipped</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+
+            <span class="c1"># Entropy is subtracted from the loss, so higher entropy is rewarded.
+</span>            <span class="n">entropy_bonus</span> <span class="o">=</span> <span class="n">dist</span><span class="p">.</span><span class="nf">entropy</span><span class="p">().</span><span class="nf">mean</span><span class="p">()</span>
+            <span class="n">actor_loss</span> <span class="o">=</span> <span class="n">policy_loss</span> <span class="o">-</span> <span class="n">ent_coef</span> <span class="o">*</span> <span class="n">entropy_bonus</span>
+
+            <span class="n">pi_optimizer</span><span class="p">.</span><span class="nf">zero_grad</span><span class="p">()</span>
+            <span class="n">actor_loss</span><span class="p">.</span><span class="nf">backward</span><span class="p">()</span>
+            <span class="n">pi_optimizer</span><span class="p">.</span><span class="nf">step</span><span class="p">()</span>
+
+            <span class="n">value_loss</span> <span class="o">=</span> <span class="p">((</span><span class="n">ac</span><span class="p">.</span><span class="nf">value</span><span class="p">(</span><span class="n">obs</span><span class="p">[</span><span class="n">mb</span><span class="p">])</span> <span class="o">-</span> <span class="n">returns</span><span class="p">[</span><span class="n">mb</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+            <span class="n">v_optimizer</span><span class="p">.</span><span class="nf">zero_grad</span><span class="p">()</span>
+            <span class="n">value_loss</span><span class="p">.</span><span class="nf">backward</span><span class="p">()</span>
+            <span class="n">v_optimizer</span><span class="p">.</span><span class="nf">step</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">flat_grad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Flatten gradients into one vector.</span><span class="sh">"""</span>
+    <span class="n">grads</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">autograd</span><span class="p">.</span><span class="nf">grad</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="n">retain_graph</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="n">create_graph</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="p">.</span><span class="nf">cat</span><span class="p">([</span><span class="n">g</span><span class="p">.</span><span class="nf">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">grads</span><span class="p">])</span>
+
+<span class="k">def</span> <span class="nf">conjugate_gradient</span><span class="p">(</span><span class="n">Avp</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">nsteps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">residual_tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Approximately solve Ax=b using only matrix-vector products Avp(v).</span><span class="sh">"""</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="nf">clone</span><span class="p">()</span>
+    <span class="n">r_dot_old</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">nsteps</span><span class="p">):</span>
+        <span class="n">Avp_p</span> <span class="o">=</span> <span class="nc">Avp</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">r_dot_old</span> <span class="o">/</span> <span class="p">(</span><span class="n">torch</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Avp_p</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">+=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">p</span>
+        <span class="n">r</span> <span class="o">-=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">Avp_p</span>
+        <span class="n">r_dot_new</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r_dot_new</span> <span class="o">&lt;</span> <span class="n">residual_tol</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">r_dot_new</span> <span class="o">/</span> <span class="p">(</span><span class="n">r_dot_old</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">r</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">p</span>
+        <span class="n">r_dot_old</span> <span class="o">=</span> <span class="n">r_dot_new</span>
+    <span class="k">return</span> <span class="n">x</span>
+
+<span class="k">def</span> <span class="nf">trpo_update</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">v_optimizer</span><span class="p">,</span> <span class="n">max_kl</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">cg_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">backtrack_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">backtrack_coeff</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">vf_iters</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">TRPO update: natural-gradient step constrained by average KL.</span><span class="sh">"""</span>
+    <span class="n">obs</span><span class="p">,</span> <span class="n">acts</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">obs</span><span class="sh">"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">acts</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">old_logp</span><span class="p">,</span> <span class="n">old_logits</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">old_logp</span><span class="sh">"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">old_logits</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">adv</span><span class="p">,</span> <span class="n">returns</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">adv</span><span class="sh">"</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">returns</span><span class="sh">"</span><span class="p">]</span>
+    <span class="n">policy_params</span> <span class="o">=</span> <span class="nf">list</span><span class="p">(</span><span class="n">ac</span><span class="p">.</span><span class="n">pi</span><span class="p">.</span><span class="nf">parameters</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">surrogate_and_kl</span><span class="p">():</span>
+        <span class="n">dist</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">ac</span><span class="p">.</span><span class="nf">dist</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span>
+        <span class="n">logp</span> <span class="o">=</span> <span class="n">dist</span><span class="p">.</span><span class="nf">log_prob</span><span class="p">(</span><span class="n">acts</span><span class="p">)</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">exp</span><span class="p">(</span><span class="n">logp</span> <span class="o">-</span> <span class="n">old_logp</span><span class="p">)</span>
+        <span class="n">surrogate</span> <span class="o">=</span> <span class="p">(</span><span class="n">ratio</span> <span class="o">*</span> <span class="n">adv</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+        <span class="n">old_dist</span> <span class="o">=</span> <span class="nc">Categorical</span><span class="p">(</span><span class="n">logits</span><span class="o">=</span><span class="n">old_logits</span><span class="p">)</span>
+        <span class="n">kl</span> <span class="o">=</span> <span class="nf">kl_divergence</span><span class="p">(</span><span class="n">old_dist</span><span class="p">,</span> <span class="n">dist</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">surrogate</span><span class="p">,</span> <span class="n">kl</span>
+
+    <span class="c1"># Policy gradient g of the surrogate objective.
+</span>    <span class="n">surrogate</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nf">surrogate_and_kl</span><span class="p">()</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="nf">flat_grad</span><span class="p">(</span><span class="n">surrogate</span><span class="p">,</span> <span class="n">policy_params</span><span class="p">).</span><span class="nf">detach</span><span class="p">()</span>
+
+    <span class="c1"># Hessian-vector product for the KL curvature matrix H.
+</span>    <span class="k">def</span> <span class="nf">hvp</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">kl</span> <span class="o">=</span> <span class="nf">surrogate_and_kl</span><span class="p">()</span>
+        <span class="n">grad_kl</span> <span class="o">=</span> <span class="nf">flat_grad</span><span class="p">(</span><span class="n">kl</span><span class="p">,</span> <span class="n">policy_params</span><span class="p">,</span> <span class="n">create_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">grad_kl_v</span> <span class="o">=</span> <span class="p">(</span><span class="n">grad_kl</span> <span class="o">*</span> <span class="n">v</span><span class="p">).</span><span class="nf">sum</span><span class="p">()</span>
+        <span class="n">hess_v</span> <span class="o">=</span> <span class="nf">flat_grad</span><span class="p">(</span><span class="n">grad_kl_v</span><span class="p">,</span> <span class="n">policy_params</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="bp">True</span><span class="p">).</span><span class="nf">detach</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">hess_v</span> <span class="o">+</span> <span class="n">damping</span> <span class="o">*</span> <span class="n">v</span>
+
+    <span class="c1"># Natural-gradient direction: solve Hs = g.
+</span>    <span class="n">step_dir</span> <span class="o">=</span> <span class="nf">conjugate_gradient</span><span class="p">(</span><span class="n">hvp</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">nsteps</span><span class="o">=</span><span class="n">cg_iters</span><span class="p">)</span>
+    <span class="n">shs</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">torch</span><span class="p">.</span><span class="nf">dot</span><span class="p">(</span><span class="n">step_dir</span><span class="p">,</span> <span class="nf">hvp</span><span class="p">(</span><span class="n">step_dir</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">shs</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="c1"># Scale step so the quadratic KL approximation is within max_kl.
+</span>    <span class="n">full_step</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">max_kl</span> <span class="o">/</span> <span class="p">(</span><span class="n">shs</span> <span class="o">+</span> <span class="mf">1e-8</span><span class="p">))</span> <span class="o">*</span> <span class="n">step_dir</span>
+    <span class="n">old_params</span> <span class="o">=</span> <span class="nf">parameters_to_vector</span><span class="p">(</span><span class="n">policy_params</span><span class="p">).</span><span class="nf">detach</span><span class="p">()</span>
+    <span class="n">old_surrogate</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="nf">surrogate_and_kl</span><span class="p">()</span>
+    <span class="n">old_surrogate</span> <span class="o">=</span> <span class="n">old_surrogate</span><span class="p">.</span><span class="nf">detach</span><span class="p">()</span>
+
+    <span class="c1"># Backtracking line search checks actual improvement and actual KL.
+</span>    <span class="n">accepted</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">backtrack_iters</span><span class="p">):</span>
+        <span class="n">frac</span> <span class="o">=</span> <span class="n">backtrack_coeff</span> <span class="o">**</span> <span class="n">i</span>
+        <span class="nf">vector_to_parameters</span><span class="p">(</span><span class="n">old_params</span> <span class="o">+</span> <span class="n">frac</span> <span class="o">*</span> <span class="n">full_step</span><span class="p">,</span> <span class="n">policy_params</span><span class="p">)</span>
+        <span class="n">new_surrogate</span><span class="p">,</span> <span class="n">new_kl</span> <span class="o">=</span> <span class="nf">surrogate_and_kl</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">new_surrogate</span><span class="p">.</span><span class="nf">item</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">old_surrogate</span><span class="p">.</span><span class="nf">item</span><span class="p">()</span> <span class="ow">and</span> <span class="n">new_kl</span><span class="p">.</span><span class="nf">item</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">max_kl</span><span class="p">:</span>
+            <span class="n">accepted</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">break</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">accepted</span><span class="p">:</span>
+        <span class="nf">vector_to_parameters</span><span class="p">(</span><span class="n">old_params</span><span class="p">,</span> <span class="n">policy_params</span><span class="p">)</span>
+
+    <span class="c1"># Critic update by supervised regression to return targets.
+</span>    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">vf_iters</span><span class="p">):</span>
+        <span class="n">value_loss</span> <span class="o">=</span> <span class="p">((</span><span class="n">ac</span><span class="p">.</span><span class="nf">value</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="o">-</span> <span class="n">returns</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">).</span><span class="nf">mean</span><span class="p">()</span>
+        <span class="n">v_optimizer</span><span class="p">.</span><span class="nf">zero_grad</span><span class="p">()</span>
+        <span class="n">value_loss</span><span class="p">.</span><span class="nf">backward</span><span class="p">()</span>
+        <span class="n">v_optimizer</span><span class="p">.</span><span class="nf">step</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="n">algo</span><span class="o">=</span><span class="sh">"</span><span class="s">ppo</span><span class="sh">"</span><span class="p">,</span> <span class="n">env_id</span><span class="o">=</span><span class="sh">"</span><span class="s">CartPole-v1</span><span class="sh">"</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">):</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">gym</span><span class="p">.</span><span class="nf">make</span><span class="p">(</span><span class="n">env_id</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">env</span><span class="p">.</span><span class="n">action_space</span><span class="p">,</span> <span class="n">gym</span><span class="p">.</span><span class="n">spaces</span><span class="p">.</span><span class="n">Discrete</span><span class="p">),</span> <span class="sh">"</span><span class="s">Demo supports discrete actions only.</span><span class="sh">"</span>
+    <span class="n">obs_dim</span> <span class="o">=</span> <span class="n">env</span><span class="p">.</span><span class="n">observation_space</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">act_dim</span> <span class="o">=</span> <span class="n">env</span><span class="p">.</span><span class="n">action_space</span><span class="p">.</span><span class="n">n</span>
+    <span class="n">ac</span> <span class="o">=</span> <span class="nc">ActorCritic</span><span class="p">(</span><span class="n">obs_dim</span><span class="p">,</span> <span class="n">act_dim</span><span class="p">)</span>
+    <span class="n">pi_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">ac</span><span class="p">.</span><span class="n">pi</span><span class="p">.</span><span class="nf">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">3e-4</span><span class="p">)</span>
+    <span class="n">v_optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="p">.</span><span class="nc">Adam</span><span class="p">(</span><span class="n">ac</span><span class="p">.</span><span class="n">v</span><span class="p">.</span><span class="nf">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">iterations</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nf">collect_rollout</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">ac</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2048</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">algo</span> <span class="o">==</span> <span class="sh">"</span><span class="s">ppo</span><span class="sh">"</span><span class="p">:</span>
+            <span class="nf">ppo_update</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pi_optimizer</span><span class="p">,</span> <span class="n">v_optimizer</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">algo</span> <span class="o">==</span> <span class="sh">"</span><span class="s">trpo</span><span class="sh">"</span><span class="p">:</span>
+            <span class="nf">trpo_update</span><span class="p">(</span><span class="n">ac</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">v_optimizer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nc">ValueError</span><span class="p">(</span><span class="sh">"</span><span class="s">algo must be </span><span class="sh">'</span><span class="s">ppo</span><span class="sh">'</span><span class="s"> or </span><span class="sh">'</span><span class="s">trpo</span><span class="sh">'"</span><span class="p">)</span>
+        <span class="n">avg_ret</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">mean</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">ep_returns</span><span class="sh">"</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="sh">"</span><span class="s">ep_returns</span><span class="sh">"</span><span class="p">]</span> <span class="k">else</span> <span class="nf">float</span><span class="p">(</span><span class="sh">"</span><span class="s">nan</span><span class="sh">"</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">algo</span><span class="p">.</span><span class="nf">upper</span><span class="p">()</span><span class="si">}</span><span class="s"> iter </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="mi">03</span><span class="n">d</span><span class="si">}</span><span class="s"> | avg return: </span><span class="si">{</span><span class="n">avg_ret</span><span class="si">:</span><span class="p">.</span><span class="mi">1</span><span class="n">f</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="nf">train</span><span class="p">(</span><span class="n">algo</span><span class="o">=</span><span class="sh">"</span><span class="s">ppo</span><span class="sh">"</span><span class="p">,</span> <span class="n">env_id</span><span class="o">=</span><span class="sh">"</span><span class="s">CartPole-v1</span><span class="sh">"</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="c1"># To try TRPO instead, comment the line above and uncomment this one:
+</span>    <span class="c1"># train(algo="trpo", env_id="CartPole-v1", iterations=50)
+</span></code></pre></div></div>
+
+<h1 id="references">References</h1>
+
+<ul>
+  <li>OmniSafe TRPO tutorial: <a href="https://omnisafe.readthedocs.io/en/latest/baserl/trpo.html">https://omnisafe.readthedocs.io/en/latest/baserl/trpo.html</a></li>
+  <li>OmniSafe PPO tutorial: <a href="https://omnisafe.readthedocs.io/en/latest/baserl/ppo.html">https://omnisafe.readthedocs.io/en/latest/baserl/ppo.html</a></li>
+  <li>Schulman et al., “Trust Region Policy Optimization,” 2015: <a href="https://arxiv.org/abs/1502.05477">https://arxiv.org/abs/1502.05477</a></li>
+  <li>Schulman et al., “Proximal Policy Optimization Algorithms,” 2017: <a href="https://arxiv.org/abs/1707.06347">https://arxiv.org/abs/1707.06347</a></li>
+  <li>Schulman et al., “High-Dimensional Continuous Control Using Generalized Advantage Estimation,” 2015: <a href="https://arxiv.org/abs/1506.02438">https://arxiv.org/abs/1506.02438</a></li>
+</ul>]]></content><author><name></name></author><summary type="html"><![CDATA[TRPO and PPO can look intimidating because they sit at the intersection of constrained optimization, probability ratios, value functions, and rollout data. The good news is that the core story is much simpler than the notation first suggests: collect data with the current policy, estimate which actions were better than expected, then update the policy without moving it too far.]]></summary></entry><entry><title type="html">Conformal E-Prediction</title><link href="https://matthewyccheung.github.io/blog/2026/eprediction/" rel="alternate" type="text/html" title="Conformal E-Prediction" /><published>2026-06-08T00:00:00-07:00</published><updated>2026-06-08T00:00:00-07:00</updated><id>https://matthewyccheung.github.io/blog/2026/eprediction</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/eprediction/"><![CDATA[<p>If you deploy machine learning models in the real world, you know a fundamental truth: data is rarely static. The environment your model was trained in is almost never the exact environment it operates in months later. Traditional Conformal Prediction (CP) is an incredible tool for quantifying uncertainty and providing reliable error bars around AI predictions. However, it relies heavily on a fragile, mathematically rigid assumption of exchangeability—the idea that your future, incoming data looks exactly like your past calibration data.</p>
+
+<p>In practice, exchangeability is routinely violated. A computer vision model trained on sunny summer driving data will inevitably face winter blizzards. An algorithmic trading bot trained in a bull market will suddenly encounter a crash. If you peek at your data stream early to check on performance, or if your environment fundamentally shifts, the mathematical guarantees of classical CP completely fall apart, leaving you with false confidence.</p>
+
+<p>A recent breakthrough paper, “E-Values Expand the Scope of Conformal Prediction” by Etienne Gauthier, Francis Bach, and Michael I. Jordan, offers a powerful, elegant solution to this exact problem. By replacing traditional, rank-based p-values with a dynamic concept called e-values, they have built a framework that allows engineers to monitor uncertainty dynamically, stop experiments at any arbitrary time, and rigorously handle non-stationary data streams.</p>
+
+<p>Here is a deep dive into the math, the statistical mechanics, and the practical engineering of this new paradigm.</p>
+
+<ol>
+  <li>The Problem: Why “Peeking” Breaks Traditional Statistics</li>
+</ol>
+
+<p>In traditional statistics and classical Conformal Prediction, uncertainty is quantified using p-values. To understand why they fail in streaming environments, you must realize that a p-value is like a finish-line photo in a marathon. Its mathematical validity relies entirely on calculating it at a single, pre-determined stopping point defined before the experiment even began.</p>
+
+<p>Imagine you are running an A/B test for a new e-commerce checkout flow. You decide to run the test for 10,000 visitors. If you wait until exactly 10,000 visitors have passed and then calculate your p-value, your error guarantees are perfectly intact.</p>
+
+<p>But what if you monitor a real-time dashboard? At visitor 400, by pure random luck, the new checkout flow happens to look incredibly successful. The p-value temporarily dips to $0.04$. If you say, “Aha! Statistical significance! Let’s stop the test and deploy,” you are committing a statistical sin known as p-hacking, optional stopping, or data snooping.</p>
+
+<p>Because data is inherently noisy, random walks will fluctuate wildly. If you check an experiment continuously, you give yourself multiple chances to get lucky with that random noise. A famous statistical theorem, the Law of the Iterated Logarithm, dictates that if you wait long enough and check often enough, a random walk will eventually cross almost any boundary. If you check your test 20 times, your true chance of accidentally finding a “significant” result shoots past your intended $5\%$ target to roughly $25\%$. Traditional CP simply cannot handle dynamic, real-time decision-making because moving the finish line breaks the foundational math.</p>
+
+<ol>
+  <li>The Mathematical Foundation: Filtrations and $\sigma$-algebras</li>
+</ol>
+
+<p>To fix the peeking problem, the authors completely change the mathematical foundation, borrowing heavy machinery from the study of sequential probability and stochastic processes.</p>
+
+<p>Filtrations and $\sigma$-algebras</p>
+
+<p>In everyday life, information accumulates. We don’t learn everything at once; we learn sequentially. In measure-theoretic probability, we define “what is knowable” at a specific moment using a $\sigma$-algebra (denoted as $\mathcal{F}_t$). Think of $\mathcal{F}_t$ as a rigorous, mathematical database of all the events and outcomes your current state of knowledge allows you to measure with a definitive “Yes” or “No”.</p>
+
+<p>As time moves forward, your database of facts grows. A filtration is the mathematical representation of this accumulating, unchangeable history:</p>
+
+\[\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \mathcal{F}_2 \dots\]
+
+<p>Why does the set of $\sigma$-algebras increase over time? Because time is an arrow that accumulates facts. At $t=2$, the past information from $t=1$ hasn’t changed—it is permanently frozen—but your overall knowledge base has expanded to include the new data from $t=2$. Your field of vision simply gets wider.</p>
+
+<p>Martingales and Supermartingales</p>
+
+<p>A martingale represents a perfectly fair casino game. It models a sequence of random variables where your expected future wealth is exactly your current wealth, given everything you know today:</p>
+
+\[\mathbb{E}[M_{t+1} \mid \mathcal{F}_t] = M_t\]
+
+<p>In this paper (specifically Theorem 2.5), the authors define their tracking metric not as a strict martingale, but as a supermartingale, meaning the expected future value is equal to or less than the current value ($\leq M_t$). Why use a supermartingale?</p>
+
+<p>The Safety Cushion: A supermartingale represents a fair or slightly disadvantageous game (like betting against the house). If you can prove that mathematical guarantees hold for a disadvantageous game, they automatically and perfectly protect you against worst-case scenarios in the real world.</p>
+
+<p>Asymmetric Error Control: In Conformal Prediction, making your intervals too wide is annoying, but making them too narrow is catastrophic (you lose your coverage guarantee). If the supermartingale drifts downward faster than expected, it mathematically forces the prediction intervals to widen safely, guaranteeing you never accidentally exceed your target error rate $\alpha$.</p>
+
+<p>By framing uncertainty as a supermartingale, the authors unlock Ville’s Inequality. While standard statistics uses Markov’s inequality for single snapshots, Ville’s Inequality is a sequential law proving that the probability of a gambler’s wealth ever multiplying by a factor of $k$ by pure luck across an entire timeline is strictly less than $1/k$. This is the magic bullet: it means you can peek at your data a million times, and your statistical safety guarantee holds flawlessly forever.</p>
+
+<ol>
+  <li>The Engine: The E-Variable Formulation</li>
+</ol>
+
+<p>Instead of ranking data from 1 to $N$ to create p-values, the authors use e-values (expectation values). An e-value is a non-negative random variable that measures evidence against a null hypothesis in the form of a betting payout.</p>
+
+<p>While there are many ways to construct e-values (like likelihood ratios), this paper relies on a beautiful, tuning-free formulation (Equation 4) that evaluates a proposed candidate label $y$:</p>
+
+\[E_{\text{test}}(y) = \frac{S(X_{\text{test}}, y)}{\frac{1}{n+1} \left( \sum_{i=1}^n S(X_i, Y_i) + S(X_{\text{test}}, y) \right)}\]
+
+<p>This equation simply asks: “How large is the error score ($S$) of my current guess compared to the average error of everything we’ve seen so far, including this new guess?”</p>
+
+<p>This specific formulation is brilliant for three reasons:</p>
+
+<p>Scale-Invariance: Because it is a relative ratio, it is totally immune to arbitrary scaling. If you suddenly switch your neural network’s loss function to output values 100x larger, the 100 cancels out in the numerator and denominator.</p>
+
+<p>No Hyperparameters: It requires absolutely no tuning or parameter guessing.</p>
+
+<p>Guaranteed Validity: By including the test point’s score in the denominator, the math forces a beautiful symmetry. Under the null hypothesis of exchangeable data, the expected value of this fraction across all points is guaranteed to average out to exactly $1$ or less.</p>
+
+<ol>
+  <li>Building Prediction Sets (Corollary 2.6)</li>
+</ol>
+
+<p>How do we actually build an “anytime-valid” prediction set, $\hat{C}<em>t$, around a completely fresh data point? We use a baseline martingale ($M</em>{t-1}$) that tracks our historical performance across all previous time steps.</p>
+
+<p>For a new data point, we perform a hypothetical trial for every possible candidate label $y$ in our label space. We calculate what the e-value $E_t(y)$ would be if that label were the truth, and multiply it by our accumulated history. If this hypothetical product breaches our safety wall (defined by our error tolerance $\alpha$), we reject the label from the set:</p>
+
+\[\hat{C}_t(X_t) = \left\{ y \in \mathcal{Y} : M_{t-1} \times E_t(y) &lt; \frac{1}{\alpha} \right\}\]
+
+<p>For example, if you want a $95\%$ confidence set, your $\alpha$ is $0.05$, making your threshold $1/0.05 = 20$. If multiplying your historical martingale by the candidate e-value pushes the total above 20, that label is deemed statistically implausible and discarded.</p>
+
+<p>Why Sets Stay Constant While Martingales Move</p>
+
+<p>If you run code simulations of this math, you will notice something fascinating: the baseline martingale $M_t$ fluctuates wildly at every single step, but the prediction set $\hat{C}_t$ often remains completely frozen for long periods.</p>
+
+<p>This is not a bug; it is the threshold effect. The prediction set only changes if the combination of a new candidate and the history crosses the strict $1/\alpha$ boundary.</p>
+
+<p>The Burn-In Phase: During the early steps of a stream (e.g., $t &lt; 30$), $M_{t-1}$ is hovering near its starting value of 1. Based on Equation 4, with so few historical samples in the denominator, it is mathematically impossible for any single $E_t(y)$ to spike high enough to cross a threshold like 20. As a result, the set conservatively accepts all labels. Practitioners must be aware that e-conformal systems require a warm-up period.</p>
+
+<p>The Stable Phase: Once the model proves itself over hundreds of steps, the true e-values hover slightly below 1, causing $M_{t-1}$ to shrink to a tiny fraction (e.g., $0.01$). False labels generate high e-values, but a high e-value multiplied by $0.01$ still won’t cross the massive gap back up to 20. The sets lock into a highly informative, constant size (often just 1 or 2 labels) until a major data shock occurs.</p>
+
+<ol>
+  <li>Optimizing the System: Online Gradient Descent</li>
+</ol>
+
+<p>As noted in the paper’s Remark 2.7, simply multiplying e-values together ($M_t = \prod E_s$) gives every single data point equal weight. This is a blunt instrument. A bad prediction from three months ago carries the same weight as a great prediction from yesterday, making the system sluggish to react to shifting environments.</p>
+
+<p>To maximize efficiency, modern sequential statistics borrows heavily from Game Theory and Online Machine Learning by applying Online Gradient Descent (OGD) to martingale design. By introducing a tunable betting fraction ($\lambda_t$) for each time step, the martingale updates as:</p>
+
+\[M_t = M_{t-1} (1 + \lambda_t (E_t - 1))\]
+
+<p>Instead of passively accepting the e-value, we are acting like a gambler choosing how much of our bankroll ($\lambda_t$) to bet on the model’s accuracy. We can treat the log-growth of this martingale as a standard convex optimization problem.</p>
+
+<p>OGD acts as a dynamic betting engine: if the model is predicting accurately, OGD aggressively increases $\lambda_t$ to maximize the martingale’s growth, which shrinks prediction intervals rapidly. If the data suddenly gets noisy or the model degrades, the gradients instantly force $\lambda_t$ back toward zero. This adaptive “learning rate” protects the mathematical guarantees from being wiped out by sudden, heavy-tailed shocks.</p>
+
+<ol>
+  <li>Real-World Systems: PID Control vs. E-Values</li>
+</ol>
+
+<p>In advanced, enterprise-grade ML production pipelines, engineers often use Conformal PID Control—a feedback loop that continuously widens or narrows prediction intervals based on recent error rates, operating exactly like a household thermostat.</p>
+
+<p>If PID control successfully adapts to distribution shifts automatically, why do we need the complexity of e-values and martingales at all?</p>
+
+<p>Think of it this way: PID control is a thermostat, but an E-Value martingale is a fire alarm.</p>
+
+<p>PID Control smoothly adapts to keep coverage stable. If an automated loan approval model slowly degrades over six months, the PID controller will quietly widen the confidence intervals to maintain $95\%$ accuracy. However, to the business, the system appears to be working fine, masking the underlying model decay. It cannot tell you if the furnace is broken.</p>
+
+<p>E-Value Martingales act as statistical watchdogs. While the PID controller manages the day-to-day fluctuations, the martingale monitors the foundational null hypothesis. Because of their rigorous, mathematically proven Type-I error bounds, e-values provide the definitive authorization required to trigger expensive, high-stakes interventions—like halting automated trading, waking up an on-call engineer at 3:00 AM, or triggering a massive GPU cluster to completely retrain a foundation model.</p>
+
+<ol>
+  <li>Innovative Applications</li>
+</ol>
+
+<p>Where does this complex math actually pay off in practice? The paper highlights several areas where classical CP structurally fails:</p>
+
+<p>Streaming Data with Sudden Shifts: In cybersecurity or fraud detection, adversaries constantly change tactics. E-values naturally absorb these distribution shifts. When the model’s assumptions fail, the e-values organically spike, triggering automated circuit breakers.</p>
+
+<p>Ambiguous Ground Truth: In tasks like medical imaging, you rarely have a single clean label. Three doctors might diagnose a scan as “malignant,” while two say “benign.” Traditional rank-based CP breaks down because there is no single scalar to rank. E-values, being continuous ratios, can seamlessly integrate soft, probabilistic labels, weighting the numerator and denominator by expert consensus.</p>
+
+<p>Fixed-Hardware Constraints: Imagine deploying an ML model to an edge device, an IoT sensor, or an automated lab pipette machine that physically holds exactly 5 candidate drugs. Classical CP cannot guarantee a set size of exactly 5 without destroying its error bounds. E-values allow you to flip the problem: you fix the set size to 5, and the algorithm outputs a dynamically shifting confidence score ($\alpha_t$) for that specific batch, scaling intelligently based on how difficult the current data point is.</p>
+
+<ol>
+  <li>Pros and Cons of Conformal E-Values</li>
+</ol>
+
+<p>The Pros</p>
+
+<p>True Anytime-Validity: You can stop experiments, pause data streams, peek at results, and intervene at any millisecond without ever corrupting your statistical safety.</p>
+
+<p>Dynamic Budgeting: It allows for highly efficient data-dependent coverage, scaling your statistical confidence based on the inherent difficulty of the example.</p>
+
+<p>Model Agnostic &amp; Structurally Flexible: It makes absolutely no assumptions about the underlying machine learning model, and handles non-stationary streams and probabilistic labels natively.</p>
+
+<p>The Cons</p>
+
+<p>The “Conservativeness” Penalty: There is no free lunch in statistics. Because Ville’s Inequality has to protect against an adversary stopping the game at any moment across an infinite horizon, conformal e-value intervals are inherently wider and more conservative than classical CP when deployed in perfectly static, clean environments.</p>
+
+<p>The Burn-in Requirement: The sequential nature requires a warm-up period. Practitioners must endure $t &gt; 1/\alpha$ steps of entirely uninformative prediction sets before the historical martingale baseline drops enough to provide tight bounds.</p>
+
+<p>Computational Overhead: For classification tasks with massive label spaces (like the vocabulary of a Large Language Model), calculating a hypothetical denominator for every single possible candidate token at every time step introduces significant computational complexity compared to simple p-value sorting.</p>
+
+<p>Conclusion</p>
+
+<p>The Gauthier, Bach, and Jordan paper is a landmark contribution to uncertainty quantification. It proves that e-values aren’t meant to simply beat classical Conformal Prediction in static, perfectly controlled laboratory settings. Instead, e-values are the key to expanding CP’s scope, bringing rigorous, mathematically unshakeable uncertainty quantification into the messy, dynamic, and non-stationary realities of production machine learning. As AI systems are deployed in increasingly high-stakes environments, the transition from rigid p-values to dynamic e-values will become a foundational pillar of trustworthy AI.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[If you deploy machine learning models in the real world, you know a fundamental truth: data is rarely static. The environment your model was trained in is almost never the exact environment it operates in months later. Traditional Conformal Prediction (CP) is an incredible tool for quantifying uncertainty and providing reliable error bars around AI predictions. However, it relies heavily on a fragile, mathematically rigid assumption of exchangeability—the idea that your future, incoming data looks exactly like your past calibration data.]]></summary></entry><entry><title type="html">Survey of Conformal Predictions for LLMs</title><link href="https://matthewyccheung.github.io/blog/2026/cpllms/" rel="alternate" type="text/html" title="Survey of Conformal Predictions for LLMs" /><published>2026-03-28T00:00:00-07:00</published><updated>2026-03-28T00:00:00-07:00</updated><id>https://matthewyccheung.github.io/blog/2026/cpllms</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/cpllms/"><![CDATA[<p>The field has split into four main directions.</p>
 
 <ol>
   <li>Discrete-answer settings (multiple-choice QA): CP looks closest to classical classification</li>
@@ -62,7 +1955,7 @@ a coverage guarantee for the prediction set.</li>
       <li></li>
     </ul>
   </li>
-</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[The field has split into four main directions.]]></summary></entry><entry><title type="html">Learn-then-Test</title><link href="http://localhost:4000/blog/2026/learnthentest/" rel="alternate" type="text/html" title="Learn-then-Test" /><published>2026-03-28T00:00:00-05:00</published><updated>2026-03-28T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/learnthentest</id><content type="html" xml:base="http://localhost:4000/blog/2026/learnthentest/"><![CDATA[]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Split Conformal Prediction and Non-Exchangeable Data</title><link href="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/" rel="alternate" type="text/html" title="Split Conformal Prediction and Non-Exchangeable Data" /><published>2026-03-23T00:00:00-05:00</published><updated>2026-03-23T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog</id><content type="html" xml:base="http://localhost:4000/blog/2026/oliveira_split_cp_nonexchangeable_blog/"><![CDATA[<p>*Based on Oliveira, Orenstein, Ramos, and Romano, <a href="https://jmlr.org/papers/v25/23-1553.html"><strong>“Split Conformal Prediction and Non-Exchangeable Data”</strong> (JMLR, 2024).*</a></p>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[The field has split into four main directions.]]></summary></entry><entry><title type="html">Split Conformal Prediction and Non-Exchangeable Data</title><link href="https://matthewyccheung.github.io/blog/2026/oliveira_split_cp_nonexchangeable_blog/" rel="alternate" type="text/html" title="Split Conformal Prediction and Non-Exchangeable Data" /><published>2026-03-23T00:00:00-07:00</published><updated>2026-03-23T00:00:00-07:00</updated><id>https://matthewyccheung.github.io/blog/2026/oliveira_split_cp_nonexchangeable_blog</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/oliveira_split_cp_nonexchangeable_blog/"><![CDATA[<p>*Based on Oliveira, Orenstein, Ramos, and Romano, <a href="https://jmlr.org/papers/v25/23-1553.html"><strong>“Split Conformal Prediction and Non-Exchangeable Data”</strong> (JMLR, 2024).*</a></p>
 
 <p>Conformal prediction is famous for one simple promise: if your data are exchangeable, then your prediction sets achieve the target coverage level without strong modeling assumptions. But many real datasets are not exchangeable at all. Time series are temporally dependent. Spatial data are correlated across nearby locations. Spatiotemporal data combine both. The main message of Oliveira et al. is that <strong>standard split conformal prediction often still works surprisingly well under dependence</strong>, and there is a clean way to quantify the price paid for non-exchangeability.</p>
 
@@ -246,7 +2139,7 @@ with high probability.</li>
   <li>the main question is whether your calibration and test blocks are “effectively large enough” after accounting for dependence</li>
 </ul>
 
-<p>In other words, dependence reduces the <strong>effective sample size</strong>, and the $\epsilon$ corrections are a mathematical way to account for that loss.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[*Based on Oliveira, Orenstein, Ramos, and Romano, “Split Conformal Prediction and Non-Exchangeable Data” (JMLR, 2024).*]]></summary></entry><entry><title type="html">Transformers 0: A Simple Mental Model</title><link href="http://localhost:4000/blog/2026/transfomer/" rel="alternate" type="text/html" title="Transformers 0: A Simple Mental Model" /><published>2026-03-12T00:00:00-05:00</published><updated>2026-03-12T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/transfomer</id><content type="html" xml:base="http://localhost:4000/blog/2026/transfomer/"><![CDATA[<p>A transformer is a system that <strong>routes information across tokens</strong> and then <strong>rewrites features within each token</strong>, repeating this process many times. More formally, let the input be a sequence of tokens</p>
+<p>In other words, dependence reduces the <strong>effective sample size</strong>, and the $\epsilon$ corrections are a mathematical way to account for that loss.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[*Based on Oliveira, Orenstein, Ramos, and Romano, “Split Conformal Prediction and Non-Exchangeable Data” (JMLR, 2024).*]]></summary></entry><entry><title type="html">Transformers 0: A Simple Mental Model</title><link href="https://matthewyccheung.github.io/blog/2026/transfomer/" rel="alternate" type="text/html" title="Transformers 0: A Simple Mental Model" /><published>2026-03-12T00:00:00-07:00</published><updated>2026-03-12T00:00:00-07:00</updated><id>https://matthewyccheung.github.io/blog/2026/transfomer</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/transfomer/"><![CDATA[<p>A transformer is a system that <strong>routes information across tokens</strong> and then <strong>rewrites features within each token</strong>, repeating this process many times. More formally, let the input be a sequence of tokens</p>
 
 <p>\[
 X = \begin{bmatrix} x_1^\top \\ x_2^\top \\ \vdots \\ x_n^\top \end{bmatrix} \in \mathbb{R}^{n \times d}, \qquad x_i \in \mathbb{R}^d.
@@ -473,7 +2366,7 @@ X \mapsto X + \mathrm{Attn}(\mathrm{LN}(X)) \mapsto X + \mathrm{Attn}(\mathrm{LN
   <li><strong>Residuals and LayerNorm make the whole iterative process trainable.</strong></li>
 </ul>
 
-<p>A transformer is structured dynamical system on token representations. At each layer, the model decides which tokens matter to each other, aggregates their content through attention, and then refines each token locally through the MLP. Everything else, including QKV projections, heads, positional structure, and normalization, is a design choice governing the <strong>state space</strong>, the <strong>interaction law</strong>, or the <strong>stability of the iterative update</strong>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A transformer is a system that routes information across tokens and then rewrites features within each token, repeating this process many times. More formally, let the input be a sequence of tokens]]></summary></entry><entry><title type="html">Transformers 1-100: From Seminal Papers to Modern Standard Practice</title><link href="http://localhost:4000/blog/2026/transformersota/" rel="alternate" type="text/html" title="Transformers 1-100: From Seminal Papers to Modern Standard Practice" /><published>2026-03-12T00:00:00-05:00</published><updated>2026-03-12T00:00:00-05:00</updated><id>http://localhost:4000/blog/2026/transformersota</id><content type="html" xml:base="http://localhost:4000/blog/2026/transformersota/"><![CDATA[<p>A transformer is a token mixer whose modern design choices are mostly about stabilizing depth, encoding geometry, and making routing cheap at scale.
+<p>A transformer is structured dynamical system on token representations. At each layer, the model decides which tokens matter to each other, aggregates their content through attention, and then refines each token locally through the MLP. Everything else, including QKV projections, heads, positional structure, and normalization, is a design choice governing the <strong>state space</strong>, the <strong>interaction law</strong>, or the <strong>stability of the iterative update</strong>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[A transformer is a system that routes information across tokens and then rewrites features within each token, repeating this process many times. More formally, let the input be a sequence of tokens]]></summary></entry><entry><title type="html">Transformers 1-100: From Seminal Papers to Modern Standard Practice</title><link href="https://matthewyccheung.github.io/blog/2026/transformersota/" rel="alternate" type="text/html" title="Transformers 1-100: From Seminal Papers to Modern Standard Practice" /><published>2026-03-12T00:00:00-07:00</published><updated>2026-03-12T00:00:00-07:00</updated><id>https://matthewyccheung.github.io/blog/2026/transformersota</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/transformersota/"><![CDATA[<p>A transformer is a token mixer whose modern design choices are mostly about stabilizing depth, encoding geometry, and making routing cheap at scale.
 The seminal works established the basic language of token-based communication.
 Modern design choices refine that language so it trains more stably, uses context more effectively, and serves faster on real hardware.
 This post walks through the design of transformers to understand which design choices are <em>structural</em>, which are <em>historical</em>, and which are now <em>default</em> in modern large-scale models.</p>
@@ -851,7 +2744,7 @@ For a modern <strong>vision transformer</strong>, the defaults usually shift to 
   <li><strong>Seminal papers</strong> taught us that attention can replace recurrence, that different masking patterns induce different model families, and that scale changes what these models can do.</li>
   <li><strong>Modern practice</strong> teaches us that normalization placement, positional structure, MLP gating, key-value sharing, and hardware-aware attention kernels are what make transformers work well at large scale.</li>
   <li><strong>Research frontier work</strong> extends this further with sparse routing, longer context mechanisms, multimodal tokenization, and increasingly specialized architectural priors.</li>
-</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[A transformer is a token mixer whose modern design choices are mostly about stabilizing depth, encoding geometry, and making routing cheap at scale. The seminal works established the basic language of token-based communication. Modern design choices refine that language so it trains more stably, uses context more effectively, and serves faster on real hardware. This post walks through the design of transformers to understand which design choices are structural, which are historical, and which are now default in modern large-scale models.]]></summary></entry><entry><title type="html">Exchangeability, Symmetry, and Conformal Prediction</title><link href="http://localhost:4000/blog/2026/exchangeability/" rel="alternate" type="text/html" title="Exchangeability, Symmetry, and Conformal Prediction" /><published>2026-03-04T00:00:00-06:00</published><updated>2026-03-04T00:00:00-06:00</updated><id>http://localhost:4000/blog/2026/exchangeability</id><content type="html" xml:base="http://localhost:4000/blog/2026/exchangeability/"><![CDATA[<p>Understanding the concept of <strong>exchangeability</strong> is central to modern uncertainty quantification methods such as <strong>conformal prediction</strong>. Although classical statistics often assumes independent and identically distributed (i.i.d.) data, conformal prediction relies on the weaker assumption of <strong>exchangeability</strong>, which can hold even when observations are dependent. This blog post explains the relationship between i.i.d. data, exchangeability, symmetry, Bayesian models, and conformal prediction.</p>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[A transformer is a token mixer whose modern design choices are mostly about stabilizing depth, encoding geometry, and making routing cheap at scale. The seminal works established the basic language of token-based communication. Modern design choices refine that language so it trains more stably, uses context more effectively, and serves faster on real hardware. This post walks through the design of transformers to understand which design choices are structural, which are historical, and which are now default in modern large-scale models.]]></summary></entry><entry><title type="html">Exchangeability, Symmetry, and Conformal Prediction</title><link href="https://matthewyccheung.github.io/blog/2026/exchangeability/" rel="alternate" type="text/html" title="Exchangeability, Symmetry, and Conformal Prediction" /><published>2026-03-04T00:00:00-08:00</published><updated>2026-03-04T00:00:00-08:00</updated><id>https://matthewyccheung.github.io/blog/2026/exchangeability</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/exchangeability/"><![CDATA[<p>Understanding the concept of <strong>exchangeability</strong> is central to modern uncertainty quantification methods such as <strong>conformal prediction</strong>. Although classical statistics often assumes independent and identically distributed (i.i.d.) data, conformal prediction relies on the weaker assumption of <strong>exchangeability</strong>, which can hold even when observations are dependent. This blog post explains the relationship between i.i.d. data, exchangeability, symmetry, Bayesian models, and conformal prediction.</p>
 
 <hr />
 
@@ -924,7 +2817,7 @@ Suppose the true data generating process is \(y = f(x) + \epsilon\), but we use 
 
 <hr />
 
-<p>Exchangeability therefore provides the conceptual bridge connecting <strong>Bayesian statistics, symmetry assumptions, and modern uncertainty quantification methods like conformal prediction</strong>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Understanding the concept of exchangeability is central to modern uncertainty quantification methods such as conformal prediction. Although classical statistics often assumes independent and identically distributed (i.i.d.) data, conformal prediction relies on the weaker assumption of exchangeability, which can hold even when observations are dependent. This blog post explains the relationship between i.i.d. data, exchangeability, symmetry, Bayesian models, and conformal prediction.]]></summary></entry><entry><title type="html">Risk-Averse Calibration (RAC): From Risk-Averse Decisions to Optimal Prediction Sets</title><link href="http://localhost:4000/blog/2026/rac/" rel="alternate" type="text/html" title="Risk-Averse Calibration (RAC): From Risk-Averse Decisions to Optimal Prediction Sets" /><published>2026-03-03T00:00:00-06:00</published><updated>2026-03-03T00:00:00-06:00</updated><id>http://localhost:4000/blog/2026/rac</id><content type="html" xml:base="http://localhost:4000/blog/2026/rac/"><![CDATA[<p>This post summarizes the <strong>theory and algorithm</strong> behind <a href="https://openreview.net/forum?id=Ukjl86EsIk"><em>Risk-Averse Calibration (RAC)</em></a>, a framework that connects <strong>risk-averse decision-making</strong> (utilities and catastrophic mistakes) with <strong>conformal prediction sets</strong>. The central insight is that if you care about <em>guaranteed</em> utility (not just average utility), then <strong>prediction sets are the optimal uncertainty object</strong>, and the “best” sets arise from a <strong>coverage allocation problem</strong> solved via a <strong>1D Lagrange multiplier</strong>.</p>
+<p>Exchangeability therefore provides the conceptual bridge connecting <strong>Bayesian statistics, symmetry assumptions, and modern uncertainty quantification methods like conformal prediction</strong>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Understanding the concept of exchangeability is central to modern uncertainty quantification methods such as conformal prediction. Although classical statistics often assumes independent and identically distributed (i.i.d.) data, conformal prediction relies on the weaker assumption of exchangeability, which can hold even when observations are dependent. This blog post explains the relationship between i.i.d. data, exchangeability, symmetry, Bayesian models, and conformal prediction.]]></summary></entry><entry><title type="html">Risk-Averse Calibration (RAC): From Risk-Averse Decisions to Optimal Prediction Sets</title><link href="https://matthewyccheung.github.io/blog/2026/rac/" rel="alternate" type="text/html" title="Risk-Averse Calibration (RAC): From Risk-Averse Decisions to Optimal Prediction Sets" /><published>2026-03-03T00:00:00-08:00</published><updated>2026-03-03T00:00:00-08:00</updated><id>https://matthewyccheung.github.io/blog/2026/rac</id><content type="html" xml:base="https://matthewyccheung.github.io/blog/2026/rac/"><![CDATA[<p>This post summarizes the <strong>theory and algorithm</strong> behind <a href="https://openreview.net/forum?id=Ukjl86EsIk"><em>Risk-Averse Calibration (RAC)</em></a>, a framework that connects <strong>risk-averse decision-making</strong> (utilities and catastrophic mistakes) with <strong>conformal prediction sets</strong>. The central insight is that if you care about <em>guaranteed</em> utility (not just average utility), then <strong>prediction sets are the optimal uncertainty object</strong>, and the “best” sets arise from a <strong>coverage allocation problem</strong> solved via a <strong>1D Lagrange multiplier</strong>.</p>
 
 <h2 id="1-setup-decisions-outcomes-and-utility">1) Setup: Decisions, Outcomes, and Utility</h2>
 
