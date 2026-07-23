@@ -628,7 +628,7 @@ After the mask is added and softmax is applied, all attention probabilities for 
 
 This prevents the decoder from seeing future target tokens during training and enforces autoregressive generation.
 
-## 11. FLOPs for one attention operation
+## FLOPs for one attention operation
 
 Consider
 
@@ -924,7 +924,7 @@ $$
 
 Thus, splitting attention into more heads does not change the leading-order core-attention FLOPs when the total model width remains fixed.
 
-## 14. Projection costs are separate
+## Projection costs are separate
 
 The estimate
 
@@ -966,7 +966,7 @@ The first term is the projection cost and grows linearly with sequence length. T
 
 This distinction explains why attention becomes expensive for long sequences.
 
-## 15. Summary of important dimensions
+## Summary of important dimensions
 
 For encoder self-attention:
 
