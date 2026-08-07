@@ -119,7 +119,7 @@ github_code:
   url: https://github.com/matthewyccheung
   description: Research code, experiments, and supporting implementations for ongoing projects.
 metadata:
-  last_updated: '2026-07-22'
+  last_updated: '2026-08-07'
 papers:
   6d3hfUcAAAAJ:WF5omc3nYNoC:
     title: 'Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation'
@@ -128,11 +128,15 @@ papers:
   6d3hfUcAAAAJ:KlAtU1dfN6UC:
     title: Metric-Guided Conformal Bounds for Probabilistic Image Reconstruction
     year: '2025'
-    citations: 9
+    citations: 8
   6d3hfUcAAAAJ:u5HHmVD_uO8C:
     title: 'Wearing a mask: Compressed representations of variable-length sequences using recurrent neural tangent kernels'
     year: '2021'
     citations: 8
+  6d3hfUcAAAAJ:ULOm3_A8WrAC:
+    title: 'COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics'
+    year: '2026'
+    citations: 3
   6d3hfUcAAAAJ:LkGwnXOMwfcC:
     title: An ultrasonic transceiver for non-invasive intracranial pressure sensing
     year: '2024'
@@ -141,10 +145,6 @@ papers:
     title: 17.11 A 9mW ultrasonic through transmission transceiver for non-invasive intracranial pressure sensing
     year: '2024'
     citations: 3
-  6d3hfUcAAAAJ:ULOm3_A8WrAC:
-    title: 'COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics'
-    year: '2026'
-    citations: 2
   6d3hfUcAAAAJ:4DMP91E08xMC:
     title: Efficient Conformal Volumetry for Template-Based Segmentation
     year: '2026'
