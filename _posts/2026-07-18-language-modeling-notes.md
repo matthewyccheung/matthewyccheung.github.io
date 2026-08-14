@@ -282,5 +282,30 @@ Stability tricks:
 
 Attention heads:
 - group query attention/multi query attention: reduce number of heads
-    - during deployment
-- sparse or sliding window attention (GPT4/Mistral): restricting attention pattern to reduce compute cost
+    - during deployment, need to pay for FLOPS and memory. 
+    - during training, arithmetic intensity is O((1/k+1/(bn))^-1), so we want to increase batch size or increase sequence length
+    - during deployment, total arithmetic operations bnd^2, total memory accesses bn^2d+nd^2, and arithmetic intensity is O((n/d+1/b)^-1), so we either need large batches and short sequnce lengths or large model dimensions
+    - key idea is to shared K and V -- allows much less items to move to and from KV cache: total memory access bnd^2+bn^2k+nd^2, arithmetic intensity O((1/d+n/(dh)+1/b)^-1)
+    - but loses significant expressive power -- tradeoff between efficiency and expressive power
+    - group query is the middle-ground (key-query ratio)
+    - other tricks: multihead latent attention (deepseek-v2)
+- sparse or sliding window attention (SWA) (GPT4/Mistral): restricting attention pattern to reduce compute cost
+    - attention scores QK^T is only computed for diagonal
+- interleave "full" and long range attention (current standard trick)
+    - for example every 4th layer is full attention
+    - long range information without PE, short range information via RoPE and SWA: LLaMA4, Gemma 3, Gemma 4, OLMo 3.
+
+# Attention Alternatives
+
+- cost of attention rises quadratically with context length
+- basic toolkit: local/sparse attention, systems engineering (flash attention)
+- Q: are there methods that are linear with context length?
+
+Linear attention:
+- linear scale in context length
+- change \rho(QK^T)V: drop the \rho (assume identity) and use associative property to get Q(K^T V)
+- now looks like RNN: S_t=S_{t-1}+k_t v_t^T and y_t=q_t S_t
+
+State space models
+- generalize linear attention and add per-position weights
+- S_t=\gamma S_{t-1}+k_t v_t^T and y_t=q_t S_t+v_t^T D
