@@ -6,7 +6,7 @@ nav: true
 nav_order: 2
 ---
 
-[Link to Resume](https://docs.google.com/document/d/1vTGelVere2_7pf3M2bFU2pstipF8cJHMvjlV7wXqWSQ/edit?usp=sharing)
+[Link to Resume](https://docs.google.com/document/d/1f3HOLTd7Ja_6CPws7nR5PZpnRaWKm8_Q3eK960jYuco/edit?usp=sharing)
 
-[Link to CV](https://docs.google.com/document/d/1Zb10DNEMc40ejEwZRs-6PIA2BPYShm-dEsEqXDXv3E4/edit?usp=sharing)
+[Link to CV](https://docs.google.com/document/d/1_XNNnHBikt8Y08k8aGd1F-zMO6rTwP6r4yf3PtKDxkQ/edit?usp=sharing)
 
