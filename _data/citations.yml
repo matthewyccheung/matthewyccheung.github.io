@@ -1,6 +1,6 @@
 featured_publications:
 - title: Conformal Certification of Reasoning Trace Prefixes
-  venue: Under Review at EMNLP
+  venue: EMNLP 2026 (Main)
   year: 2026
   image: null
   image_alt: Conformal Certification of Reasoning Trace Prefixes
@@ -11,7 +11,7 @@ featured_publications:
   - label: GitHub
     url: https://github.com/matthewyccheung/crop
 - title: Efficient Conformal Volumetry for Template-Based Segmentation
-  venue: MICCAI
+  venue: MICCAI (Spotlight)
   year: 2026
   image: assets/img/convolt.png
   image_alt: Efficient Conformal Volumetry for Template-Based Segmentation
