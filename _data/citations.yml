@@ -119,24 +119,24 @@ github_code:
   url: https://github.com/matthewyccheung
   description: Research code, experiments, and supporting implementations for ongoing projects.
 metadata:
-  last_updated: '2026-08-07'
+  last_updated: '2026-08-24'
 papers:
   6d3hfUcAAAAJ:WF5omc3nYNoC:
     title: 'Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation'
     year: '2024'
-    citations: 15
+    citations: 19
+  6d3hfUcAAAAJ:u5HHmVD_uO8C:
+    title: 'Wearing a mask: Compressed representations of variable-length sequences using recurrent neural tangent kernels'
+    year: '2021'
+    citations: 9
   6d3hfUcAAAAJ:KlAtU1dfN6UC:
     title: Metric-Guided Conformal Bounds for Probabilistic Image Reconstruction
     year: '2025'
     citations: 8
-  6d3hfUcAAAAJ:u5HHmVD_uO8C:
-    title: 'Wearing a mask: Compressed representations of variable-length sequences using recurrent neural tangent kernels'
-    year: '2021'
-    citations: 8
-  6d3hfUcAAAAJ:ULOm3_A8WrAC:
-    title: 'COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics'
+  6d3hfUcAAAAJ:dhFuZR0502QC:
+    title: 'Compass: Robust feature conformal prediction for medical segmentation metrics'
     year: '2026'
-    citations: 3
+    citations: 5
   6d3hfUcAAAAJ:LkGwnXOMwfcC:
     title: An ultrasonic transceiver for non-invasive intracranial pressure sensing
     year: '2024'
@@ -149,12 +149,12 @@ papers:
     title: Efficient Conformal Volumetry for Template-Based Segmentation
     year: '2026'
     citations: 1
-  6d3hfUcAAAAJ:QIV2ME_5wuYC:
-    title: 'ConRad: Efficient Conformal Prediction for Radiomics'
-    year: '2026'
-    citations: 0
   6d3hfUcAAAAJ:9ZlFYXVOiuMC:
     title: Conformal Certification of Reasoning Trace Prefixes
+    year: '2026'
+    citations: 0
+  6d3hfUcAAAAJ:QIV2ME_5wuYC:
+    title: 'ConRad: Efficient Conformal Prediction for Radiomics'
     year: '2026'
     citations: 0
   6d3hfUcAAAAJ:M3ejUd6NZC8C:
