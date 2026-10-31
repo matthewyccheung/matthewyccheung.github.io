@@ -1,24 +1,26 @@
 featured_publications:
 - title: Conformal Certification of Reasoning Trace Prefixes
-  venue: EMNLP 2026 (Main)
+  venue: EMNLP 2026 (Oral, Outstanding Paper 🏆)
   year: 2026
-  image: null
+  image: assets/img/publication_preview/crop_overview.png
   image_alt: Conformal Certification of Reasoning Trace Prefixes
   description: A conformal prediction framework for certifying the reliability of reasoning trace prefixes in large language models, providing statistical guarantees on the correctness of intermediate reasoning steps and enabling early stopping when confidence is low.
   links:
   - label: arXiv
-    url: https://arxiv.org/abs/2605.30085
+    url: https://aclanthology.org/2026.emnlp-main.1776/
   - label: GitHub
     url: https://github.com/matthewyccheung/crop
 - title: Efficient Conformal Volumetry for Template-Based Segmentation
-  venue: MICCAI (Spotlight)
+  venue: MICCAI (Spotlight 💡)
   year: 2026
-  image: assets/img/convolt.png
+  image: assets/img/publication_preview/crop_overview.png
   image_alt: Efficient Conformal Volumetry for Template-Based Segmentation
   description: Efficient conformal uncertainty quantification for volumetry in template-based segmentation pipelines, producing prediction sets with guaranteed coverage while staying practical for large-scale medical imaging workflows.
   links:
   - label: arXiv
     url: https://arxiv.org/abs/2603.00798
+  - label: Proceedings
+    url: https://link.springer.com/chapter/10.1007/978-3-032-38085-2_17
   - label: GitHub
     url: https://github.com/matthewyccheung/convolt
 - title: 'COMPASS: Robust Feature Conformal Prediction for Medical Segmentation Metrics'
@@ -32,10 +34,13 @@ featured_publications:
     url: https://openreview.net/forum?id=uBy4TCgGiT&noteId=uBy4TCgGiT
   - label: arXiv
     url: https://arxiv.org/abs/2509.22240
+  - label: Proceedings
+    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/
   - label: GitHub
     url: https://github.com/matthewyccheung/compass
+d95c3d1d599b4f98adc253d2eb269558-Abstract-Conference.html
 - title: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
-  venue: IEEE ISBI
+  venue: IEEE ISBI (Oral 🗣️)
   year: 2026
   image: assets/img/bias_fig.png
   image_alt: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
@@ -43,8 +48,10 @@ featured_publications:
   links:
   - label: arXiv
     url: https://arxiv.org/abs/2410.05263
+  - label: Proceedings
+    url: https://ieeexplore.ieee.org/abstract/document/11515847
 - title: Metric-Guided Conformal Bounds for Probabilistic Image Reconstruction
-  venue: UNSURE @ MICCAI (Long Oral)
+  venue: UNSURE @ MICCAI (Long Oral 🗣️)
   year: 2025
   image: assets/img/metric_guidance_overview_fig.png
   image_alt: Metric-guided conformal bounds overview
@@ -52,6 +59,8 @@ featured_publications:
   links:
   - label: arXiv
     url: https://arxiv.org/abs/2404.15274
+  - label: Proceedings
+    url: https://link.springer.com/chapter/10.1007/978-3-032-06593-3_16
   - label: GitHub
     url: https://github.com/matthewyccheung/conformal-metric
 - title: When Are Diffusion Priors Helpful in Sparse Reconstruction? A Study with Sparse-view CT
@@ -61,12 +70,10 @@ featured_publications:
   image_alt: Diffusion priors in sparse-view CT
   description: A systematic study of diffusion priors for sparse-view CT showing that diffusion can recover detail with very few projections, but can also plateau and produce convincing failure modes that require careful evaluation in high-stakes settings.
   links:
-  - label: IEEE
-    url: https://ieeexplore.ieee.org/document/10981058
-  - label: PubMed
-    url: https://pubmed.ncbi.nlm.nih.gov/39975437/
   - label: arXiv
     url: https://arxiv.org/abs/2502.02771
+  - label: Proceedings
+    url: https://ieeexplore.ieee.org/document/10981058
 other_publications:
 - title: 'Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation'
   venue: IEEE TBME
@@ -75,7 +82,7 @@ other_publications:
   image_alt: Wearable blood pressure monitoring review
   description: A systematic review of cuffless wearable blood pressure devices, emphasizing how protocol and evaluation design choices drive heterogeneous reported performance and proposing directions for more comparable and safer validation.
   links:
-  - label: IEEE
+  - label: Journal Article
     url: https://ieeexplore.ieee.org/document/10623798
   - label: Project Page
     url: https://wearablebp.github.io
