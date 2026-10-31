@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "Handling large images in nnUNet Coarse to Fine"
+title: "Handling large images in nnU-Net Coarse to Fine"
 math: true
 ---
 
-nnU-Net handles very large images/volumes through:
+nnU-Net handles very large images/volumes through two simple methods:
 
-1. Patch based inference: full-res model sees crops and inference uses overlapping windows and blends them with gaussian weighting.
+1) Patch based inference: full-res model sees crops and inference uses overlapping windows and blends them with gaussian weighting.
 
 ``` python
 # patch X: [H, W]
@@ -48,7 +48,7 @@ for c in starts(FH, H):
 Yhat_new /= weights
 ```
 
-2. Low-res to high-res cascade: when full-res patch covers too little of the volume, first run a low resolution U-Net (with large image) and then feed its segmentation into a second full-res U-Net for refinement.
+2) Low-res to high-res cascade: when full-res patch covers too little of the volume, first run a low resolution U-Net (with large image) and then feed its segmentation into a second full-res U-Net for refinement.
 
 ``` python
 # X_low: full low res image [H_low, W_low]
