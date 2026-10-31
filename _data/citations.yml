@@ -35,10 +35,9 @@ featured_publications:
   - label: arXiv
     url: https://arxiv.org/abs/2509.22240
   - label: Proceedings
-    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/
+    url: https://proceedings.iclr.cc/paper_files/paper/2026/hash/d95c3d1d599b4f98adc253d2eb269558-Abstract-Conference.html
   - label: GitHub
     url: https://github.com/matthewyccheung/compass
-d95c3d1d599b4f98adc253d2eb269558-Abstract-Conference.html
 - title: Bias-Aware Conformal Prediction for Metric-Based Imaging Pipelines
   venue: IEEE ISBI (Oral 🗣️)
   year: 2026
