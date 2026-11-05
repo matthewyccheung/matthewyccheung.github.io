@@ -14,7 +14,6 @@ nav_order: 3
       <li>
         <div class="row">
           <div class="col col-sm-2 abbr">
-            <abbr class="badge rounded w-100">{{ pub.venue }}</abbr>
             {% if pub.image %}
               {% include figure.liquid loading="lazy" path=pub.image class="preview z-depth-1 rounded" alt=pub.image_alt %}
             {% endif %}
@@ -40,7 +39,6 @@ nav_order: 3
       <li>
         <div class="row">
           <div class="col col-sm-2 abbr">
-            <abbr class="badge rounded w-100">{{ pub.venue }}</abbr>
             {% if pub.image %}
               {% include figure.liquid loading="lazy" path=pub.image class="preview z-depth-1 rounded" alt=pub.image_alt %}
             {% endif %}

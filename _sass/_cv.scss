@@ -151,6 +151,107 @@ td.list-group-link {
 }
 
 /*****************************
+ * CV timeline styles
+ *****************************/
+
+.cv-intro {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.cv-timeline-heading {
+  margin: 2.5rem 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.cv-timeline {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0 0 0 2rem;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    left: 0.4rem;
+    width: 2px;
+    background: var(--global-divider-color);
+  }
+}
+
+.cv-timeline-item {
+  position: relative;
+  margin-bottom: 1.75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -1.875rem;
+    top: 0.4rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background: var(--global-theme-color);
+    box-shadow: 0 0 0 3px var(--global-bg-color);
+  }
+}
+
+.cv-timeline-date {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--global-text-color-light);
+}
+
+.cv-timeline-card {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 0.25rem;
+  background: var(--global-card-bg-color);
+}
+
+.cv-timeline-title {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cv-timeline-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.cv-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+
+  .btn {
+    color: var(--global-text-color);
+    border: 1px solid var(--global-text-color);
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 500;
+
+    &:hover {
+      color: var(--global-theme-color);
+      border-color: var(--global-theme-color);
+    }
+  }
+}
+
+/*****************************
  * CV TOC styles
  *****************************/
 

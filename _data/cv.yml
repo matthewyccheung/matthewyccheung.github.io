@@ -1,97 +1,172 @@
 cv:
-  name: Matt Y. Cheung
-  label: PhD Student, Electrical and Computer Engineering
+  name: Matthew YC Cheung
+  headline: Ph.D. Candidate, Electrical and Computer Engineering
   location: Houston, TX
+  email: matthewyccheung@gmail.com
+  website: https://matthewyccheung.github.io
 
   sections:
+    Summary:
+      - >-
+        Machine learning researcher and Rice University ECE Ph.D. candidate (expected Dec. 2026)
+        developing methods to evaluate and improve AI systems. First-author research at EMNLP
+        (Outstanding Paper; Oral), ICLR, and MICCAI (Spotlight) spanning LLM reasoning,
+        statistically rigorous model evaluation, computer vision, and generative imaging.
+        Industry experience building medical-imaging ML models for Phase 3 clinical-trial
+        applications and software for manufacturing R&D.
+
     Education:
       - institution: Rice University
         location: Houston, TX
         area: Electrical and Computer Engineering
-        studyType: Ph.D.
+        degree: Ph.D.
+        timeline_title: Ph.D.
         start_date: 2023-08
         end_date: 2026-12
         highlights:
-          - Expected graduation: Dec. 2026
+          - "Advisors: Ashok Veeraraghavan (Rice Computational Imaging Lab) and Guha Balakrishnan (Rice Vision and Imaging Group)"
+          - "Trainee in the NIH NLM Training Program in Biomedical Informatics and Data Science"
+          - "Thesis: Exploiting Structure in Learning Pipelines for Practical Conformal Inference"
+          - "Topics of interest: computer vision, conformal prediction, language modeling, reasoning verification"
 
       - institution: Rice University
         location: Houston, TX
         area: Electrical and Computer Engineering
-        studyType: M.S.
+        degree: M.S.
         start_date: 2020-08
         end_date: 2023-12
+        highlights:
+          - "Advisor: Ashok Veeraraghavan (Rice Computational Imaging Lab)"
+          - "Thesis: Wearable Blood Pressure Monitoring Devices: Understanding Heterogeneity in Design and Evaluation"
+          - "Teaching assistant for undergraduate and graduate courses in computer vision and linear algebra"
 
       - institution: University of California, Davis
         location: Davis, CA
         area: Electrical Engineering
-        studyType: B.S. (cum laude)
+        degree: B.S.
         start_date: 2015-09
         end_date: 2020-06
+        highlights:
+          - "Graduated cum laude"
+          - "Graduate coursework in optical microscopy, large-scale scientific computing, computational imaging, and solid-state device physics"
+          - "Tau Beta Pi, CA Lambda Chapter"
 
     Experience:
+      - company: Johnson & Johnson R&D
+        position: AI/ML Intern, Computer Vision
+        location: Remote
+        start_date: 2026-05
+        end_date: 2026-08
+        summary: "Developed deep-learning models for ophthalmic imaging, now being deployed in Phase 3 clinical trials."
+        highlights:
+          - "Designed morphology-aware losses for geographic-atrophy biomarker quantification from volumetric OCT (GAIZ, MLMI @ MICCAI 2026 Oral)"
+          - "Trained segmentation models and developed a data-augmentation approach for fundus autofluorescence imaging"
+
       - company: Rice University
         position: Graduate Research Assistant
+        timeline_hidden: "true"
         location: Houston, TX
         start_date: 2020-12
         end_date:
-        summary: Advised by Ashok Veeraraghavan and Guha Balakrishnan
+        summary: "Advised by Ashok Veeraraghavan and Guha Balakrishnan."
         highlights:
-          - Trainee in the NIH NLM Training Program in Biomedical Informatics and Data Science.
-          - Topics of interest include uncertainty quantification for image reconstruction, segmentation, and classification, medical image reconstruction, and distribution shift.
-          - First-author work at ICLR, IEEE ISBI, UNSURE@MICCAI, and IEEE TBME.
-          - Reviewer for ICLR, MICCAI, IEEE BHI, IEEE PAMI, IEEE ICHI, Biomedical Optics Express, and MobiCom.
-
-      - company: Yang Research Laboratory
-        position: Undergraduate Research Assistant
-        location: Davis, CA
-        start_date: 2018-09
-        end_date: 2020-07
-
-      - company: Kovnir Group
-        position: Undergraduate Research Assistant
-        location: Davis, CA
-        start_date: 2016-03
-        end_date: 2017-05
+          - "LLM reasoning reliability: verifier-agnostic calibration for certifying reasoning-trace prefixes (CROP, EMNLP 2026 Oral, Outstanding Paper)"
+          - "Vision reliability: statistically valid uncertainty intervals on segmentation metrics (COMPASS, ICLR 2026; ConVOLT, MICCAI 2026 Spotlight)"
+          - "Developed uncertainty quantification for probabilistic image reconstruction (Metric-Guided, UNSURE @ MICCAI 2025 Oral)"
+          - "Mentored 6 undergraduate researchers and supervised 2 data-science capstone projects"
 
       - company: Texas Instruments
         position: Quality Reliability Engineering Intern
         location: Dallas, TX
         start_date: 2019-06
         end_date: 2019-09
+        highlights:
+          - "Applied statistical drift analysis to high-voltage gate-driver reliability and developed system-level testing procedures"
+          - "Built data-cleaning, clustering, and database automation tools for production quality workflows"
+
+      - company: Yang Research Laboratory
+        position: Undergraduate Research Assistant
+        location: Davis, CA
+        start_date: 2018-09
+        end_date: 2020-07
+        highlights:
+          - "Simulated optical setups for classification and differentiation with spatial light modulators in TensorFlow"
 
       - company: Enovix Corporation
         position: Software Development Intern (R&D, Engineering)
         location: Fremont, CA
         start_date: 2017-06
         end_date: 2019-01
+        highlights:
+          - "Built Python tools for battery characterization, metrology, and manufacturing process control"
+          - "Automated production-data extraction and visualization, and maintained SQL databases"
+
+      - company: Kovnir Group
+        position: Undergraduate Research Assistant
+        location: Davis, CA
+        start_date: 2016-03
+        end_date: 2017-05
+        highlights:
+          - "Synthesized type-I clathrate compounds and characterized samples with powder X-ray diffraction"
 
     Skills:
-      - name: Deep Learning
-        keywords:
-          - Time-series
-          - Generative Models
-          - Image Reconstruction
-          - Segmentation
-          - Diffusion
-          - INR
+      - label: Programming and ML frameworks
+        details: Python, PyTorch, Hugging Face Transformers/Diffusers, SciPy, NumPy, Pandas, scikit-learn
+      - label: Generative and vision models
+        details: Transformers, language models, vision-language models, diffusion models, segmentation, reconstruction, object detection, registration
+      - label: Statistical ML
+        details: Conformal inference, risk control, uncertainty quantification, calibration, distribution shift, model evaluation
+      - label: Language model evaluation
+        details: Reasoning verification, process supervision, model benchmarking, selective prediction
 
-      - name: Programming
-        keywords:
-          - Python
-          - PyTorch
-          - TensorFlow
-          - NumPy
-          - SciPy
-          - Pandas
-          - scikit-learn
-          - Matplotlib
-          - HuggingFace
-          - transformers
-          - diffusers
-          - MATLAB
+    Mentoring:
+      - bullet: "Adilkhan Kairzhan (Rice ECE, May 2025 – Present)"
+      - bullet: "Leslie Espinoza (Rice Statistics, Apr. 2025 – Aug. 2025)"
+      - bullet: "Luke Yuen (Rice MECH, REU, May 2023 – Dec. 2024; now pursuing an M.S. in Mechanical Engineering at Stanford)"
+      - bullet: "Rachel Gu (Rice ECE, REU, May 2023 – Dec. 2024; ECE Distinction in Research and Creative Work; now Engineer at Tetra Tech)"
+      - bullet: "Cindy Pineda (Lone Star Community College Biotechnology, NSF START, Nov. 2023 – Aug. 2024)"
+      - bullet: "Desiree Gutierrez (Texas A&M, PATHS-UP REU, May 2023 – Jul. 2023)"
 
-      - name: Math and Statistics
-        keywords:
-          - Conformal Prediction
-          - Meta-Analysis
-          - Linear Regression
+    Awards:
+      - name: D2K Mentoring Fellowship
+        date: 2024-08
+        summary: Rice University
+      - name: NLM Training Program in Biomedical Informatics and Data Science
+        date: 2023-06
+        summary: National Library of Medicine
+      - name: PATHS-UP Fellow
+        date: 2022-01
+        summary: PATHS-UP
+      - name: PATHS-UP Student Seed Fund Award
+        date: 2023-10
+        summary: PATHS-UP
+      - name: Graduate Student Distinguished Mentoring Fellowship
+        date: 2023-10
+        summary: Rice University
+      - name: Rice Fellow
+        date: 2020-08
+        summary: Rice University
+      - name: John Eric Peckham Memorial Scholarship
+        date: 2019-09
+        summary: UC Davis Undergraduate and Prestigious Scholarships
+      - name: Joseph Bonnheim Memorial Scholarship
+        date: 2016-09
+        summary: UC Davis Undergraduate and Prestigious Scholarships
+      - name: Outstanding Senior Design Project Award
+        date: 2019-05
+        summary: UC Davis Department of Electrical & Computer Engineering
+      - name: Texas Instruments Scholar Award
+        date: 2019-05
+        summary: UC Davis Department of Electrical & Computer Engineering
+      - name: Arthur & Julia Suran Endowment Scholarship
+        date: 2018-08
+        summary: UC Davis College of Engineering
+      - name: Scholarship for Outstanding Performance in Major
+        date: 2016-05
+        summary: UC Davis Department of Chemistry
+      - name: Kraft Prize
+        date: 2016-01
+        summary: UC Davis Undergraduate Scholarships, Honors and Prizes
+      - name: ESF Chairman's Award for Academic Excellence
+        date: 2015-08
+        summary: English Schools Foundation

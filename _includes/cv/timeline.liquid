@@ -1,0 +1,21 @@
+{% comment %}
+  Compact CV timeline.
+  Shows Education and Experience as separate sections, newest first.
+{% endcomment %}
+
+{% assign cv = site.data.cv.cv %}
+{% assign empty_array = '' | split: ',' %}
+{% assign education = cv.sections.Education | default: empty_array | sort: 'start_date' | reverse %}
+{% assign experience = cv.sections.Experience | default: empty_array %}
+{% assign volunteer = cv.sections.Volunteer | default: empty_array %}
+{% assign experience = experience | concat: volunteer | sort: 'start_date' | reverse %}
+
+{% if education.size > 0 %}
+  <h2 class="cv-timeline-heading">Education</h2>
+  {% include cv/timeline-list.liquid entries=education %}
+{% endif %}
+
+{% if experience.size > 0 %}
+  <h2 class="cv-timeline-heading">Experience</h2>
+  {% include cv/timeline-list.liquid entries=experience %}
+{% endif %}

@@ -1,6 +1,6 @@
 featured_publications:
 - title: Conformal Certification of Reasoning Trace Prefixes
-  venue: EMNLP 2026 (Oral, Outstanding Paper 🏆)
+  venue: EMNLP (Oral, Outstanding Paper 🏆)
   year: 2026
   image: assets/img/publication_preview/crop_overview.png
   image_alt: Conformal Certification of Reasoning Trace Prefixes
@@ -13,7 +13,7 @@ featured_publications:
 - title: Efficient Conformal Volumetry for Template-Based Segmentation
   venue: MICCAI (Spotlight 💡)
   year: 2026
-  image: assets/img/publication_preview/crop_overview.png
+  image: assets/img/publication_preview/convolt.png
   image_alt: Efficient Conformal Volumetry for Template-Based Segmentation
   description: Efficient conformal uncertainty quantification for volumetry in template-based segmentation pipelines, producing prediction sets with guaranteed coverage while staying practical for large-scale medical imaging workflows.
   links:

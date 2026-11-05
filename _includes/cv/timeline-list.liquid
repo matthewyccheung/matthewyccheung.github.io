@@ -1,0 +1,72 @@
+{% comment %}
+  One compact timeline list. Expects `include.entries`, newest first.
+{% endcomment %}
+
+{% assign months = 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec' | split: ',' %}
+
+<ol class="cv-timeline">
+  {% for entry in include.entries %}
+    {% if entry.timeline_hidden %}
+      {% continue %}
+    {% endif %}
+
+    {% assign start_date = entry.start_date | default: entry.startDate %}
+    {% assign end_date = entry.end_date | default: entry.endDate %}
+
+    {% capture date_range %}
+      {% if start_date %}
+        {% assign start_parts = start_date | split: '-' %}
+        {% assign start_year = start_parts[0] %}
+        {% assign start_month = start_parts[1] %}
+        {% if start_month %}
+          {% assign start_month_index = start_month | minus: 1 %}
+          {{ months[start_month_index] }} {{ start_year }}
+        {% else %}
+          {{ start_year }}
+        {% endif %}
+
+        {% if end_date %}
+          {% assign end_parts = end_date | split: '-' %}
+          {% assign end_year = end_parts[0] %}
+          {% assign end_month = end_parts[1] %}
+          {% if end_year != start_year or end_month != start_month %}
+            {% if end_month %}
+              {% assign end_month_index = end_month | minus: 1 %}
+              – {{ months[end_month_index] }} {{ end_year }}
+            {% else %}
+              – {{ end_year }}
+            {% endif %}
+          {% endif %}
+        {% else %}
+          – Present
+        {% endif %}
+      {% endif %}
+    {% endcapture %}
+
+    {% assign is_education = false %}
+    {% if entry.institution %}
+      {% assign is_education = true %}
+    {% endif %}
+
+    <li class="cv-timeline-item">
+      <span class="cv-timeline-date">{{ date_range | strip }}</span>
+      <div class="cv-timeline-card">
+        <h3 class="cv-timeline-title">
+          {% if is_education %}
+            {{ entry.timeline_title | default: entry.degree | default: entry.studyType }}
+          {% else %}
+            {{ entry.timeline_title | default: entry.position }}
+          {% endif %}
+        </h3>
+        <p class="cv-timeline-subtitle">
+          {% if is_education %}
+            {{ entry.institution }}
+          {% else %}
+            {{ entry.company | default: entry.name | default: entry.organization }}
+          {% endif %}
+          {% if entry.location %} · {{ entry.location }}{% endif %}
+        </p>
+      </div>
+    </li>
+  {% endfor %}
+</ol>
